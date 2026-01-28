@@ -1,0 +1,112 @@
+/* Minimal, clean styling (no framework) */
+:root {
+  color-scheme: light;
+  --bg: #0b1020;
+  --panel: rgba(255,255,255,0.08);
+  --panel2: rgba(255,255,255,0.06);
+  --text: rgba(255,255,255,0.92);
+  --muted: rgba(255,255,255,0.72);
+  --border: rgba(255,255,255,0.12);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  background: radial-gradient(1200px 600px at 20% 10%, rgba(95, 130, 255, 0.35), transparent 60%),
+              radial-gradient(1000px 600px at 80% 0%, rgba(255, 190, 80, 0.20), transparent 55%),
+              var(--bg);
+  color: var(--text);
+}
+
+.page {
+  min-height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.2);
+  backdrop-filter: blur(10px);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(95, 130, 255, 0.9);
+  box-shadow: 0 0 0 6px rgba(95, 130, 255, 0.2);
+}
+
+.title {
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.link {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel2);
+}
+.link:hover {
+  background: var(--panel);
+}
+
+.content {
+  padding: 18px 20px 22px;
+  display: grid;
+  gap: 14px;
+}
+
+.frameWrap {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.03);
+  height: min(78vh, 880px);
+}
+
+.frame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.hint {
+  border: 1px dashed var(--border);
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.04);
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.footer {
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  background: rgba(0,0,0,0.15);
+}
