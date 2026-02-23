@@ -1,74 +1,61 @@
-export default function Hero({ heroImage, onPrimaryClickHref, onSecondaryClickHref }) {
-    return (
-        <section className="hero" aria-label="Introdução ao Portal">
-            <div
-                className="heroBg"
-                style={{ backgroundImage: `url(${heroImage})` }}
-                aria-hidden="true"
-            />
+import React from 'react';
+import FadeIn from './FadeIn';
 
-            <div className="container heroInner">
-                <div className="heroContent">
-                    <div className="pill">
-                        <span className="pillDot" aria-hidden="true" />
-                        Painel Oficial de Contratações Artísticas EMPETUR
-                    </div>
+export default function Hero() {
+  const handleScroll = (e) => {
+    e.preventDefault();
+    const targetId = e.currentTarget.getAttribute("href").substring(1);
+    const targetElement = document.getElementById(targetId);
+    
+    if (targetElement) {
+      // Compensar a altura do Topbar (h-20 do tailwind = 80px)
+      const headerOffset = 80;
+      const elementPosition = targetElement.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+  
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    }
+  };
 
-                    <h1 className="heroTitle">
-                        Contratações Artísticas
-                        <br />
-                        <span className="highlight">de Pernambuco</span>
-                    </h1>
+  return (
+    <section id="inicio" className="bg-[#F8FAFC] pt-24 pb-20 border-b border-slate-200">
+      <div className="max-w-7xl mx-auto px-6 text-center flex flex-col items-center">
+        
+        <FadeIn>
+          <div className="inline-block bg-[#E2E8F0] text-[#0B2341] px-4 py-1.5 rounded-sm text-xs font-black tracking-[0.1em] uppercase mb-8">
+            Portal de Contratações Artísticas Oficial
+          </div>
+        </FadeIn>
 
-                    <p className="heroText">
-                        Visualização transparente e acessível dos Shows e Eventos Artísticos apoiados pela EMPETUR
-                    </p>
+        <FadeIn delay={0.1}>
+          <h1 className="text-4xl md:text-6xl font-black text-[#0B2341] tracking-tighter leading-[1.1] mb-6">
+            Contratações Artísticas <br className="hidden md:block" />
+            <span className="text-[#00AEEF]">em Pernambuco.</span>
+          </h1>
+        </FadeIn>
 
-                    <div className="heroCtas">
-                        <a className="btn btnPrimary" href={onPrimaryClickHref}>
-                            Acessar Painel Interativo
-                        </a>
-                        <a className="btn btnSecondary" href={onSecondaryClickHref}>
-                            Conhecer a Metodologia
-                        </a>
-                    </div>
+        <FadeIn delay={0.2}>
+          <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto font-medium leading-relaxed mb-12">
+            Acompanhe os investimentos do Governo na cultura local. Uma visualização de dados sólida, direta e detalhada para consulta pública.
+          </p>
+        </FadeIn>
 
-                    <div className="heroStats" role="list" aria-label="Estatísticas do sistema">
-                        <div className="stat" role="listitem">
-                            <div className="statLabel">Fonte Oficial</div>
-                            <div className="statValue">Sistema eFisco</div>
-                        </div>
-                        <div className="stat" role="listitem">
-                            <div className="statLabel">Período</div>
-                            <div className="statValue">2023-2025</div>
-                        </div>
-                    </div>
-                </div>
-
-                <aside className="heroSide" aria-label="Instruções de uso">
-                    <div className="sideCard">
-                        <h3 className="sideTitle">Como usar</h3>
-
-                        <ol className="steps">
-                            <li>Escolha o <strong>Ano</strong> no filtro do topo</li>
-                            <li>Selecione o <strong>Evento/Ciclo</strong> (Carnaval, São João etc.)</li>
-                            <li>Filtre por <strong>Município</strong> para ver onde aconteceu</li>
-                            <li>Na tabela, confira <strong>quando foi</strong>, <strong>onde foi</strong> e <strong>o que foi</strong></li>
-                            <li>Use a <strong>Observação do Empenho</strong> para detalhes completos do registro</li>
-                            <li>Para baixar, clique no menu do Looker Studio e use <strong>Exportar</strong></li>
-                        </ol>
-
-                        <div className="divider" />
-
-                        <h3 className="sideTitle">Sobre os dados</h3>
-                        <p className="cardText">
-                            A visualização é alimentada por planilhas padronizadas do sistema oficial (eFisco),
-                            organizadas para consulta pública. O painel é somente leitura: alterações e cargas
-                            de dados são realizadas apenas por usuários autorizados.
-                        </p>
-                    </div>
-                </aside>
-            </div>
-        </section>
-    );
+        <FadeIn delay={0.3}>
+          <a 
+            href="#painel" 
+            onClick={handleScroll}
+            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#0B2341] text-white font-bold rounded-sm hover:bg-[#15345E] transition-colors"
+          >
+            Visualizar Dados Completos
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </a>
+        </FadeIn>
+      </div>
+    </section>
+  );
 }

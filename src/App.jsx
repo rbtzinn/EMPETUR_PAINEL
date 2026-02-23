@@ -5,6 +5,7 @@ import PanelSection from './components/PanelSection';
 import AboutSection from './components/AboutSection';
 import GlossarySection from './components/GlossarySection';
 import ContactSection from './components/ContactSection';
+import Footer from './components/Footer';
 
 function App() {
   const lookerShareUrl =
@@ -40,6 +41,7 @@ function App() {
         <GlossarySection id="glossario" />
 
         <ContactSection id="contato" />
+        <Footer />
       </main>
     </div>
   );
