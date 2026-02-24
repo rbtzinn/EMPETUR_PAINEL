@@ -165,7 +165,7 @@ export default function PainelCompleto({ csvUrl }) {
       <aside className={`fixed lg:static inset-y-0 left-0 w-80 bg-white border-r border-slate-200 shadow-2xl z-40 flex flex-col shrink-0 transform transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}>
         
         <div className="p-8 border-b border-slate-100 flex items-center justify-between">
-          <img src="/images/empeturlogobranca.png" alt="Logo" className="h-10 object-contain filter invert opacity-90" />
+          <img src="/images/empeturlogobranca.png" alt="Logo" className="h-50 object-contain filter invert opacity-90" />
           {/* Botão X para fechar no Mobile */}
           <button 
             onClick={() => setIsMobileMenuOpen(false)} 
