@@ -14,11 +14,30 @@ import Footer from './components/Footer';
 // O novo Painel Avançado que criamos
 import PainelCompleto from './pages/PainelCompleto'; // Verifique se o caminho está correto
 import InternalControlSection from './components/InternalControlSection';
+import { fetchAndProcessData } from "./utils/DataProcessor";
+import { useEffect, useState } from "react";
 
 // 1. Isolamos a sua página principal inteira em um componente "Home"
 function Home({ csvUrl, shareUrl }) {
   const heroImage = "/images/heroImage.jpg";
   const bannerImage = "/images/bannerImage.jpg";
+
+  const [stats, setStats] = useState({
+    apresentacoes: 0,
+    municipios: 0,
+    artistas: 0
+  });
+
+  useEffect(() => {
+    fetchAndProcessData(csvUrl).then((data) => {
+      setStats({
+        apresentacoes: data.length,
+        municipios: new Set(data.map(d => d.municipio)).size,
+        artistas: new Set(data.map(d => d.artista)).size
+      });
+    });
+  }, [csvUrl]);
+
 
   return (
     <div className="app bg-[#F8FAFC]">
@@ -28,6 +47,9 @@ function Home({ csvUrl, shareUrl }) {
       <main>
         <Hero
           heroImage={heroImage}
+          apresentacoes={stats.apresentacoes}
+          municipios={stats.municipios}
+          artistas={stats.artistas}
           onPrimaryClickHref="#painel"
           onSecondaryClickHref="#sobre"
         />
@@ -48,7 +70,7 @@ function Home({ csvUrl, shareUrl }) {
         <GlossarySection id="glossario" />
         <ContactSection id="contato" />
       </main>
-      
+
       <Footer />
     </div>
   );
@@ -65,7 +87,7 @@ function App() {
       <Routes>
         {/* Rota Padrão: Quando o usuário acessa seusite.com/ */}
         <Route path="/" element={<Home csvUrl={csvUrl} shareUrl={shareUrl} />} />
-        
+
         {/* Rota do Dashboard: Quando o usuário acessa seusite.com/dashboard */}
         <Route path="/dashboard" element={<PainelCompleto csvUrl={csvUrl} />} />
       </Routes>

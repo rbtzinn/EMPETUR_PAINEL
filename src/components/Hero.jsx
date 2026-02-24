@@ -33,7 +33,7 @@ const AnimatedCounter = ({ end, suffix = "", label }) => {
   );
 };
 
-export default function Hero() {
+export default function Hero({ apresentacoes, municipios, artistas }) {
   const handleScroll = (e) => {
     e.preventDefault();
     const targetId = e.currentTarget.getAttribute("href").substring(1);
@@ -75,9 +75,9 @@ export default function Hero() {
         {/* ÁREA DOS CONTADORES ANIMADOS */}
         <FadeIn delay={0.3} className="w-full max-w-3xl mx-auto mb-12 bg-white rounded-3xl shadow-xl shadow-blue-900/5 p-6 md:p-8 grid grid-cols-1 md:grid-cols-3 divide-y-2 md:divide-y-0 md:divide-x-2 divide-slate-100">
           {/* Pode mudar os valores do 'end' para bater com a sua planilha */}
-          <AnimatedCounter end={829} label="Apresentações" />
-          <AnimatedCounter end={129} label="Municípios Atendidos" />
-          <AnimatedCounter end={423} suffix="+" label="Artistas Diferentes" />
+          <AnimatedCounter end={apresentacoes} label="Apresentações" />
+          <AnimatedCounter end={municipios} label="Municípios Atendidos" />
+          <AnimatedCounter end={artistas} suffix="+" label="Artistas Diferentes" />
         </FadeIn>
 
         <FadeIn delay={0.4}>
