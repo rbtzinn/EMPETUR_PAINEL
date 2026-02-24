@@ -11,23 +11,20 @@ export default function GlossarySection() {
   ];
 
   return (
-    <section id="glossario" className="py-24 bg-[#F8FAFC]">
-      <div className="max-w-5xl mx-auto px-6">
-        <FadeIn className="mb-12">
-          <h2 className="text-3xl md:text-4xl font-black text-[#0B2341] tracking-tight mb-4">Dicionário de Variáveis</h2>
-          <div className="w-16 h-1.5 bg-[#00AEEF]"></div>
+    <section id="glossario" className="py-24 bg-white">
+      <div className="max-w-6xl mx-auto px-6">
+        <FadeIn className="text-center mb-16">
+          <h2 className="text-3xl md:text-5xl font-black text-[#0B2341] tracking-tight mb-6">Dicionário de Variáveis</h2>
+          <div className="w-20 h-2 bg-[#00AEEF] mx-auto rounded-full"></div>
         </FadeIn>
 
-        <div className="bg-white border border-slate-200 rounded-sm">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {terms.map((item, i) => (
-            <FadeIn key={i} delay={i * 0.05}>
-              <div className="flex flex-col md:flex-row md:items-start p-6 border-b border-slate-200 last:border-b-0">
-                <div className="md:w-1/3 mb-2 md:mb-0">
-                  <span className="text-lg font-bold text-[#0B2341]">{item.t}</span>
-                </div>
-                <div className="md:w-2/3">
-                  <p className="text-slate-600">{item.d}</p>
-                </div>
+            <FadeIn key={i} delay={i * 0.1}>
+              <div className="h-full p-8 bg-[#F8FAFC] border border-slate-100 rounded-[2rem] hover:bg-white hover:shadow-2xl hover:shadow-blue-900/5 transition-all duration-500 group">
+                <div className="text-xs font-black text-[#00AEEF] uppercase tracking-widest mb-4 opacity-50 group-hover:opacity-100 transition-opacity">Definição</div>
+                <h3 className="text-xl font-bold text-[#0B2341] mb-3">{item.t}</h3>
+                <p className="text-slate-500 text-sm leading-relaxed">{item.d}</p>
               </div>
             </FadeIn>
           ))}

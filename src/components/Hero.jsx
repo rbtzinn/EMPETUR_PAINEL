@@ -6,40 +6,37 @@ export default function Hero() {
     e.preventDefault();
     const targetId = e.currentTarget.getAttribute("href").substring(1);
     const targetElement = document.getElementById(targetId);
-    
     if (targetElement) {
-      // Compensar a altura do Topbar (h-20 do tailwind = 80px)
       const headerOffset = 80;
       const elementPosition = targetElement.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-  
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth"
-      });
+      window.scrollTo({ top: offsetPosition, behavior: "smooth" });
     }
   };
 
   return (
-    <section id="inicio" className="bg-[#F8FAFC] pt-24 pb-20 border-b border-slate-200">
+    <section id="inicio" className="relative bg-[#F8FAFC] pt-32 pb-24 overflow-hidden">
+      {/* Elemento Decorativo de Fundo */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-blue-50 via-transparent to-transparent -z-10" />
+      
       <div className="max-w-7xl mx-auto px-6 text-center flex flex-col items-center">
-        
         <FadeIn>
-          <div className="inline-block bg-[#E2E8F0] text-[#0B2341] px-4 py-1.5 rounded-sm text-xs font-black tracking-[0.1em] uppercase mb-8">
+          <div className="inline-flex items-center gap-2 bg-white border border-slate-200 text-[#0B2341] px-4 py-2 rounded-full text-[10px] font-bold tracking-[0.15em] uppercase mb-10 shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             Portal de Contratações Artísticas Oficial
           </div>
         </FadeIn>
 
         <FadeIn delay={0.1}>
-          <h1 className="text-4xl md:text-6xl font-black text-[#0B2341] tracking-tighter leading-[1.1] mb-6">
-            Contratações Artísticas <br className="hidden md:block" />
-            <span className="text-[#00AEEF]">em Pernambuco.</span>
+          <h1 className="text-5xl md:text-7xl font-black text-[#0B2341] tracking-tight leading-[1.05] mb-8">
+            Contratações Artísticas <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0B2341] to-[#00AEEF]">em Pernambuco.</span>
           </h1>
         </FadeIn>
 
         <FadeIn delay={0.2}>
-          <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto font-medium leading-relaxed mb-12">
-            Acompanhe os investimentos do Governo na cultura local. Uma visualização de dados sólida, direta e detalhada para consulta pública.
+          <p className="text-slate-500 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed mb-12 font-light">
+            Transparência e dados sólidos sobre os investimentos culturais do Governo de Pernambuco.
           </p>
         </FadeIn>
 
@@ -47,10 +44,10 @@ export default function Hero() {
           <a 
             href="#painel" 
             onClick={handleScroll}
-            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#0B2341] text-white font-bold rounded-sm hover:bg-[#15345E] transition-colors"
+            className="group inline-flex items-center justify-center gap-3 px-10 py-5 bg-[#0B2341] text-white font-bold rounded-2xl hover:bg-[#003399] transition-all shadow-xl shadow-blue-900/20"
           >
             Visualizar Dados Completos
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-5 h-5 group-hover:translate-y-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>
           </a>

@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+/* Fundo padrão */
 body {
   background-color: #F8FAFC;
 }
+

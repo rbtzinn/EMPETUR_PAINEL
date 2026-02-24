@@ -2,36 +2,38 @@ import FadeIn from "./FadeIn";
 
 export default function ContactSection({ id }) {
   const contacts = [
-    { label: "E-mail Oficial", value: "XXXXXXXXXX@empetur.pe.gov.br", icon: "✉️" },
-    { label: "Horário de Atendimento", value: "Segunda a Sexta • 08h às 17h", icon: "🕐" },
-    { label: "Telefone", value: "+55 (XX) XXXX-XXXX", icon: "📞" },
-    { label: "Endereço", value: "Av. XXXXXX, XXXX - XXXXXX, Recife - PE", icon: "📍" }
+    { label: "E-mail Oficial", value: "contato@empetur.pe.gov.br", icon: "✉️", color: "bg-blue-50 text-blue-600" },
+    { label: "Atendimento", value: "Segunda a Sexta • 08h às 17h", icon: "🕐", color: "bg-emerald-50 text-emerald-600" },
+    { label: "Telefone", value: "+55 (81) 3182-8000", icon: "📞", color: "bg-purple-50 text-purple-600" },
+    { label: "Localização", value: "Olinda - Pernambuco", icon: "📍", color: "bg-orange-50 text-orange-600" }
   ];
 
   return (
-    <section id={id} className="py-24 bg-slate-50" aria-label="Contato e informações">
-      <div className="max-w-4xl mx-auto px-6">
-        <FadeIn className="bg-white rounded-[3rem] p-10 md:p-16 shadow-xl shadow-gray-200/50 border border-gray-100 text-center relative overflow-hidden">
+    <section id={id} className="py-32 bg-[#F8FAFC]" aria-label="Contato e informações">
+      <div className="max-w-5xl mx-auto px-6">
+        <FadeIn className="bg-white rounded-[4rem] p-12 md:p-20 shadow-2xl shadow-blue-900/5 border border-white relative overflow-hidden">
           
-          {/* Decoração sutil no fundo */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-3xl -z-10 translate-x-1/2 -translate-y-1/2" />
+          {/* Elementos abstratos de fundo */}
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#00AEEF]/5 rounded-full blur-3xl" />
+          <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-[#0B2341]/5 rounded-full blur-3xl" />
           
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Contato e Informações</h2>
-          <p className="text-gray-600 mb-12 max-w-2xl mx-auto">
-            Entre em contato para esclarecimentos, sugestões ou solicitação de 
-            informações adicionais sobre os dados apresentados.
-          </p>
+          <div className="text-center mb-16 relative z-10">
+            <h2 className="text-3xl md:text-5xl font-black text-[#0B2341] mb-6 tracking-tight">Contato e Suporte</h2>
+            <p className="text-slate-500 text-lg max-w-xl mx-auto font-light">
+              Estamos à disposição para esclarecimentos sobre os dados e transparência das contratações.
+            </p>
+          </div>
 
-          <div className="grid sm:grid-cols-2 gap-6 text-left">
+          <div className="grid sm:grid-cols-2 gap-8 relative z-10">
             {contacts.map((contact, index) => (
-              <FadeIn key={index} delay={0.1 * index} direction="up">
-                <div className="flex items-start gap-4 p-5 rounded-2xl bg-slate-50 border border-gray-100 hover:border-blue-200 transition-all group">
-                  <div className="w-10 h-10 shrink-0 rounded-full bg-white flex items-center justify-center text-xl shadow-sm group-hover:-translate-y-1 transition-transform">
+              <FadeIn key={index} delay={0.1 * index}>
+                <div className="flex items-center gap-6 p-6 rounded-[2rem] bg-slate-50/50 border border-slate-100 hover:bg-white hover:shadow-xl hover:shadow-blue-900/5 transition-all group">
+                  <div className={`w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center text-2xl shadow-inner group-hover:scale-110 transition-transform ${contact.color}`}>
                     {contact.icon}
                   </div>
                   <div>
-                    <div className="text-sm font-semibold text-gray-900 mb-1">{contact.label}</div>
-                    <div className="text-sm text-gray-600">{contact.value}</div>
+                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{contact.label}</div>
+                    <div className="text-sm font-bold text-[#0B2341] break-all">{contact.value}</div>
                   </div>
                 </div>
               </FadeIn>
