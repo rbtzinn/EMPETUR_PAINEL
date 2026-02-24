@@ -3,7 +3,6 @@ import Papa from "papaparse";
 /* ======================
    UTILITÁRIOS
 ====================== */
-
 const extrairAno = (texto) => {
   if (!texto) return "---";
   const match = texto.match(/(19|20)\d{2}/);
@@ -13,31 +12,10 @@ const extrairAno = (texto) => {
 const normalizarEspacos = (txt) =>
   txt.replace(/\s+/g, " ").trim();
 
-// NOVA FUNÇÃO: Transforma "R$ 25.000,00" em 25000.00 numérico
 const extrairValor = (valorString) => {
   if (!valorString) return 0;
-  // Remove tudo que não for dígito ou vírgula, e troca a vírgula por ponto
   const limpo = valorString.replace(/[^\d,]/g, '').replace(',', '.');
   return parseFloat(limpo) || 0;
-};
-
-/* ======================
-   ARTISTA
-====================== */
-export const extrairArtista = (obsOriginal) => {
-  const obs = (obsOriginal || "").toUpperCase();
-
-  const regex1 =
-    /(?:APRESENTAÇÃO|ART[IÍ]STIC[A-Z]*|AP\.|APRESENT)(?:.*?)\s+(?:DE|DA|DO|DAS|DOS)\s+(.+?)(?:,|\s+NO\s+|\s+NA\s+|\s+EM\s+|\s+-|$)/;
-
-  const match1 = obs.match(regex1);
-  if (match1?.[1]) return normalizarEspacos(match1[1]);
-
-  const regex2 = /^([^,]{3,80})(?:,|$)/;
-  const match2 = obs.match(regex2);
-  if (match2?.[1]) return normalizarEspacos(match2[1]);
-
-  return "NÃO IDENTIFICADO";
 };
 
 /* ======================
@@ -51,32 +29,113 @@ export const extrairDataEvento = (obsOriginal) => {
 };
 
 /* ======================
-   MUNICÍPIO
+   ARTISTA (VERSÃO FINAL CONSOLIDADA)
 ====================== */
-export const extrairMunicipio = (obsOriginal) => {
-  let obs = (obsOriginal || "").toUpperCase();
+export const extrairArtista = (obsOriginal) => {
+  if (!obsOriginal) return "NÃO IDENTIFICADO";
+  const obs = obsOriginal.toUpperCase();
 
-  obs = obs
-    .replace(/NACIDADE/g, "CIDADE")
-    .replace(/DECATENDE/g, "DE CATENDE")
-    .replace(/B\. DE SÃO FRANCISCO/g, "BELEM DE SÃO FRANCISCO")
-    .replace(/B DE SÃO FRANCISCO/g, "BELEM DE SÃO FRANCISCO")
-    .replace(/JABAOTÃO/g, "JABOATÃO")
-    .replace(/JABOATÃO DOS GUARAPES/g, "JABOATÃO DOS GUARARAPES")
-    .replace(/JOAQUIMNABUCO/g, "JOAQUIM NABUCO")
-    .replace(/RECFE/g, "RECIFE")
-    .replace(/\bCDADE\b|\bCIDAD\b/g, "CIDADE")
-    .replace(/\s+/g, " ");
+  // 1. REGEX DE CAPTURA MELHORADA
+  // Pega o nome após DE/DA/DO e para apenas em conectores de local ou data
+  const regexArtista = /(?:APRESENTAÇÃO|ART[IÍ]STIC[A-Z]*|AP\.|APRESENT)(?:.*?)\s+(?:DE|DA|DO|DAS|DOS)\s+(.+?)(?:,|\s+NO\s+|\s+NA\s+|\s+EM\s+|\s+NO\s+CARNAVAL|\s+NO\s+SÃO|\s+NO\s+DIA|$)/;
 
-  const regex =
-    /(?:CIDADE\s*(?:DE|DO|DA)?|\bEM\b)\s+([A-ZÀ-Ú .]+?)(?:\s*\/\s*[A-Z]{2}|\s+PE\b|\s*-|,|$)/;
+  const match = obs.match(regexArtista);
+  let artistaRaw = "NÃO IDENTIFICADO";
 
-  const match = obs.match(regex);
-  return match?.[1]?.trim() || "NÃO IDENTIFICADO";
+  if (match?.[1]) {
+    // Remove (CONVITE) e espaços extras
+    artistaRaw = normalizarEspacos(match[1].replace(/\(.*?\)/g, ""));
+  }
+
+  // 2. DICIONÁRIO DE UNIFICAÇÃO (Faxina nos nomes)
+  const mapaArtistas = {
+    // Unificação Banda D' Romance
+    "BANDA D ROMANCE": "BANDA D' ROMANCE",
+    "BANDA D' ROMANCE": "BANDA D' ROMANCE",
+    "D' ROMANCE": "BANDA D' ROMANCE",
+    "D ROMANCE": "BANDA D' ROMANCE",
+    
+    // Kebrança (Apenas o nome no singular)
+    "BANDA KEBRANÇAS": "BANDA KEBRANÇA",
+    "BANDA KEBRANÇA": "BANDA KEBRANÇA",
+    
+    // Swing Novo (Garantindo espaço)
+    "BANDA SWINGNOVO": "BANDA SWING NOVO",
+    "BANDA SWING NOVO": "BANDA SWING NOVO",
+    "SWING NOVO": "BANDA SWING NOVO",
+    
+    // Marília Marques (Garantindo acento)
+    "MARILIA MARQUES": "MARÍLIA MARQUES",
+    "MARÍLIA MARQUES": "MARÍLIA MARQUES",
+    
+    // Matheus Vini (Corrigindo Vinni)
+    "MATHEUS VINNI": "MATHEUS VINI",
+    "MATHEUS VINI": "MATHEUS VINI",
+    
+    // Orquestra Mexe com Tudo (Removendo o traço final)
+    "ORQUESTRA DE FREVO MEXE COM TUDO -": "ORQUESTRA DE FREVO MEXE COM TUDO",
+    "ORQUESTRA DE FREVO MEXE COM TUDO": "ORQUESTRA DE FREVO MEXE COM TUDO",
+
+    // Fulô de Mandacaru
+    "BFULÔ DE MANDACARÚ": "FULÔ DE MANDACARÚ",
+    "BFULO DE MANDACARU": "FULÔ DE MANDACARÚ"
+  };
+
+  // Limpeza final de qualquer traço ou hifen solto no fim da string
+  let artistaLimpo = artistaRaw.replace(/\s*-\s*$/, "").trim();
+
+  return mapaArtistas[artistaLimpo] || artistaLimpo;
 };
 
 /* ======================
-   PROCESSADOR PRINCIPAL
+   MUNICÍPIO (MANTENDO AS REGRAS ANTERIORES)
+====================== */
+export const extrairMunicipio = (obsOriginal) => {
+  if (!obsOriginal) return "NÃO IDENTIFICADO";
+  let obs = obsOriginal.toUpperCase();
+
+  obs = obs
+    .replace(/\bCUMBUCA\b/g, "CUMBUCÁ")
+    .replace(/\bCAMBUCÁ\b/g, "CUMBUCÁ")
+    .replace(/\bCAMBUCA\b/g, "CUMBUCÁ")
+    .replace(/\bNAZARE\s+DE\s+MATA\b/g, "NAZARÉ DA MATA")
+    .replace(/\bJOAQUIMNABUCO\b/g, "JOAQUIM NABUCO")
+    .replace(/\bDEILHA DE ITAMARACÁ\b/g, "ILHA DE ITAMARACÁ")
+    .replace(/\bDECATENDE\b/g, "CATENDE")
+    .replace(/\bDETUPARETAMA\b/g, "TUPARETAMA")
+    .replace(/\bCIDAD\s+DE\b/g, "CIDADE DE")
+    .replace(/\bCIDADED\s+E\b/g, "CIDADE DE")
+    .replace(/\bCDADE\s+DE\b/g, "CIDADE DE")
+    .replace(/\bB\.\s+DE\s+SÃO\s+FRANCISCO\b/g, "BELEM DE SAO FRANCISCO")
+    .replace(/\bB\s+DE\s+SÃO\s+FRANCISCO\b/g, "BELEM DE SAO FRANCISCO")
+    .replace(/CARNAUBEIRA\s+DAPENHA/g, "CARNAUBEIRA DA PENHA")
+    .replace(/\s+/g, " ");
+
+  const regexCidade = /CIDADE\s*(?:DE|DO|DA)?\s+([A-ZÀ-Ú\s\.]{3,40}?)(?:\/|PE|-|,|\.|\s+NO\s+DIA|$)/;
+  const match = obs.match(regexCidade);
+  let resultado = match?.[1]?.trim() || "NÃO IDENTIFICADO";
+
+  resultado = resultado.replace(/\/.*$/, "").replace(/\bPE\b$/, "").trim();
+
+  const mapaCorrecoes = {
+    "BELEM DE SAO FRANCISCO": "BELÉM DE SÃO FRANCISCO",
+    "GLORIA DO GOITA": "GLÓRIA DO GOITÁ",
+    "CARNAUBEIRA DA PENHA": "CARNAUBEIRA DA PENHA",
+    "JOAQUIM NABUCO": "JOAQUIM NABUCO",
+    "NAZARÉ DA MATA": "NAZARÉ DA MATA",
+    "ILHA DE ITAMARACÁ": "ILHA DE ITAMARACÁ",
+    "RECFE": "RECIFE"
+  };
+
+  if (resultado.includes("JABOATAO") || resultado.includes("JABOATÃO")) {
+    return "JABOATÃO DOS GUARARAPES";
+  }
+
+  return mapaCorrecoes[resultado] || resultado;
+};
+
+/* ======================
+   PROCESSADOR PRINCIPAL (COM TRAVA DE DUPLICADOS)
 ====================== */
 export const fetchAndProcessData = async (url) => {
   const response = await fetch(url);
@@ -87,28 +146,44 @@ export const fetchAndProcessData = async (url) => {
       header: true,
       skipEmptyLines: true,
       complete: ({ data }) => {
-        const processed = data.map((linha, index) => {
+        const setUnico = new Set(); // Para rastrear combinações já vistas
+        
+        const processed = data.reduce((acc, linha, index) => {
           const obs = linha["Observação do Empenho"] || "";
           const dataEmpenho = linha["Data do Empenho"] || "";
-          
-          // CAPTURANDO A COLUNA DE VALOR DA PLANILHA DO EFISCO
           const valorBruto = linha["Total Liquidado"] || "0"; 
 
-          return {
+          // Extraímos os dados para criar a chave de comparação
+          const artista = extrairArtista(obs);
+          const municipio = extrairMunicipio(obs);
+          const dataEvento = extrairDataEvento(obs);
+          const valor = extrairValor(valorBruto);
+
+          // Criamos a "Chave de Identidade" do registro
+          // Se artista, data, cidade e valor forem iguais, a chave será a mesma
+          const chaveUnica = `${artista}-${municipio}-${dataEvento}-${valor}`;
+
+          // Se a chave já existe no Set, ignoramos este registro (é um duplicado)
+          if (setUnico.has(chaveUnica)) {
+            return acc;
+          }
+
+          // Se for novo, adicionamos ao Set e ao resultado final
+          setUnico.add(chaveUnica);
+
+          acc.push({
             id: `${linha["Número do Empenho"] || "emp"}-${index}`,
-
-            artista: extrairArtista(obs),
-            municipio: extrairMunicipio(obs),
+            artista,
+            municipio,
             ciclo: linha["Detalhamento da Despesa Gerencial"] || "Outros",
-
-            dataEvento: extrairDataEvento(obs),
+            dataEvento,
             dataEmpenho: dataEmpenho || "---",
             ano: extrairAno(dataEmpenho),
-            
-            // INJETANDO O VALOR LIMPO NO OBJETO FINAL
-            valor: extrairValor(valorBruto), 
-          };
-        });
+            valor, 
+          });
+
+          return acc;
+        }, []);
 
         resolve(processed);
       },
