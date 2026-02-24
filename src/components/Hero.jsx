@@ -36,7 +36,7 @@ export default function Hero() {
 
         <FadeIn delay={0.2}>
           <p className="text-slate-500 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed mb-12 font-light">
-            Transparência e dados sólidos sobre os investimentos culturais do Governo de Pernambuco.
+            EMPETUR - Empresa de Turismo de Pernambuco - Controle Interno.
           </p>
         </FadeIn>
 

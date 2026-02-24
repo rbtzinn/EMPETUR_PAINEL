@@ -165,7 +165,7 @@ export default function PainelCompleto({ csvUrl }) {
       <aside className={`fixed lg:static inset-y-0 left-0 w-80 bg-white border-r border-slate-200 shadow-2xl z-40 flex flex-col shrink-0 transform transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}>
         
         <div className="p-8 border-b border-slate-100 flex items-center justify-between">
-          <img src="/images/empeturlogobranca.png" alt="Logo" className="h-50 object-contain filter invert opacity-90" />
+          <img src="/images/empeturlogobranca.png" alt="Logo" className="h-10 object-contain filter invert opacity-90" />
           {/* Botão X para fechar no Mobile */}
           <button 
             onClick={() => setIsMobileMenuOpen(false)} 
@@ -288,13 +288,15 @@ export default function PainelCompleto({ csvUrl }) {
             </div>
             
             <div className="overflow-auto max-h-[400px] w-full flex-1 scrollbar-moderna">
-              <Table className="min-w-[600px]">
+              <Table className="min-w-[700px]">
                 <TableHead className="bg-slate-50 sticky top-0 z-10 shadow-sm">
                   <TableRow>
                     <TableHeaderCell className="text-[#0B2341] font-bold text-xs py-4 px-6">Artista</TableHeaderCell>
                     <TableHeaderCell className="text-[#0B2341] font-bold text-xs py-4 px-6">Município</TableHeaderCell>
                     <TableHeaderCell className="text-[#0B2341] font-bold text-xs py-4 px-6">Ciclo</TableHeaderCell>
                     <TableHeaderCell className="text-[#0B2341] font-bold text-xs py-4 px-6">Data</TableHeaderCell>
+                    {/* NOVA COLUNA AQUI */}
+                    <TableHeaderCell className="text-[#0B2341] font-bold text-xs py-4 px-6 text-right">Valor Pago</TableHeaderCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -310,6 +312,12 @@ export default function PainelCompleto({ csvUrl }) {
                         <span className="bg-[#0B2341] text-white px-3 py-1 rounded-full text-[10px] font-bold whitespace-nowrap">{d.ciclo}</span>
                       </TableCell>
                       <TableCell className="text-slate-500 text-xs py-4 px-6 whitespace-nowrap">{d.dataEvento}</TableCell>
+                      {/* NOVA CÉLULA AQUI (COM FORMATAÇÃO) */}
+                      <TableCell className="text-right py-4 px-6">
+                        <span className="font-mono font-black text-[#00AEEF] text-sm whitespace-nowrap">
+                          {Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(d.valor) || 0)}
+                        </span>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
