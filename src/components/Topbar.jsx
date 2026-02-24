@@ -1,37 +1,38 @@
 import React, { useState, useEffect } from 'react';
-// IMPORTANTE: Ajuste o caminho de importação conforme a estrutura da sua pasta
 import ConfirmModal from './ConfirmModal'; 
 
 export default function Topbar({ lookerShareUrl }) {
   const [activeSection, setActiveSection] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id);
-        }
-      });
-    }, { 
-      rootMargin: "-20% 0px -60% 0px" 
+ useEffect(() => {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      // Usamos isIntersecting e uma proporção mínima para garantir a troca
+      if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
+        setActiveSection(entry.target.id);
+      }
     });
+  }, { 
+    // Ajustamos a margem para detectar a seção quando ela ocupa o meio da tela
+    rootMargin: "-25% 0px -25% 0px",
+    threshold: [0.3] 
+  });
 
-    const sectionsToObserve = ['inicio', 'painel', 'sobre', 'glossario'];
+  const sectionsToObserve = ['inicio', 'painel', 'gestao', 'sobre', 'glossario'];
 
-    const timeoutId = setTimeout(() => {
-      sectionsToObserve.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) observer.observe(el);
-      });
-    }, 100);
+  const timeoutId = setTimeout(() => {
+    sectionsToObserve.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+  }, 100);
 
-    return () => {
-      clearTimeout(timeoutId);
-      observer.disconnect();
-    };
-  }, []);
-
+  return () => {
+    clearTimeout(timeoutId);
+    observer.disconnect();
+  };
+}, []);
   const handleScroll = (e) => {
     e.preventDefault();
     const targetId = e.currentTarget.getAttribute("href").substring(1);
@@ -62,7 +63,8 @@ export default function Topbar({ lookerShareUrl }) {
 
   return (
     <>
-      <header className="sticky top-0 w-full z-40 bg-[#0B2341]/95 backdrop-blur-md border-b border-white/10 shadow-2xl">
+      {/* 2. AJUSTE DE CAMADA: z-index alterado para z-[100] para ficar acima de tudo */}
+      <header className="sticky top-0 w-full z-[100] bg-[#0B2341]/95 backdrop-blur-md border-b border-white/10 shadow-2xl">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-6">
             
@@ -71,29 +73,29 @@ export default function Topbar({ lookerShareUrl }) {
               href="https://www.empetur.pe.gov.br/"
               onClick={handleLogoClick}
             >
-              <img src="/images/empeturlogobranca.png" alt="Logo EMPETUR" className="h-30 w-auto object-contain" />
+              <img src="/images/empeturlogobranca.png" alt="Logo EMPETUR" className="h-20 w-auto object-contain" />
             </a>
             
             <div className="w-[1px] h-8 bg-gradient-to-b from-transparent via-slate-500 to-transparent"></div>
             <div className="flex flex-col">
-              <span className="text-white font-bold text-xs tracking-tight uppercase">Controle Interno</span>
+              {/* 3. TERMO AMIGÁVEL: Mudado de Controle para Gestão */}
+              <span className="text-white font-bold text-xs tracking-tight uppercase">Gestão Cultural</span>
               <span className="text-[#00AEEF] font-black text-[9px] uppercase tracking-[0.2em]">Pernambuco</span>
             </div>
           </div>
 
           <div className="flex items-center gap-10">
             <nav className="hidden lg:flex gap-8">
-              {['painel', 'sobre', 'glossario'].map((id) => (
+              {/* 4. NOVO ITEM: Adicionado 'gestao' no array de links do menu */}
+              {['painel', 'gestao', 'sobre', 'glossario'].map((id) => (
                 <a key={id} href={`#${id}`} onClick={handleScroll} className={getLinkClass(id)}>
-                  {id.charAt(0).toUpperCase() + id.slice(1)}
+                  {id === 'gestao' ? 'Gestão' : id.charAt(0).toUpperCase() + id.slice(1)}
                   {activeSection === id && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#00AEEF] rounded-full" />}
                 </a>
               ))}
             </nav>
             <a 
               href={lookerShareUrl}
-              target="_blank"
-              rel="noreferrer"
               className="px-6 py-2.5 bg-[#00AEEF] hover:bg-white text-[#0B2341] text-xs font-black uppercase tracking-widest rounded-full transition-all duration-300 shadow-lg shadow-[#00AEEF]/20 active:scale-95"
             >
               Acessar Painel
@@ -102,7 +104,6 @@ export default function Topbar({ lookerShareUrl }) {
         </div>
       </header>
 
-      {/* Renderizando o Modal como componente externo */}
       <ConfirmModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 

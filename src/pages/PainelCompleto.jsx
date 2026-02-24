@@ -1,6 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Card, Title, DonutChart, Metric, Text, Grid, Table, TableHead, TableRow, TableHeaderCell, TableBody, TableCell, Badge } from "@tremor/react";
+import { Card, Title, Metric, Text, Grid } from "@tremor/react";
 import { fetchAndProcessData } from "../utils/DataProcessor";
+import TopArtistasCard from "../components/TopArtistasCard";
+import TabelaHistorico from "../components/TabelaHistorico";
+import Sidebar from "../components/Sidebar"; 
+import TopMunicipiosChart from "../components/TopMunicipiosChart"; // <--- NOVO IMPORT AQUI
 
 /* ========================================================
    1. GRÁFICO DE BARRAS NATIVO
@@ -11,7 +15,7 @@ const GraficoBarrasNativo = ({ data, indice, formatador, onClick, filtroAtivo })
   const maximo = Math.max(...data.map(d => d.total));
   
   return (
-    <div className="flex items-end gap-2 h-full w-full pt-10">
+    <div className="flex items-end justify-center gap-4 h-full w-full pt-10">
       {data.map((item, idx) => {
         const altura = maximo === 0 ? 0 : (item.total / maximo) * 100;
         const selecionado = filtroAtivo === item[indice];
@@ -21,7 +25,7 @@ const GraficoBarrasNativo = ({ data, indice, formatador, onClick, filtroAtivo })
           <div 
             key={idx}
             onClick={() => onClick(item[indice])}
-            className="relative flex-1 flex flex-col justify-end h-full group cursor-pointer rounded-t-xl hover:bg-slate-100 transition-all px-1"
+            className="relative flex flex-col justify-end h-full w-full max-w-[120px] group cursor-pointer rounded-t-xl hover:bg-slate-50 transition-all px-1"
           >
             <div className="opacity-0 group-hover:opacity-100 absolute -top-12 left-1/2 -translate-x-1/2 bg-[#0B2341] text-white px-3 py-2 rounded-lg text-xs font-bold whitespace-nowrap z-50 pointer-events-none transition-opacity shadow-xl">
               {item[indice]}
@@ -29,9 +33,9 @@ const GraficoBarrasNativo = ({ data, indice, formatador, onClick, filtroAtivo })
             </div>
             <div 
               style={{ height: `${altura}%`, minHeight: item.total > 0 ? '4px' : '0' }}
-              className={`w-full rounded-t-md transition-all duration-500 ${apagado ? 'bg-slate-200' : 'bg-[#00AEEF]'}`}
+              className={`w-full rounded-t-md transition-all duration-500 shadow-sm ${apagado ? 'bg-slate-200' : 'bg-[#00AEEF]'}`}
             ></div>
-            <div className="text-center mt-2 text-[10px] md:text-xs font-bold text-slate-500 truncate">
+            <div className="text-center mt-3 text-[10px] md:text-xs font-black text-slate-500 truncate">
               {item[indice]}
             </div>
           </div>
@@ -41,28 +45,10 @@ const GraficoBarrasNativo = ({ data, indice, formatador, onClick, filtroAtivo })
   );
 };
 
-// Dropdown da Sidebar
-const DropdownSidebar = ({ label, value, onChange, options }) => (
-  <div className="w-full mb-4">
-    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">{label}</label>
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="w-full bg-slate-50 border border-slate-200 text-[#0B2341] text-sm font-medium rounded-xl px-4 py-3 outline-none cursor-pointer transition-all hover:bg-slate-100"
-    >
-      <option value="">Todos</option>
-      {options.map((opt, idx) => (
-        <option key={idx} value={opt}>{opt}</option>
-      ))}
-    </select>
-  </div>
-);
-
 export default function PainelCompleto({ csvUrl }) {
   const [dados, setDados] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // ESTADO PARA O MENU MOBILE
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const [filtros, setFiltros] = useState({
@@ -121,17 +107,6 @@ export default function PainelCompleto({ csvUrl }) {
     return [...new Set(dadosPossiveis.map(d => d[campoCorrente]))].filter(Boolean).sort();
   };
 
-  const customTooltipDonut = ({ payload, active }) => {
-    if (!active || !payload || payload.length === 0) return null;
-    const data = payload[0].payload;
-    return (
-      <div className="bg-[#0B2341] p-4 rounded-xl shadow-2xl border border-white/10 z-50">
-        <p className="font-bold text-white text-sm mb-1">{data.nome}</p>
-        <p className="text-[#00AEEF] font-black text-lg">{data.total} shows</p>
-      </div>
-    );
-  };
-
   if (loading) return <div className="h-screen flex items-center justify-center bg-[#F8FAFC]"><Text className="text-2xl font-black text-[#0B2341] animate-pulse">Carregando Dashboard Oficial...</Text></div>;
 
   return (
@@ -143,61 +118,22 @@ export default function PainelCompleto({ csvUrl }) {
         .scrollbar-moderna::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .scrollbar-moderna::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
-        /* Força as Cores do Gráfico de Pizza ignorando o Tailwind do Tremor */
-        .recharts-pie-sector:nth-child(1) path { fill: #0B2341 !important; }
-        .recharts-pie-sector:nth-child(2) path { fill: #00AEEF !important; }
-        .recharts-pie-sector:nth-child(3) path { fill: #38BDF8 !important; }
-        .recharts-pie-sector:nth-child(4) path { fill: #7DD3FC !important; }
-        .recharts-pie-sector:nth-child(5) path { fill: #E0F2FE !important; }
-        .recharts-pie-sector:nth-child(6) path { fill: #94A3B8 !important; }
-        .recharts-pie-sector path { stroke: #ffffff !important; stroke-width: 2px !important; }
+        /* Cores do Tremor já definidas no componente isolado, mas se quiser forçar via CSS, mantenha aqui */
       `}</style>
 
-      {/* OVERLAY MOBILE: Fundo escuro quando a sidebar abre no celular */}
-      {isMobileMenuOpen && (
-        <div 
-          className="fixed inset-0 bg-[#0B2341]/60 backdrop-blur-sm z-30 lg:hidden transition-opacity"
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
-      )}
-
-      {/* SIDEBAR (Desktop = estática, Mobile = Gaveta absolute) */}
-      <aside className={`fixed lg:static inset-y-0 left-0 w-80 bg-white border-r border-slate-200 shadow-2xl z-40 flex flex-col shrink-0 transform transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}>
-        
-        <div className="p-8 border-b border-slate-100 flex items-center justify-between">
-          <img src="/images/empeturlogobranca.png" alt="Logo" className="h-50 object-contain filter invert opacity-90" />
-          {/* Botão X para fechar no Mobile */}
-          <button 
-            onClick={() => setIsMobileMenuOpen(false)} 
-            className="lg:hidden p-2 text-slate-400 hover:text-[#0B2341] bg-slate-50 rounded-lg"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-          </button>
-        </div>
-        
-        <div className="p-8 overflow-y-auto flex-1 scrollbar-moderna">
-          <Text className="text-[#0B2341] font-black mb-6">Filtros Avançados</Text>
-          <DropdownSidebar label="Município" value={filtros.municipio} onChange={(v) => setFiltros({ ...filtros, municipio: v })} options={getOpcoes('municipio')} />
-          <DropdownSidebar label="Ciclo Cultural" value={filtros.ciclo} onChange={(v) => setFiltros({ ...filtros, ciclo: v })} options={getOpcoes('ciclo')} />
-          <DropdownSidebar label="Ano" value={filtros.ano} onChange={(v) => setFiltros({ ...filtros, ano: v })} options={getOpcoes('ano')} />
-          <DropdownSidebar label="Artista" value={filtros.artista} onChange={(v) => setFiltros({ ...filtros, artista: v })} options={getOpcoes('artista')} />
-          
-          <button 
-            onClick={() => {
-              setFiltros({ municipio: "", ciclo: "", ano: "", artista: "", dataEvento: "" });
-              setIsMobileMenuOpen(false); // Fecha a sidebar ao limpar no mobile
-            }}
-            className="w-full mt-6 py-3 rounded-xl bg-blue-50 text-[#00AEEF] font-bold text-sm hover:bg-[#00AEEF] hover:text-white transition-all"
-          >
-            ↺ Resetar Filtros
-          </button>
-        </div>
-      </aside>
+      {/* COMPONENTE DA SIDEBAR ISOLADO */}
+      <Sidebar 
+        isMobileMenuOpen={isMobileMenuOpen}
+        setIsMobileMenuOpen={setIsMobileMenuOpen}
+        filtros={filtros}
+        setFiltros={setFiltros}
+        getOpcoes={getOpcoes}
+      />
 
       {/* ÁREA PRINCIPAL */}
       <main className="flex-1 overflow-y-auto p-4 md:p-10 scrollbar-moderna min-w-0">
         
-        {/* CABEÇALHO MOBILE COM HAMBURGUER */}
+        {/* CABEÇALHO MOBILE */}
         <div className="lg:hidden flex items-center justify-between mb-8 p-4 bg-white rounded-2xl shadow-sm border border-slate-100">
           <div className="flex flex-col">
              <span className="text-[#0B2341] font-black text-sm uppercase tracking-tight">Dashboard</span>
@@ -235,9 +171,10 @@ export default function PainelCompleto({ csvUrl }) {
           </Card>
         </div>
 
+        {/* GRÁFICOS DE CIMA */}
         <Grid numItems={1} numItemsLg={3} className="gap-6 mb-8">
           
-          <Card className="rounded-3xl border-none shadow-xl shadow-blue-900/5 bg-white p-6 md:p-8 lg:col-span-2 flex flex-col h-full">
+          <Card className="rounded-3xl border-none shadow-xl shadow-blue-900/5 bg-white p-6 md:p-8 flex flex-col h-full">
             <Title className="text-[#0B2341] font-black">Apresentações por Ciclo</Title>
             <Text className="text-slate-400 text-xs mb-2">💡 Clique na coluna para filtrar</Text>
             <div className="flex-1 min-h-[250px]">
@@ -251,22 +188,20 @@ export default function PainelCompleto({ csvUrl }) {
             </div>
           </Card>
 
-          <Card className="rounded-3xl border-none shadow-xl shadow-blue-900/5 bg-white p-6 md:p-8">
-            <Title className="text-[#0B2341] font-black">Top Municípios</Title>
-            <Text className="text-slate-400 text-xs mb-6">💡 Clique na fatia para filtrar</Text>
-            <DonutChart
-              data={registrosPorMunicipio} category="total" index="nome"
-              className="h-64 cursor-pointer"
-              showLegend={false}
-              customTooltip={customTooltipDonut}
-              onValueChange={(v) => setFiltros(prev => ({...prev, municipio: v ? v.nome : ""}))}
-            />
-          </Card>
+          {/* NOVO COMPONENTE ISOLADO AQUI */}
+          <TopMunicipiosChart 
+            data={registrosPorMunicipio} 
+            onFilter={(nome) => setFiltros(prev => ({...prev, municipio: nome}))} 
+          />
+          
         </Grid>
 
-        <Grid numItems={1} numItemsLg={3} className="gap-6">
-          
-          <Card className="rounded-3xl border-none shadow-xl shadow-blue-900/5 bg-white p-6 md:p-8 h-full flex flex-col">
+        {/* TABELA ISOLADA */}
+        <TabelaHistorico filtrados={filtrados} setFiltros={setFiltros} />
+
+        {/* GRÁFICOS DE BAIXO */}
+        <Grid numItems={1} numItemsLg={3} className="gap-6 mb-8">
+          <Card className="rounded-3xl border-none shadow-xl shadow-blue-900/5 bg-white p-6 md:p-8 h-full flex flex-col lg:col-span-2">
             <Title className="text-[#0B2341] font-black">Apresentações por Ano</Title>
             <Text className="text-slate-400 text-xs mb-2">💡 Clique na coluna para filtrar</Text>
             <div className="flex-1 min-h-[300px]">
@@ -280,51 +215,9 @@ export default function PainelCompleto({ csvUrl }) {
             </div>
           </Card>
 
-          {/* TABELA GIGANTE E COM SCROLL */}
-          <Card className="rounded-3xl border-none shadow-xl shadow-blue-900/5 bg-white p-0 lg:col-span-2 flex flex-col h-full overflow-hidden">
-            <div className="p-6 border-b border-slate-50 bg-[#0B2341] shrink-0">
-              <Title className="text-white font-black">Histórico Recente</Title>
-              <Text className="text-[#00AEEF] text-xs">Clique no nome do artista para filtrar a tela toda</Text>
-            </div>
-            
-            <div className="overflow-auto max-h-[400px] w-full flex-1 scrollbar-moderna">
-              <Table className="min-w-[700px]">
-                <TableHead className="bg-slate-50 sticky top-0 z-10 shadow-sm">
-                  <TableRow>
-                    <TableHeaderCell className="text-[#0B2341] font-bold text-xs py-4 px-6">Artista</TableHeaderCell>
-                    <TableHeaderCell className="text-[#0B2341] font-bold text-xs py-4 px-6">Município</TableHeaderCell>
-                    <TableHeaderCell className="text-[#0B2341] font-bold text-xs py-4 px-6">Ciclo</TableHeaderCell>
-                    <TableHeaderCell className="text-[#0B2341] font-bold text-xs py-4 px-6">Data</TableHeaderCell>
-                    {/* NOVA COLUNA AQUI */}
-                    <TableHeaderCell className="text-[#0B2341] font-bold text-xs py-4 px-6 text-right">Valor Pago</TableHeaderCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {filtrados.slice(0, 100).map((d) => (
-                    <TableRow 
-                      key={d.id} 
-                      className="hover:bg-blue-50/50 transition-colors cursor-pointer border-b border-slate-100"
-                      onClick={() => setFiltros(prev => ({...prev, artista: prev.artista === d.artista ? "" : d.artista}))}
-                    >
-                      <TableCell className="font-bold text-[#0B2341] py-4 px-6 whitespace-normal">{d.artista}</TableCell>
-                      <TableCell className="text-slate-500 text-xs py-4 px-6 whitespace-normal">{d.municipio}</TableCell>
-                      <TableCell className="py-4 px-6">
-                        <span className="bg-[#0B2341] text-white px-3 py-1 rounded-full text-[10px] font-bold whitespace-nowrap">{d.ciclo}</span>
-                      </TableCell>
-                      <TableCell className="text-slate-500 text-xs py-4 px-6 whitespace-nowrap">{d.dataEvento}</TableCell>
-                      {/* NOVA CÉLULA AQUI (COM FORMATAÇÃO) */}
-                      <TableCell className="text-right py-4 px-6">
-                        <span className="font-mono font-black text-[#00AEEF] text-sm whitespace-nowrap">
-                          {Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(d.valor) || 0)}
-                        </span>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </Card>
+          <TopArtistasCard filtrados={filtrados} />
         </Grid>
+
       </main>
     </div>
   );

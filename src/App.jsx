@@ -13,6 +13,7 @@ import Footer from './components/Footer';
 
 // O novo Painel Avançado que criamos
 import PainelCompleto from './pages/PainelCompleto'; // Verifique se o caminho está correto
+import InternalControlSection from './components/InternalControlSection';
 
 // 1. Isolamos a sua página principal inteira em um componente "Home"
 function Home({ csvUrl, shareUrl }) {
@@ -40,6 +41,8 @@ function Home({ csvUrl, shareUrl }) {
           shareUrl={shareUrl}
           lookerShareUrl="/dashboard"
         />
+
+        <InternalControlSection />
 
         <AboutSection id="sobre" />
         <GlossarySection id="glossario" />

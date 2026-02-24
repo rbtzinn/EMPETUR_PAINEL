@@ -2,31 +2,13 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Card, Text, Badge } from "@tremor/react";
 import FadeIn from "./FadeIn";
 import { fetchAndProcessData } from "../utils/DataProcessor";
-
-const DropdownNativo = ({ placeholder, value, onChange, options }) => (
-  <div className="relative w-full">
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="w-full bg-slate-50 border border-slate-200 text-[#0B2341] text-sm font-medium rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#00AEEF] focus:border-transparent outline-none cursor-pointer appearance-none truncate transition-all hover:bg-slate-100"
-    >
-      <option value="">{placeholder}</option>
-      {options.map((opt, idx) => (
-        <option key={idx} value={opt}>{opt}</option>
-      ))}
-    </select>
-    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
-      <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-        <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-      </svg>
-    </div>
-  </div>
-);
+// NOVO IMPORT: Importando o componente isolado que criamos
+import DropdownPesquisavel from "./DropdownPesquisavel"; // Ajuste o caminho se estiver em outra pasta
 
 export default function PanelSection({ id, csvUrl, lookerShareUrl }) {
   const [dados, setDados] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   const [filtros, setFiltros] = useState({
     municipio: "", ciclo: "", ano: "", artista: "", dataEvento: "",
   });
@@ -49,8 +31,6 @@ export default function PanelSection({ id, csvUrl, lookerShareUrl }) {
       );
     });
   }, [dados, filtros]);
-
-  const valorTotal = filtrados.reduce((acc, curr) => acc + (Number(curr.valor) || 0), 0);
 
   const getOpcoesCascata = (campoCorrente) => {
     const dadosPossiveis = dados.filter(d => {
@@ -87,19 +67,19 @@ export default function PanelSection({ id, csvUrl, lookerShareUrl }) {
             <h2 className="text-3xl md:text-5xl font-black text-[#0B2341] tracking-tight mb-2">Consulta Rápida</h2>
             <Text className="text-slate-500 font-medium text-lg">Clique nos itens da tabela para filtrar rapidamente.</Text>
           </div>
-          
+
           {/* Container dos botões */}
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto shrink-0">
-            <button 
+            <button
               onClick={() => setFiltros({ municipio: "", ciclo: "", ano: "", artista: "", dataEvento: "" })}
               className="w-full sm:w-auto text-[#00AEEF] font-bold text-sm uppercase tracking-wider hover:underline bg-blue-50 px-5 py-3 rounded-xl transition-colors"
             >
               ↺ Limpar Filtros
             </button>
-            
-            <a 
+
+            <a
               href={lookerShareUrl}
-              target="_blank" // Abre em uma nova aba. Se quiser que abra na mesma, remova esta linha.
+              target="_blank"
               rel="noreferrer"
               className="cursor-pointer w-full sm:w-auto text-center px-6 py-3 bg-[#00AEEF] hover:bg-[#0B2341] text-white text-sm font-black uppercase tracking-widest rounded-xl transition-all duration-300 shadow-lg shadow-[#00AEEF]/20 active:scale-95 flex items-center justify-center gap-2 group"
             >
@@ -112,16 +92,20 @@ export default function PanelSection({ id, csvUrl, lookerShareUrl }) {
         </FadeIn>
 
         {/* BARRA DE FILTROS INTELIGENTE */}
-        <FadeIn delay={0.1}>
-          <Card className="rounded-[2rem] border-none shadow-xl shadow-blue-900/5 bg-white p-6 mb-8">
+        {/* Ajustamos o z-index para 30 (intermediário) */}
+        <FadeIn delay={0.1} className="relative z-30">
+
+          {/* Mantemos o overflow-visible para a lista aparecer */}
+          <Card className="rounded-[2rem] border-none shadow-xl shadow-blue-900/5 bg-white p-6 mb-8 overflow-visible">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-              <DropdownNativo placeholder="Todos os Municípios" value={filtros.municipio} onChange={(v) => setFiltros({ ...filtros, municipio: v })} options={getOpcoesCascata('municipio')} />
-              <DropdownNativo placeholder="Todos os Ciclos" value={filtros.ciclo} onChange={(v) => setFiltros({ ...filtros, ciclo: v })} options={getOpcoesCascata('ciclo')} />
-              <DropdownNativo placeholder="Todos os Anos" value={filtros.ano} onChange={(v) => setFiltros({ ...filtros, ano: v })} options={getOpcoesCascata('ano')} />
-              <DropdownNativo placeholder="Todos os Artistas" value={filtros.artista} onChange={(v) => setFiltros({ ...filtros, artista: v })} options={getOpcoesCascata('artista')} />
-              <DropdownNativo placeholder="Todas as Datas" value={filtros.dataEvento} onChange={(v) => setFiltros({ ...filtros, dataEvento: v })} options={getOpcoesCascata('dataEvento')} />
+              <DropdownPesquisavel label="Todos os Municípios" value={filtros.municipio} onChange={(v) => setFiltros({ ...filtros, municipio: v })} options={getOpcoesCascata('municipio')} />
+              <DropdownPesquisavel label="Todos os Ciclos" value={filtros.ciclo} onChange={(v) => setFiltros({ ...filtros, ciclo: v })} options={getOpcoesCascata('ciclo')} />
+              <DropdownPesquisavel label="Todos os Anos" value={filtros.ano} onChange={(v) => setFiltros({ ...filtros, ano: v })} options={getOpcoesCascata('ano')} />
+              <DropdownPesquisavel label="Todos os Artistas" value={filtros.artista} onChange={(v) => setFiltros({ ...filtros, artista: v })} options={getOpcoesCascata('artista')} />
+              <DropdownPesquisavel label="Todas as Datas" value={filtros.dataEvento} onChange={(v) => setFiltros({ ...filtros, dataEvento: v })} options={getOpcoesCascata('dataEvento')} />
             </div>
           </Card>
+
         </FadeIn>
 
         {/* TABELA FULL WIDTH */}
@@ -131,9 +115,6 @@ export default function PanelSection({ id, csvUrl, lookerShareUrl }) {
               <Text className="font-bold text-white text-sm tracking-wide">DETALHAMENTO OFICIAL</Text>
               <div className="flex items-center gap-4">
                 <Badge className="font-bold text-white text-sm tracking-wide">{filtrados.length} Registros</Badge>
-                <Text className="font-black text-[#00AEEF] text-xl">
-                  {/* Total: {Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valorTotal)} */}
-                </Text>
               </div>
             </div>
 
@@ -152,21 +133,21 @@ export default function PanelSection({ id, csvUrl, lookerShareUrl }) {
                   {filtrados.length > 0 ? (
                     filtrados.map((d) => (
                       <tr key={d.id} className="hover:bg-blue-50/40 transition-colors border-b border-slate-100 last:border-0 group">
-                        <td 
+                        <td
                           className="p-6 text-sm font-bold text-[#0B2341] cursor-pointer group-hover:text-[#00AEEF] transition-colors"
                           onClick={() => setFiltros({ ...filtros, artista: d.artista })}
                           title="Clique para filtrar apenas este artista"
                         >
                           {d.artista}
                         </td>
-                        <td 
+                        <td
                           className="p-6 text-sm text-slate-600 cursor-pointer hover:text-[#0B2341] hover:font-bold transition-all"
                           onClick={() => setFiltros({ ...filtros, municipio: d.municipio })}
                           title="Clique para filtrar apenas este município"
                         >
                           {d.municipio}
                         </td>
-                        <td 
+                        <td
                           className="p-6 text-sm cursor-pointer"
                           onClick={() => setFiltros({ ...filtros, ciclo: d.ciclo })}
                           title="Clique para filtrar apenas este ciclo"
