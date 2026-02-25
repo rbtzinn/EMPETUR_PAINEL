@@ -1,5 +1,13 @@
 import Papa from "papaparse";
 
+export const normalizarMunicipio = (txt = "") =>
+  txt
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // remove acentos
+    .toUpperCase()
+    .trim();
+
+
 /* ======================
    UTILITÁRIOS
 ====================== */
@@ -180,6 +188,7 @@ export const fetchAndProcessData = async (url) => {
             dataEmpenho: dataEmpenho || "---",
             ano: extrairAno(dataEmpenho),
             valor, 
+            municipioNormalizado: normalizarMunicipio(municipio),
           });
 
           return acc;

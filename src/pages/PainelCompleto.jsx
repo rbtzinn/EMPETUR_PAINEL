@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Card, Title, Metric, Text, Grid } from "@tremor/react";
-import { fetchAndProcessData } from "../utils/DataProcessor";
+import { fetchAndProcessData, normalizarMunicipio } from "../utils/DataProcessor";
 import TopArtistasCard from "../components/TopArtistasCard";
 import TabelaHistorico from "../components/TabelaHistorico";
 import Sidebar from "../components/Sidebar";
-import TopMunicipiosChart from "../components/TopMunicipiosChart"; // <--- NOVO IMPORT AQUI
+import TopMunicipiosChart from "../components/TopMunicipiosChart";
+import InfoTooltip from "../components/InfoTooltip";
+import MapaPernambuco from "../components/MapaPernambuco";
 
 /* ========================================================
    1. GRÁFICO DE BARRAS NATIVO
@@ -55,6 +57,12 @@ export default function PainelCompleto({ csvUrl }) {
     municipio: "", ciclo: "", ano: "", artista: "", dataEvento: "",
   });
 
+  // Dentro do componente PainelCompleto, antes do return:
+  const temFiltroAtivo = useMemo(() => {
+    return Object.values(filtros).some(valor => valor !== "");
+  }, [filtros]);
+
+
   useEffect(() => {
     fetchAndProcessData(csvUrl).then(data => {
       setDados(data);
@@ -66,7 +74,7 @@ export default function PainelCompleto({ csvUrl }) {
   const filtrados = useMemo(() => {
     return dados.filter((d) => {
       return (
-        (filtros.municipio === "" || d.municipio === filtros.municipio) &&
+        (filtros.municipio === "" || d.municipioNormalizado === filtros.municipio) &&
         (filtros.ciclo === "" || d.ciclo === filtros.ciclo) &&
         (filtros.ano === "" || d.ano === filtros.ano) &&
         (filtros.artista === "" || d.artista === filtros.artista) &&
@@ -97,14 +105,30 @@ export default function PainelCompleto({ csvUrl }) {
   const getOpcoes = (campoCorrente) => {
     const dadosPossiveis = dados.filter(d => {
       return (
-        (filtros.municipio === "" || campoCorrente === 'municipio' || d.municipio === filtros.municipio) &&
-        (filtros.ciclo === "" || campoCorrente === 'ciclo' || d.ciclo === filtros.ciclo) &&
-        (filtros.ano === "" || campoCorrente === 'ano' || d.ano === filtros.ano) &&
-        (filtros.artista === "" || campoCorrente === 'artista' || d.artista === filtros.artista) &&
-        (filtros.dataEvento === "" || campoCorrente === 'dataEvento' || d.dataEvento === filtros.dataEvento)
+        (filtros.municipio === "" || campoCorrente === "municipio" || d.municipioNormalizado === filtros.municipio) &&
+        (filtros.ciclo === "" || campoCorrente === "ciclo" || d.ciclo === filtros.ciclo) &&
+        (filtros.ano === "" || campoCorrente === "ano" || d.ano === filtros.ano) &&
+        (filtros.artista === "" || campoCorrente === "artista" || d.artista === filtros.artista)
       );
     });
-    return [...new Set(dadosPossiveis.map(d => d[campoCorrente]))].filter(Boolean).sort();
+
+    if (campoCorrente === "municipio") {
+      const mapa = new Map();
+
+      dadosPossiveis.forEach(d => {
+        if (!mapa.has(d.municipioNormalizado)) {
+          mapa.set(d.municipioNormalizado, d.municipio);
+        }
+      });
+
+      return Array.from(mapa.entries())
+        .map(([value, label]) => ({ value, label }))
+        .sort((a, b) => a.label.localeCompare(b.label));
+    }
+
+    return [...new Set(dadosPossiveis.map(d => d[campoCorrente]))]
+      .filter(Boolean)
+      .sort();
   };
 
   if (loading) return <div className="h-screen flex items-center justify-center bg-[#F8FAFC]"><Text className="text-2xl font-black text-[#0B2341] animate-pulse">Carregando Dashboard Oficial...</Text></div>;
@@ -133,21 +157,37 @@ export default function PainelCompleto({ csvUrl }) {
       {/* ÁREA PRINCIPAL */}
       <main className="flex-1 overflow-y-auto p-4 md:p-10 scrollbar-moderna min-w-0">
 
-        {/* CABEÇALHO MOBILE */}
-        <div className="lg:hidden flex items-center justify-between mb-8 p-4 bg-white rounded-2xl shadow-sm border border-slate-100">
-          <div className="flex flex-col">
-            <span className="text-[#0B2341] font-black text-sm uppercase tracking-tight">Dashboard</span>
-            <span className="text-[#00AEEF] font-bold text-[10px] uppercase tracking-widest">Empetur</span>
+        {/* CABEÇALHO MOBILE INTEGRADO */}
+        <div className={`lg:hidden fixed top-0 left-0 right-0 z-[60] flex items-center justify-between p-4 bg-[#0B2341] transition-all duration-500 ${isMobileMenuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+          <div className="flex items-center gap-3">
+            <img src="/images/empeturlogobranca.png" alt="Logo" className="h-10 w-auto" />
+            <div className="flex flex-col">
+              <span className="text-white font-black text-xs uppercase tracking-tight">Filtros e Gestão</span>
+              <span className="text-[#00AEEF] font-bold text-[9px] uppercase tracking-widest">Painel Oficial</span>
+            </div>
           </div>
+
           <button
             onClick={() => setIsMobileMenuOpen(true)}
-            className="p-3 text-[#0B2341] bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors"
+            className="relative p-3 text-white bg-white/10 rounded-xl hover:bg-white/20 transition-all active:scale-95"
           >
+            {/* Ícone de Filtro/Hambúrguer */}
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
             </svg>
+
+            {/* BOLINHA DE NOTIFICAÇÃO (Filtro Ativo) */}
+            {temFiltroAtivo && (
+              <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00AEEF] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-4 w-4 bg-[#00AEEF] border-2 border-[#0B2341]"></span>
+              </span>
+            )}
           </button>
         </div>
+
+        {/* ESPAÇADOR MOBILE */}
+        <div className="lg:hidden h-20"></div>
 
         {/* KPIs */}
         <div className="flex flex-col md:flex-row gap-6 mb-8 w-full">
@@ -172,12 +212,26 @@ export default function PainelCompleto({ csvUrl }) {
         </div>
 
         {/* GRÁFICOS DE CIMA - Lado a Lado no Desktop */}
+
+        <div className="w-full mt-6">
+          <MapaPernambuco
+            dados={filtrados}
+            municipioSelecionado={filtros.municipio}
+            onSelectMunicipio={(nome) =>
+              setFiltros((prev) => ({ ...prev, municipio: nome }))
+            }
+          />
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
 
-          {/* Card de Ciclo - Ocupa 1/3 */}
-          <Card className="rounded-3xl border-none shadow-xl shadow-blue-900/5 bg-white p-6 md:p-8 flex flex-col h-full">
-            <Title className="text-[#0B2341] font-black">Apresentações por Ciclo</Title>
-            <Text className="text-slate-400 text-xs mb-2">💡 Clique na coluna para filtrar</Text>
+          <Card className="relative rounded-3xl border-none shadow-xl shadow-blue-900/5 bg-white p-6 md:p-8 flex flex-col h-full">
+            <Title className="text-[#0B2341] font-black mb-6">Apresentações por Ciclo</Title>
+
+            <div className="absolute top-6 right-6 md:top-8 md:right-8">
+              <InfoTooltip text="Clique nas barras para filtrar os dados por este ciclo cultural específico." />
+            </div>
+
             <div className="flex-1 min-h-[250px]">
               <GraficoBarrasNativo
                 data={registrosPorCiclo}
@@ -193,7 +247,12 @@ export default function PainelCompleto({ csvUrl }) {
           <div className="lg:col-span-2">
             <TopMunicipiosChart
               data={registrosPorMunicipio}
-              onFilter={(nome) => setFiltros(prev => ({ ...prev, municipio: nome }))}
+              onFilter={(nome) =>
+                setFiltros(prev => ({
+                  ...prev,
+                  municipio: normalizarMunicipio(nome),
+                }))
+              }
             />
           </div>
         </div>
@@ -203,9 +262,13 @@ export default function PainelCompleto({ csvUrl }) {
         {/* GRÁFICOS DE BAIXO */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           <div className="lg:col-span-2">
-            <Card className="rounded-3xl border-none shadow-xl shadow-blue-900/5 bg-white p-6 md:p-8 h-full flex flex-col">
-              <Title className="text-[#0B2341] font-black">Apresentações por Ano</Title>
-              <Text className="text-slate-400 text-xs mb-2">💡 Clique na coluna para filtrar</Text>
+            <Card className="relative rounded-3xl border-none shadow-xl shadow-blue-900/5 bg-white p-6 md:p-8 h-full flex flex-col">
+              <Title className="text-[#0B2341] font-black mb-6">Apresentações por Ano</Title>
+
+              <div className="absolute top-6 right-6 md:top-8 md:right-8">
+                <InfoTooltip text="Estatísticas baseadas na data do empenho oficial emitida pela EMPETUR." />
+              </div>
+
               <div className="flex-1 min-h-[300px]">
                 <GraficoBarrasNativo
                   data={registrosPorAno}

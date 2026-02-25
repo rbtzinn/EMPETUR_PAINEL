@@ -1,5 +1,6 @@
 import React from "react";
 import { Card, Title, Text, DonutChart } from "@tremor/react";
+import InfoTooltip from "./InfoTooltip";
 
 export default function TopMunicipiosChart({ data, onFilter }) {
   // Tooltip customizado com o design do seu painel
@@ -43,9 +44,10 @@ export default function TopMunicipiosChart({ data, onFilter }) {
         .recharts-pie-sector path { stroke: #ffffff !important; stroke-width: 2px !important; }
       `}</style>
 
-      <div className="mb-6">
-        <Title className="text-[#0B2341] font-black">Top Municípios</Title>
-        <Text className="text-slate-400 text-xs">💡 Clique na fatia ou no nome para filtrar</Text>
+      <Title className="text-[#0B2341] font-black mb-8">Top Municípios</Title>
+      
+      <div className="absolute top-6 right-6 md:top-8 md:right-8">
+        <InfoTooltip text="Clique na fatia ou no nome da cidade na legenda para filtrar o painel." />
       </div>
       
       <div className="flex-1 flex flex-col md:flex-row items-center justify-between gap-8 h-full">

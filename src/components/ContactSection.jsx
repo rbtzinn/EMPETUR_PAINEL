@@ -9,31 +9,35 @@ export default function ContactSection({ id }) {
   ];
 
   return (
-    <section id={id} className="py-32 bg-[#F8FAFC]" aria-label="Contato e informações">
-      <div className="max-w-5xl mx-auto px-6">
-        <FadeIn className="bg-white rounded-[4rem] p-12 md:p-20 shadow-2xl shadow-blue-900/5 border border-white relative overflow-hidden">
+    <section id={id} className="py-20 md:py-32 bg-[#F8FAFC]" aria-label="Contato e informações">
+      <div className="max-w-5xl mx-auto px-4 md:px-6">
+        {/* Reduzi o rounded no mobile para ganhar espaço interno */}
+        <FadeIn className="bg-white rounded-[2.5rem] md:rounded-[4rem] p-8 md:p-20 shadow-2xl shadow-blue-900/5 border border-white relative overflow-hidden">
           
-          {/* Elementos abstratos de fundo */}
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#00AEEF]/5 rounded-full blur-3xl" />
           <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-[#0B2341]/5 rounded-full blur-3xl" />
           
-          <div className="text-center mb-16 relative z-10">
-            <h2 className="text-3xl md:text-5xl font-black text-[#0B2341] mb-6 tracking-tight">Contato e Suporte</h2>
-            <p className="text-slate-500 text-lg max-w-xl mx-auto font-light">
+          <div className="text-center mb-12 md:mb-16 relative z-10">
+            <h2 className="text-3xl md:text-5xl font-black text-[#0B2341] mb-4 md:mb-6 tracking-tight">Contato e Suporte</h2>
+            <p className="text-slate-500 text-base md:text-lg max-w-xl mx-auto font-light leading-relaxed">
               Estamos à disposição para esclarecimentos sobre os dados e transparência das contratações.
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-8 relative z-10">
+          {/* Grid ajustado: 1 coluna no mobile, 2 no desktop */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 relative z-10">
             {contacts.map((contact, index) => (
               <FadeIn key={index} delay={0.1 * index}>
-                <div className="flex items-center gap-6 p-6 rounded-[2rem] bg-slate-50/50 border border-slate-100 hover:bg-white hover:shadow-xl hover:shadow-blue-900/5 transition-all group">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 md:gap-6 p-6 rounded-[2rem] bg-slate-50/50 border border-slate-100 hover:bg-white hover:shadow-xl hover:shadow-blue-900/5 transition-all group">
                   <div className={`w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center text-2xl shadow-inner group-hover:scale-110 transition-transform ${contact.color}`}>
                     {contact.icon}
                   </div>
-                  <div>
+                  <div className="min-w-0 w-full">
                     <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{contact.label}</div>
-                    <div className="text-sm font-bold text-[#0B2341] break-all">{contact.value}</div>
+                    {/* break-words é melhor que break-all para e-mails longos */}
+                    <div className="text-sm md:text-base font-bold text-[#0B2341] break-words">
+                      {contact.value}
+                    </div>
                   </div>
                 </div>
               </FadeIn>
