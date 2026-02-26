@@ -7,7 +7,6 @@ export const normalizarMunicipio = (txt = "") =>
     .toUpperCase()
     .trim();
 
-
 /* ======================
    UTILITÁRIOS
 ====================== */
@@ -44,7 +43,6 @@ export const extrairArtista = (obsOriginal) => {
   const obs = obsOriginal.toUpperCase();
 
   // 1. REGEX DE CAPTURA MELHORADA
-  // Pega o nome após DE/DA/DO e para apenas em conectores de local ou data
   const regexArtista = /(?:APRESENTAÇÃO|ART[IÍ]STIC[A-Z]*|AP\.|APRESENT)(?:.*?)\s+(?:DE|DA|DO|DAS|DOS)\s+(.+?)(?:,|\s+NO\s+|\s+NA\s+|\s+EM\s+|\s+NO\s+CARNAVAL|\s+NO\s+SÃO|\s+NO\s+DIA|$)/;
 
   const match = obs.match(regexArtista);
@@ -57,34 +55,21 @@ export const extrairArtista = (obsOriginal) => {
 
   // 2. DICIONÁRIO DE UNIFICAÇÃO (Faxina nos nomes)
   const mapaArtistas = {
-    // Unificação Banda D' Romance
     "BANDA D ROMANCE": "BANDA D' ROMANCE",
     "BANDA D' ROMANCE": "BANDA D' ROMANCE",
     "D' ROMANCE": "BANDA D' ROMANCE",
     "D ROMANCE": "BANDA D' ROMANCE",
-    
-    // Kebrança (Apenas o nome no singular)
     "BANDA KEBRANÇAS": "BANDA KEBRANÇA",
     "BANDA KEBRANÇA": "BANDA KEBRANÇA",
-    
-    // Swing Novo (Garantindo espaço)
     "BANDA SWINGNOVO": "BANDA SWING NOVO",
     "BANDA SWING NOVO": "BANDA SWING NOVO",
     "SWING NOVO": "BANDA SWING NOVO",
-    
-    // Marília Marques (Garantindo acento)
     "MARILIA MARQUES": "MARÍLIA MARQUES",
     "MARÍLIA MARQUES": "MARÍLIA MARQUES",
-    
-    // Matheus Vini (Corrigindo Vinni)
     "MATHEUS VINNI": "MATHEUS VINI",
     "MATHEUS VINI": "MATHEUS VINI",
-    
-    // Orquestra Mexe com Tudo (Removendo o traço final)
     "ORQUESTRA DE FREVO MEXE COM TUDO -": "ORQUESTRA DE FREVO MEXE COM TUDO",
     "ORQUESTRA DE FREVO MEXE COM TUDO": "ORQUESTRA DE FREVO MEXE COM TUDO",
-
-    // Fulô de Mandacaru
     "BFULÔ DE MANDACARÚ": "FULÔ DE MANDACARÚ",
     "BFULO DE MANDACARU": "FULÔ DE MANDACARÚ"
   };
@@ -143,7 +128,7 @@ export const extrairMunicipio = (obsOriginal) => {
 };
 
 /* ======================
-   PROCESSADOR PRINCIPAL (COM TRAVA DE DUPLICADOS)
+   PROCESSADOR PRINCIPAL
 ====================== */
 export const fetchAndProcessData = async (url) => {
   const response = await fetch(url);
@@ -157,18 +142,24 @@ export const fetchAndProcessData = async (url) => {
         const setUnico = new Set(); // Para rastrear combinações já vistas
         
         const processed = data.reduce((acc, linha, index) => {
+          const valorBruto = linha["Total Liquidado"] || "0"; 
+          const valor = extrairValor(valorBruto);
+
+          // === NOVA TRAVA: IGNORAR ITENS ZERADOS ===
+          // Se o valor extraído for 0, pula a execução deste item
+          if (valor === 0) {
+            return acc;
+          }
+
           const obs = linha["Observação do Empenho"] || "";
           const dataEmpenho = linha["Data do Empenho"] || "";
-          const valorBruto = linha["Total Liquidado"] || "0"; 
 
           // Extraímos os dados para criar a chave de comparação
           const artista = extrairArtista(obs);
           const municipio = extrairMunicipio(obs);
           const dataEvento = extrairDataEvento(obs);
-          const valor = extrairValor(valorBruto);
 
           // Criamos a "Chave de Identidade" do registro
-          // Se artista, data, cidade e valor forem iguais, a chave será a mesma
           const chaveUnica = `${artista}-${municipio}-${dataEvento}-${valor}`;
 
           // Se a chave já existe no Set, ignoramos este registro (é um duplicado)

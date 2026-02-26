@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Card, Title, Metric, Text, Grid } from "@tremor/react";
+import { Card, Title, Text, Grid } from "@tremor/react";
 import { fetchAndProcessData, normalizarMunicipio } from "../utils/DataProcessor";
 import TopArtistasCard from "../components/TopArtistasCard";
 import TabelaHistorico from "../components/TabelaHistorico";
@@ -7,6 +7,7 @@ import Sidebar from "../components/Sidebar";
 import TopMunicipiosChart from "../components/TopMunicipiosChart";
 import InfoTooltip from "../components/InfoTooltip";
 import MapaPernambuco from "../components/MapaPernambuco";
+import IndicadoresKPI from "../components/IndicadoresKPI"; // <-- Importação do novo componente
 
 /* ========================================================
    1. GRÁFICO DE BARRAS NATIVO
@@ -57,11 +58,9 @@ export default function PainelCompleto({ csvUrl }) {
     municipio: "", ciclo: "", ano: "", artista: "", dataEvento: "",
   });
 
-  // Dentro do componente PainelCompleto, antes do return:
   const temFiltroAtivo = useMemo(() => {
     return Object.values(filtros).some(valor => valor !== "");
   }, [filtros]);
-
 
   useEffect(() => {
     fetchAndProcessData(csvUrl).then(data => {
@@ -141,8 +140,6 @@ export default function PainelCompleto({ csvUrl }) {
         .scrollbar-moderna::-webkit-scrollbar-track { background: transparent; }
         .scrollbar-moderna::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .scrollbar-moderna::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        
-        /* Cores do Tremor já definidas no componente isolado, mas se quiser forçar via CSS, mantenha aqui */
       `}</style>
 
       {/* COMPONENTE DA SIDEBAR ISOLADO */}
@@ -189,30 +186,14 @@ export default function PainelCompleto({ csvUrl }) {
         {/* ESPAÇADOR MOBILE */}
         <div className="lg:hidden h-20"></div>
 
-        {/* KPIs */}
-        <div className="flex flex-col md:flex-row gap-6 mb-8 w-full">
-          <Card className="flex-1 w-full rounded-3xl border-none shadow-xl shadow-blue-900/5 bg-[#0B2341]">
-            <Text className="text-white/60 font-bold uppercase tracking-widest text-[10px]">Apresentações Encontradas</Text>
-            <Metric className="text-white text-5xl font-black mt-2">{filtrados.length}</Metric>
-          </Card>
-
-          <Card className="flex-1 w-full rounded-3xl border-none shadow-xl shadow-blue-900/5 bg-white">
-            <Text className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Artistas Diferentes</Text>
-            <Metric className="text-[#0B2341] text-5xl font-black mt-2">
-              {[...new Set(filtrados.map(d => d.artista))].length}
-            </Metric>
-          </Card>
-
-          <Card className="flex-1 w-full rounded-3xl border-none shadow-xl shadow-blue-900/5 bg-white">
-            <Text className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Municípios Atendidos</Text>
-            <Metric className="text-[#00AEEF] text-5xl font-black mt-2">
-              {[...new Set(filtrados.map(d => d.municipio))].length}
-            </Metric>
-          </Card>
-        </div>
+        {/* COMPONENTE DE KPIs ISOLADO */}
+        <IndicadoresKPI 
+          filtrados={filtrados} 
+          filtros={filtros} 
+          setFiltros={setFiltros} 
+        />
 
         {/* GRÁFICOS DE CIMA - Lado a Lado no Desktop */}
-
         <div className="w-full mt-6">
           <MapaPernambuco
             dados={filtrados}
@@ -259,6 +240,7 @@ export default function PainelCompleto({ csvUrl }) {
 
         {/* TABELA ISOLADA */}
         <TabelaHistorico filtrados={filtrados} setFiltros={setFiltros} />
+        
         {/* GRÁFICOS DE BAIXO */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           <div className="lg:col-span-2">

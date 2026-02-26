@@ -100,6 +100,8 @@ export default function Topbar({ lookerShareUrl }) {
 
             <a 
               href={lookerShareUrl}
+              target="_blank" 
+              rel="noopener noreferrer"
               className="hidden sm:block px-6 py-2.5 bg-[#00AEEF] hover:bg-white text-[#0B2341] text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 shadow-lg shadow-[#00AEEF]/20 active:scale-95"
             >
               Acessar Painel
@@ -136,6 +138,8 @@ export default function Topbar({ lookerShareUrl }) {
             ))}
             <a 
               href={lookerShareUrl}
+              target="_blank" 
+              rel="noopener noreferrer"
               className="mt-4 w-full text-center py-4 bg-[#00AEEF] text-[#0B2341] font-black uppercase tracking-widest rounded-xl"
             >
               Acessar Painel
