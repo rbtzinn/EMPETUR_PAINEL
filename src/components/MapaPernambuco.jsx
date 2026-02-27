@@ -90,7 +90,7 @@ export default function MapaPernambuco({
                 projection="geoMercator"
                 projectionConfig={{ scale: 8000 }}
                 width={1000}
-                height={300}
+                height={350}
                 className="w-full h-full outline-none"
             >
                 <ZoomableGroup

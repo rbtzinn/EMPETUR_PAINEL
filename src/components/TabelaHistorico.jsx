@@ -1,21 +1,19 @@
 import React, { useState, useMemo } from "react";
 import { 
-  Card, 
-  Title, 
-  Text, 
-  Table, 
-  TableHead, 
-  TableRow, 
-  TableHeaderCell, 
-  TableBody, 
-  TableCell 
+  Card, Title, Text, Table, TableHead, TableRow, 
+  TableHeaderCell, TableBody, TableCell 
 } from "@tremor/react";
 import ExportModal from "./ExportModal";
+import ExplicacaoBaseBrutaModal from "./ExplicacaoBaseBrutaModal"; // <-- NOVO IMPORT
 import { exportarParaExcelPersonalizado } from "../utils/ExportUtils";
 
 export default function TabelaHistorico({ filtrados, setFiltros }) {
   const [termoBusca, setTermoBusca] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isExplicacaoOpen, setIsExplicacaoOpen] = useState(false); // <-- NOVO ESTADO
+
+  // Link direto para o XLSX sem tratamento
+  const baseBrutaUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbCY3xmn0T8KAH-c9jA7-HIUlHHTIEgo0TqjS3-y7mYSACBhpcwrOwief4MCzfG8001m-k6P4u4JyY/pub?output=xlsx";
 
   const dadosExibidos = useMemo(() => {
     if (!termoBusca) return filtrados;
@@ -23,12 +21,15 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
     return filtrados.filter((d) => (
       (d.artista && d.artista.toLowerCase().includes(buscaLower)) ||
       (d.municipio && d.municipio.toLowerCase().includes(buscaLower)) ||
-      (d.ciclo && d.ciclo.toLowerCase().includes(buscaLower))
+      (d.ciclo && d.ciclo.toLowerCase().includes(buscaLower)) ||
+      (d.numeroEmpenho && d.numeroEmpenho.toLowerCase().includes(buscaLower))
     ));
   }, [filtrados, termoBusca]);
 
   return (
     <div className="w-full mb-8">
+      
+      {/* MODAIS AQUI */}
       <ExportModal 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -36,58 +37,84 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
         totalRegistros={dadosExibidos.length}
       />
 
+      <ExplicacaoBaseBrutaModal 
+        isOpen={isExplicacaoOpen}
+        onClose={() => setIsExplicacaoOpen(false)}
+      />
+
       <Card className="rounded-3xl border-none shadow-xl shadow-blue-900/5 bg-white p-0 flex flex-col h-full overflow-hidden">
-        <div className="p-6 border-b border-slate-50 bg-[#0B2341] shrink-0 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        
+        {/* CABEÇALHO DA TABELA */}
+        <div className="p-6 border-b border-slate-50 bg-[#0B2341] shrink-0 flex flex-col xl:flex-row xl:items-start justify-between gap-6">
           <div>
-            <Title className="text-white font-black">Histórico de Apresentações</Title>
-            <Text className="text-[#00AEEF] text-xs font-bold uppercase tracking-wider">
+            <Title className="text-white font-black text-xl">Histórico de Apresentações</Title>
+            <Text className="text-[#00AEEF] text-xs font-bold uppercase tracking-wider mt-1">
               Dados validados pelo fomento cultural
             </Text>
           </div>
           
-          <div className="flex flex-col sm:flex-row items-center gap-3 ">
+          <div className="flex flex-col sm:flex-row items-start sm:items-start gap-4 w-full xl:w-auto">
+            
+            {/* BOTÃO BASE BRUTA + LINK EXPLICATIVO */}
+            <div className="flex flex-col items-center w-full sm:w-auto">
+              <a 
+                href={baseBrutaUrl}
+                download="base_bruta_empetur.xlsx"
+                className="cursor-pointer w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white hover:text-[#0B2341] text-white text-xs font-bold uppercase tracking-widest rounded-xl transition-all duration-300"
+                title="Baixar a planilha original sem filtros (Dados Abertos)"
+              >
+                Base Bruta (XLSX)
+              </a>
+              {/* LINK NOVO AQUI */}
+              <span 
+                onClick={() => setIsExplicacaoOpen(true)}
+                className="mt-2 text-[9px] text-slate-400 hover:text-white cursor-pointer transition-colors underline decoration-slate-400/50 underline-offset-2 uppercase tracking-wider font-bold"
+              >
+                Por que a base tem mais dados?
+              </span>
+            </div>
+
+            {/* BOTÃO EXPORTAR PAINEL */}
             <button 
               onClick={() => setIsModalOpen(true)}
-              className=" cursor-pointer w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-white hover:text-emerald-700 text-white text-xs font-black uppercase tracking-widest rounded-xl transition-all duration-300 shadow-lg shadow-emerald-900/20 active:scale-95 group"
+              className="cursor-pointer w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black uppercase tracking-widest rounded-xl transition-all duration-300 shadow-lg"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              Exportar XLSX
+              Exportar Painel
             </button>
 
-            <div className="relative w-full sm:w-64">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
+            {/* BARRA DE PESQUISA */}
+            <div className="relative w-full sm:w-64 shrink-0">
               <input
                 type="text"
-                placeholder="Pesquisar nesta lista..."
+                placeholder="Pesquisar registro..."
                 value={termoBusca}
                 onChange={(e) => setTermoBusca(e.target.value)}
-                className="block w-full pl-9 pr-4 py-2 border-none rounded-xl text-xs font-bold bg-white/10 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00AEEF] transition-all"
+                className="block w-full pl-4 pr-4 py-2.5 border-none rounded-xl text-xs font-bold bg-white/10 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00AEEF] transition-all"
               />
             </div>
           </div>
         </div>
         
+        {/* CORPO DA TABELA (Mantido igual) */}
         <div className="overflow-auto max-h-[500px] w-full flex-1 scrollbar-moderna">
-          <Table className="min-w-[800px] w-full">
+          <Table className="min-w-[900px] w-full">
             <TableHead className="bg-slate-50 sticky top-0 z-10 shadow-sm">
               <TableRow>
-                <TableHeaderCell className="text-[#0B2341] font-black text-xs py-5 px-6 uppercase tracking-wider">Artista</TableHeaderCell>
-                <TableHeaderCell className="text-[#0B2341] font-black text-xs py-5 px-6 uppercase tracking-wider">Município</TableHeaderCell>
-                <TableHeaderCell className="text-[#0B2341] font-black text-xs py-5 px-6 uppercase tracking-wider">Ciclo</TableHeaderCell>
-                <TableHeaderCell className="text-[#0B2341] font-black text-xs py-5 px-6 uppercase tracking-wider">Data</TableHeaderCell>
-                <TableHeaderCell className="text-[#0B2341] font-black text-xs py-5 px-6 uppercase tracking-wider text-right">Valor Pago</TableHeaderCell>
+                <TableHeaderCell className="text-[#0B2341] font-black text-[10px] py-5 px-6 uppercase tracking-wider">Nº Empenho</TableHeaderCell>
+                <TableHeaderCell className="text-[#0B2341] font-black text-[10px] py-5 px-6 uppercase tracking-wider">Artista</TableHeaderCell>
+                <TableHeaderCell className="text-[#0B2341] font-black text-[10px] py-5 px-6 uppercase tracking-wider">Município</TableHeaderCell>
+                <TableHeaderCell className="text-[#0B2341] font-black text-[10px] py-5 px-6 uppercase tracking-wider">Ciclo</TableHeaderCell>
+                <TableHeaderCell className="text-[#0B2341] font-black text-[10px] py-5 px-6 uppercase tracking-wider">Data</TableHeaderCell>
+                <TableHeaderCell className="text-[#0B2341] font-black text-[10px] py-5 px-6 uppercase tracking-wider text-right">Valor Pago</TableHeaderCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {dadosExibidos.length > 0 ? (
                 dadosExibidos.map((item) => (
                   <TableRow key={item.id} className="hover:bg-blue-50/50 transition-colors border-b border-slate-100 last:border-0 group">
+                    <TableCell className="py-4 px-6 text-slate-500 font-mono text-[10px] font-bold">
+                      {item.numeroEmpenho}
+                    </TableCell>
                     <TableCell 
                       className="font-bold text-[#0B2341] py-4 px-6 cursor-pointer group-hover:text-[#00AEEF] transition-colors"
                       onClick={() => setFiltros(prev => ({...prev, artista: item.artista}))}
@@ -96,12 +123,12 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
                     </TableCell>
                     <TableCell 
                       className="text-slate-500 text-xs font-medium py-4 px-6 cursor-pointer hover:text-[#0B2341]"
-                      onClick={() => setFiltros(prev => ({...prev, municipio: item.municipio}))}
+                      onClick={() => setFiltros(prev => ({...prev, municipio: item.municipioNormalizado}))}
                     >
                       {item.municipio}
                     </TableCell>
                     <TableCell className="py-4 px-6">
-                      <span className="bg-[#0B2341] text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter">
+                      <span className="bg-[#0B2341] text-white px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter">
                         {item.ciclo}
                       </span>
                     </TableCell>
@@ -117,7 +144,7 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-20">
+                  <TableCell colSpan={6} className="text-center py-20">
                     <Text className="text-slate-400 font-bold">Nenhum registro encontrado para esta busca.</Text>
                   </TableCell>
                 </TableRow>

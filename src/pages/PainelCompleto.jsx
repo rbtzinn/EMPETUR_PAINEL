@@ -7,7 +7,7 @@ import Sidebar from "../components/Sidebar";
 import TopMunicipiosChart from "../components/TopMunicipiosChart";
 import InfoTooltip from "../components/InfoTooltip";
 import MapaPernambuco from "../components/MapaPernambuco";
-import IndicadoresKPI from "../components/IndicadoresKPI"; // <-- Importação do novo componente
+import IndicadoresKPI from "../components/IndicadoresKPI"; 
 
 /* ========================================================
    1. GRÁFICO DE BARRAS NATIVO
@@ -49,6 +49,12 @@ const GraficoBarrasNativo = ({ data, indice, formatador, onClick, filtroAtivo })
 };
 
 export default function PainelCompleto({ csvUrl }) {
+  // ========================================================
+  // 🔴 CONTROLE DE DATA DE ATUALIZAÇÃO AQUI 🔴
+  // Mude esta data sempre que atualizar a planilha do Google Sheets
+  // ========================================================
+  const dataUltimaAtualizacao = "27/02/2026"; 
+
   const [dados, setDados] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -168,12 +174,10 @@ export default function PainelCompleto({ csvUrl }) {
             onClick={() => setIsMobileMenuOpen(true)}
             className="relative p-3 text-white bg-white/10 rounded-xl hover:bg-white/20 transition-all active:scale-95"
           >
-            {/* Ícone de Filtro/Hambúrguer */}
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
             </svg>
 
-            {/* BOLINHA DE NOTIFICAÇÃO (Filtro Ativo) */}
             {temFiltroAtivo && (
               <span className="absolute -top-1 -right-1 flex h-4 w-4">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00AEEF] opacity-75"></span>
@@ -185,6 +189,45 @@ export default function PainelCompleto({ csvUrl }) {
 
         {/* ESPAÇADOR MOBILE */}
         <div className="lg:hidden h-20"></div>
+
+        {/* ========================================================= */}
+        {/* CABEÇALHO DO PAINEL COM OS SELOS DE TRANSPARÊNCIA */}
+        {/* ========================================================= */}
+        <div className="mb-8 flex flex-col xl:flex-row xl:items-end justify-between gap-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-black text-[#0B2341] tracking-tight mb-2">
+              Painel de Dados Culturais
+            </h1>
+            <Text className="text-slate-500 font-medium">
+              Monitoramento oficial das contratações artísticas, feitas pela EMPETUR, do Governo de Pernambuco.
+            </Text>
+          </div>
+          
+          {/* Selos de Origem e Atualização */}
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-slate-200 shadow-sm" title="Fonte de Dados">
+              <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+              </svg>
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Fonte: e-Fisco PE</span>
+            </div>
+            
+            <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-slate-200 shadow-sm" title="Frequência de Atualização">
+              <svg className="w-4 h-4 text-[#00AEEF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Atualização: Mensal</span>
+            </div>
+
+            {/* NOVO SELO: DATA DE ÚLTIMA ATUALIZAÇÃO */}
+            <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-slate-200 shadow-sm" title="Data da última importação dos dados">
+              <svg className="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Última: {dataUltimaAtualizacao}</span>
+            </div>
+          </div>
+        </div>
 
         {/* COMPONENTE DE KPIs ISOLADO */}
         <IndicadoresKPI 

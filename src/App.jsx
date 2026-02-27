@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // Componentes da página inicial
@@ -11,11 +11,11 @@ import GlossarySection from './components/GlossarySection';
 import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 
-// O novo Painel Avançado que criamos
-import PainelCompleto from './pages/PainelCompleto'; // Verifique se o caminho está correto
+// O novo Painel Avançado e Acessibilidade
+import PainelCompleto from './pages/PainelCompleto'; 
 import InternalControlSection from './components/InternalControlSection';
+import Acessibilidade from './components/Acessibilidade'; // <--- IMPORTAMOS AQUI
 import { fetchAndProcessData } from "./utils/DataProcessor";
-import { useEffect, useState } from "react";
 
 // 1. Isolamos a sua página principal inteira em um componente "Home"
 function Home({ csvUrl, shareUrl }) {
@@ -38,12 +38,9 @@ function Home({ csvUrl, shareUrl }) {
     });
   }, [csvUrl]);
 
-
   return (
     <div className="app bg-[#F8FAFC]">
-      {/* O Topbar agora recebe a rota /dashboard para o botão "Acessar Painel" */}
       <Topbar lookerShareUrl="/dashboard" />
-
       <main>
         <Hero
           heroImage={heroImage}
@@ -53,24 +50,13 @@ function Home({ csvUrl, shareUrl }) {
           onPrimaryClickHref="#painel"
           onSecondaryClickHref="#sobre"
         />
-
         <Banner image={bannerImage} />
-
-        {/* O painel resumido (só com a tabela e filtros em cascata) */}
-        <PanelSection
-          id="painel"
-          csvUrl={csvUrl}
-          shareUrl={shareUrl}
-          lookerShareUrl="/dashboard"
-        />
-
+        <PanelSection id="painel" csvUrl={csvUrl} shareUrl={shareUrl} lookerShareUrl="/dashboard" />
         <InternalControlSection />
-
         <AboutSection id="sobre" />
         <GlossarySection id="glossario" />
         <ContactSection id="contato" />
       </main>
-
       <Footer />
     </div>
   );
@@ -78,17 +64,16 @@ function Home({ csvUrl, shareUrl }) {
 
 // 2. O App agora apenas gerencia as Rotas (Qual tela mostrar)
 function App() {
-  // Seus links de dados
   const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbCY3xmn0T8KAH-c9jA7-HIUlHHTIEgo0TqjS3-y7mYSACBhpcwrOwief4MCzfG8001m-k6P4u4JyY/pub?output=csv";
   const shareUrl = "https://docs.google.com/spreadsheets/d/1P94FuVBBiScKlty_slbSVOE5N6uO5g3bzD5giKMtT3I/edit";
 
   return (
     <Router>
-      <Routes>
-        {/* Rota Padrão: Quando o usuário acessa seusite.com/ */}
-        <Route path="/" element={<Home csvUrl={csvUrl} shareUrl={shareUrl} />} />
+      {/* O BOTAO FICA AQUI, ACIMA DE TODAS AS TELAS */}
+      <Acessibilidade /> 
 
-        {/* Rota do Dashboard: Quando o usuário acessa seusite.com/dashboard */}
+      <Routes>
+        <Route path="/" element={<Home csvUrl={csvUrl} shareUrl={shareUrl} />} />
         <Route path="/dashboard" element={<PainelCompleto csvUrl={csvUrl} />} />
       </Routes>
     </Router>

@@ -9,3 +9,13 @@ button{
   cursor: pointer;
 }
 
+.modo-alto-contraste {
+  filter: contrast(130%) grayscale(100%);
+}
+
+/* Garante legibilidade */
+.modo-alto-contraste text,
+.modo-alto-contraste span,
+.modo-alto-contraste p {
+  color: #000 !important;
+}

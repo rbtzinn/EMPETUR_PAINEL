@@ -92,10 +92,7 @@ export default function PanelSection({ id, csvUrl, lookerShareUrl }) {
         </FadeIn>
 
         {/* BARRA DE FILTROS INTELIGENTE */}
-        {/* Ajustamos o z-index para 30 (intermediário) */}
         <FadeIn delay={0.1} className="relative z-30">
-
-          {/* Mantemos o overflow-visible para a lista aparecer */}
           <Card className="rounded-[2rem] border-none shadow-xl shadow-blue-900/5 bg-white p-6 mb-8 overflow-visible">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
               <DropdownPesquisavel label="Todos os Municípios" value={filtros.municipio} onChange={(v) => setFiltros({ ...filtros, municipio: v })} options={getOpcoesCascata('municipio')} />
@@ -105,7 +102,6 @@ export default function PanelSection({ id, csvUrl, lookerShareUrl }) {
               <DropdownPesquisavel label="Todas as Datas" value={filtros.dataEvento} onChange={(v) => setFiltros({ ...filtros, dataEvento: v })} options={getOpcoesCascata('dataEvento')} />
             </div>
           </Card>
-
         </FadeIn>
 
         {/* TABELA FULL WIDTH */}
@@ -119,20 +115,25 @@ export default function PanelSection({ id, csvUrl, lookerShareUrl }) {
             </div>
 
             <div className="h-[600px] overflow-y-auto scrollbar-moderna">
-              <table className="w-full text-left border-collapse min-w-[800px]">
+              <table className="w-full text-left border-collapse min-w-[900px]">
                 <thead className="bg-slate-50/95 backdrop-blur-sm sticky top-0 z-10 shadow-sm">
                   <tr>
-                    <th className="p-6 text-xs font-black text-[#0B2341] uppercase tracking-wider">Artista</th>
-                    <th className="p-6 text-xs font-black text-[#0B2341] uppercase tracking-wider">Município</th>
-                    <th className="p-6 text-xs font-black text-[#0B2341] uppercase tracking-wider">Ciclo</th>
-                    <th className="p-6 text-xs font-black text-[#0B2341] uppercase tracking-wider">Data</th>
-                    <th className="p-6 text-xs font-black text-[#0B2341] uppercase tracking-wider text-right">Valor Pago</th>
+                    <th className="p-6 text-xs font-black text-[#0B2341] uppercase tracking-wider whitespace-nowrap">Nº Empenho</th>
+                    <th className="p-6 text-xs font-black text-[#0B2341] uppercase tracking-wider whitespace-nowrap">Artista</th>
+                    <th className="p-6 text-xs font-black text-[#0B2341] uppercase tracking-wider whitespace-nowrap">Município</th>
+                    <th className="p-6 text-xs font-black text-[#0B2341] uppercase tracking-wider whitespace-nowrap">Ciclo</th>
+                    <th className="p-6 text-xs font-black text-[#0B2341] uppercase tracking-wider whitespace-nowrap">Data</th>
+                    <th className="p-6 text-xs font-black text-[#0B2341] uppercase tracking-wider text-right whitespace-nowrap">Valor Pago</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filtrados.length > 0 ? (
                     filtrados.map((d) => (
                       <tr key={d.id} className="hover:bg-blue-50/40 transition-colors border-b border-slate-100 last:border-0 group">
+                        {/* NOVO DADO AQUI */}
+                        <td className="p-6 text-slate-500 font-mono text-[10px] font-bold">
+                          {d.numeroEmpenho}
+                        </td>
                         <td
                           className="p-6 text-sm font-bold text-[#0B2341] cursor-pointer group-hover:text-[#00AEEF] transition-colors"
                           onClick={() => setFiltros({ ...filtros, artista: d.artista })}
@@ -162,7 +163,8 @@ export default function PanelSection({ id, csvUrl, lookerShareUrl }) {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="5" className="p-12 text-center text-slate-400 font-medium">
+                      {/* colSpan atualizado para 6 */}
+                      <td colSpan="6" className="p-12 text-center text-slate-400 font-medium">
                         Nenhum registro encontrado.
                       </td>
                     </tr>
