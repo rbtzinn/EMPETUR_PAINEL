@@ -8,78 +8,8 @@ import TopMunicipiosChart from "../components/TopMunicipiosChart";
 import InfoTooltip from "../components/InfoTooltip";
 import MapaPernambuco from "../components/MapaPernambuco";
 import IndicadoresKPI from "../components/IndicadoresKPI";
+import GraficoBarrasNativo from "../components/GraficoBarrasNativo";
 
-/* ========================================================
-   1. GRÁFICO DE BARRAS NATIVO (COM SCROLL HORIZONTAL)
-======================================================== */
-const GraficoBarrasNativo = ({ data, indice, formatador, onClick, filtroAtivo }) => {
-  if (!data || data.length === 0)
-    return (
-      <div className="h-full flex items-center justify-center text-slate-400">
-        Sem dados
-      </div>
-    );
-
-  const maximo = Math.max(...data.map((d) => d.total || 0), 0);
-
-  return (
-    <div className="h-full w-full">
-      {/* Área rolável só do gráfico */}
-      <div className="h-full w-full overflow-x-auto scrollbar-moderna">
-        {/* “trilho” com largura pelo conteúdo */}
-        <div className="min-w-max h-full flex items-end gap-3 md:gap-4 pt-10 px-2">
-          {data.map((item, idx) => {
-            const total = item.total || 0;
-            const altura = maximo === 0 ? 0 : (total / maximo) * 100;
-
-            const chave = item[indice];
-            const selecionado = filtroAtivo === chave;
-            const apagado = filtroAtivo !== "" && !selecionado;
-
-            return (
-              <button
-                key={`${String(chave)}-${idx}`}
-                type="button"
-                onClick={() => onClick(chave)}
-                className="relative flex flex-col justify-end h-full flex-none w-24 md:w-28 group cursor-pointer rounded-t-xl hover:bg-slate-50 transition-all px-1 text-left"
-                title={String(chave)}
-              >
-                {/* Tooltip */}
-                <div className="opacity-0 group-hover:opacity-100 absolute -top-12 left-1/2 -translate-x-1/2 bg-[#0B2341] text-white px-3 py-2 rounded-lg text-xs font-bold whitespace-nowrap z-50 pointer-events-none transition-opacity shadow-xl">
-                  {String(chave)}
-                  <span className="block text-[#00AEEF] text-center mt-1">
-                    {formatador(total)}
-                  </span>
-                </div>
-
-                {/* Barra */}
-                <div
-                  style={{ height: `${altura}%`, minHeight: total > 0 ? "6px" : "0" }}
-                  className={`w-full rounded-t-md transition-all duration-500 shadow-sm ${apagado ? "bg-slate-200" : "bg-[#00AEEF]"
-                    }`}
-                />
-
-                {/* Rótulo (sem esmagar) */}
-                <div className="mt-3 h-8 flex items-start justify-center">
-                  <span className="text-center text-[9px] md:text-[10px] font-black text-slate-500 line-clamp-2 leading-tight break-words">
-                    {String(chave)}
-                  </span>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Dica visual opcional (pode remover se não quiser) */}
-      {data.length > 6 && (
-        <div className="mt-2 text-[10px] text-slate-400 font-semibold">
-          Dica: role para o lado para ver todos os ciclos →
-        </div>
-      )}
-    </div>
-  );
-};
 
 export default function PainelCompleto({ csvUrl }) {
   // ========================================================
@@ -297,26 +227,29 @@ export default function PainelCompleto({ csvUrl }) {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
 
-          <Card className="relative rounded-3xl border-none shadow-xl shadow-blue-900/5 bg-white p-6 md:p-8 flex flex-col h-full">
-            <Title className="text-[#0B2341] font-black mb-6">Apresentações por Ciclo</Title>
-
-            <div className="absolute top-6 right-6 md:top-8 md:right-8">
-              <InfoTooltip text="Clique nas barras para filtrar os dados por este ciclo cultural específico." />
-            </div>
-
-            <div className="flex-1 min-h-[250px]">
-              <GraficoBarrasNativo
-                data={registrosPorCiclo}
-                indice="ciclo"
-                formatador={(num) => `${num} shows`}
-                onClick={(v) => setFiltros(prev => ({ ...prev, ciclo: v === filtros.ciclo ? "" : v }))}
-                filtroAtivo={filtros.ciclo}
-              />
-            </div>
-          </Card>
-
-          {/* Card de Municípios - Ocupa 2/3 (lg:col-span-2) */}
+          {/* Card de Ciclo - AGORA OCUPA 2/3 (lg:col-span-2) */}
           <div className="lg:col-span-2">
+            <Card className="relative rounded-3xl border-none shadow-xl shadow-blue-900/5 bg-white p-6 md:p-8 flex flex-col h-full">
+              <Title className="text-[#0B2341] font-black mb-6">Apresentações por Ciclo</Title>
+
+              <div className="absolute top-6 right-6 md:top-8 md:right-8">
+                <InfoTooltip text="Clique nas barras para filtrar os dados por este ciclo cultural específico." />
+              </div>
+
+              <div className="flex-1 min-h-[250px]">
+                <GraficoBarrasNativo
+                  data={registrosPorCiclo}
+                  indice="ciclo"
+                  formatador={(num) => `${num} shows`}
+                  onClick={(v) => setFiltros(prev => ({ ...prev, ciclo: v === filtros.ciclo ? "" : v }))}
+                  filtroAtivo={filtros.ciclo}
+                />
+              </div>
+            </Card>
+          </div>
+
+          {/* Card de Municípios - AGORA OCUPA 1/3 (Tirei o col-span-2 dele) */}
+          <div className="w-full h-full">
             <TopMunicipiosChart
               data={registrosPorMunicipio}
               onFilter={(nome) =>
