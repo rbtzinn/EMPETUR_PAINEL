@@ -7,43 +7,76 @@ import Sidebar from "../components/Sidebar";
 import TopMunicipiosChart from "../components/TopMunicipiosChart";
 import InfoTooltip from "../components/InfoTooltip";
 import MapaPernambuco from "../components/MapaPernambuco";
-import IndicadoresKPI from "../components/IndicadoresKPI"; 
+import IndicadoresKPI from "../components/IndicadoresKPI";
 
 /* ========================================================
-   1. GRÁFICO DE BARRAS NATIVO
+   1. GRÁFICO DE BARRAS NATIVO (COM SCROLL HORIZONTAL)
 ======================================================== */
 const GraficoBarrasNativo = ({ data, indice, formatador, onClick, filtroAtivo }) => {
-  if (data.length === 0) return <div className="h-full flex items-center justify-center text-slate-400">Sem dados</div>;
+  if (!data || data.length === 0)
+    return (
+      <div className="h-full flex items-center justify-center text-slate-400">
+        Sem dados
+      </div>
+    );
 
-  const maximo = Math.max(...data.map(d => d.total));
+  const maximo = Math.max(...data.map((d) => d.total || 0), 0);
 
   return (
-    <div className="flex items-end justify-center gap-4 h-full w-full pt-10">
-      {data.map((item, idx) => {
-        const altura = maximo === 0 ? 0 : (item.total / maximo) * 100;
-        const selecionado = filtroAtivo === item[indice];
-        const apagado = filtroAtivo !== "" && !selecionado;
+    <div className="h-full w-full">
+      {/* Área rolável só do gráfico */}
+      <div className="h-full w-full overflow-x-auto scrollbar-moderna">
+        {/* “trilho” com largura pelo conteúdo */}
+        <div className="min-w-max h-full flex items-end gap-3 md:gap-4 pt-10 px-2">
+          {data.map((item, idx) => {
+            const total = item.total || 0;
+            const altura = maximo === 0 ? 0 : (total / maximo) * 100;
 
-        return (
-          <div
-            key={idx}
-            onClick={() => onClick(item[indice])}
-            className="relative flex flex-col justify-end h-full w-full max-w-[120px] group cursor-pointer rounded-t-xl hover:bg-slate-50 transition-all px-1"
-          >
-            <div className="opacity-0 group-hover:opacity-100 absolute -top-12 left-1/2 -translate-x-1/2 bg-[#0B2341] text-white px-3 py-2 rounded-lg text-xs font-bold whitespace-nowrap z-50 pointer-events-none transition-opacity shadow-xl">
-              {item[indice]}
-              <span className="block text-[#00AEEF] text-center mt-1">{formatador(item.total)}</span>
-            </div>
-            <div
-              style={{ height: `${altura}%`, minHeight: item.total > 0 ? '4px' : '0' }}
-              className={`w-full rounded-t-md transition-all duration-500 shadow-sm ${apagado ? 'bg-slate-200' : 'bg-[#00AEEF]'}`}
-            ></div>
-            <div className="text-center mt-3 text-[10px] md:text-xs font-black text-slate-500 truncate">
-              {item[indice]}
-            </div>
-          </div>
-        );
-      })}
+            const chave = item[indice];
+            const selecionado = filtroAtivo === chave;
+            const apagado = filtroAtivo !== "" && !selecionado;
+
+            return (
+              <button
+                key={`${String(chave)}-${idx}`}
+                type="button"
+                onClick={() => onClick(chave)}
+                className="relative flex flex-col justify-end h-full flex-none w-24 md:w-28 group cursor-pointer rounded-t-xl hover:bg-slate-50 transition-all px-1 text-left"
+                title={String(chave)}
+              >
+                {/* Tooltip */}
+                <div className="opacity-0 group-hover:opacity-100 absolute -top-12 left-1/2 -translate-x-1/2 bg-[#0B2341] text-white px-3 py-2 rounded-lg text-xs font-bold whitespace-nowrap z-50 pointer-events-none transition-opacity shadow-xl">
+                  {String(chave)}
+                  <span className="block text-[#00AEEF] text-center mt-1">
+                    {formatador(total)}
+                  </span>
+                </div>
+
+                {/* Barra */}
+                <div
+                  style={{ height: `${altura}%`, minHeight: total > 0 ? "6px" : "0" }}
+                  className={`w-full rounded-t-md transition-all duration-500 shadow-sm ${apagado ? "bg-slate-200" : "bg-[#00AEEF]"
+                    }`}
+                />
+
+                {/* Rótulo (sem esmagar) */}
+                <div className="mt-3 h-8 flex items-start justify-center">
+                  <span className="text-center text-[9px] md:text-[10px] font-black text-slate-500 line-clamp-2 leading-tight break-words">
+                    {String(chave)}
+                  </span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Dica visual opcional (pode remover se não quiser) */}
+      {data.length > 6 && (
+        <div className="mt-2 text-[10px] text-slate-400 font-semibold">
+          Dica: role para o lado para ver todos os ciclos →
+        </div>
+      )}
     </div>
   );
 };
@@ -53,7 +86,7 @@ export default function PainelCompleto({ csvUrl }) {
   // 🔴 CONTROLE DE DATA DE ATUALIZAÇÃO AQUI 🔴
   // Mude esta data sempre que atualizar a planilha do Google Sheets
   // ========================================================
-  const dataUltimaAtualizacao = "27/02/2026"; 
+  const dataUltimaAtualizacao = "27/02/2026";
 
   const [dados, setDados] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -75,10 +108,19 @@ export default function PainelCompleto({ csvUrl }) {
     });
   }, [csvUrl]);
 
-  // Aplicação dos Filtros
+  // Aplicação dos Filtros e Limpeza de Dados Administrativos
   const filtrados = useMemo(() => {
+    // 🛡️ TRAVA DE GOVERNANÇA: Filtra lixos administrativos da EMPETUR
+    const termosProibidos = ["limpeza", "vigilância", "cota global", "manutenção", "locação", "passagens", "segurança"];
+
     return dados.filter((d) => {
+      const cicloString = (d.ciclo || "").toLowerCase();
+
+      // Se o ciclo contiver qualquer uma das palavras proibidas, ele bloqueia o registro
+      const ehShowCultural = !termosProibidos.some(termo => cicloString.includes(termo));
+
       return (
+        ehShowCultural &&
         (filtros.municipio === "" || d.municipioNormalizado === filtros.municipio) &&
         (filtros.ciclo === "" || d.ciclo === filtros.ciclo) &&
         (filtros.ano === "" || d.ano === filtros.ano) &&
@@ -108,8 +150,15 @@ export default function PainelCompleto({ csvUrl }) {
   }, [filtrados]);
 
   const getOpcoes = (campoCorrente) => {
+    // Aqui também aplicamos o filtro para o lixo administrativo não aparecer nos Dropdowns
+    const termosProibidos = ["limpeza", "vigilância", "cota global", "manutenção", "locação", "passagens", "segurança"];
+
     const dadosPossiveis = dados.filter(d => {
+      const cicloString = (d.ciclo || "").toLowerCase();
+      const ehShowCultural = !termosProibidos.some(termo => cicloString.includes(termo));
+
       return (
+        ehShowCultural &&
         (filtros.municipio === "" || campoCorrente === "municipio" || d.municipioNormalizado === filtros.municipio) &&
         (filtros.ciclo === "" || campoCorrente === "ciclo" || d.ciclo === filtros.ciclo) &&
         (filtros.ano === "" || campoCorrente === "ano" || d.ano === filtros.ano) &&
@@ -202,7 +251,7 @@ export default function PainelCompleto({ csvUrl }) {
               Monitoramento oficial das contratações artísticas, feitas pela EMPETUR, do Governo de Pernambuco.
             </Text>
           </div>
-          
+
           {/* Selos de Origem e Atualização */}
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-slate-200 shadow-sm" title="Fonte de Dados">
@@ -211,7 +260,7 @@ export default function PainelCompleto({ csvUrl }) {
               </svg>
               <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Fonte: e-Fisco PE</span>
             </div>
-            
+
             <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-slate-200 shadow-sm" title="Frequência de Atualização">
               <svg className="w-4 h-4 text-[#00AEEF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -219,7 +268,6 @@ export default function PainelCompleto({ csvUrl }) {
               <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Atualização: Mensal</span>
             </div>
 
-            {/* NOVO SELO: DATA DE ÚLTIMA ATUALIZAÇÃO */}
             <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-slate-200 shadow-sm" title="Data da última importação dos dados">
               <svg className="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -230,10 +278,10 @@ export default function PainelCompleto({ csvUrl }) {
         </div>
 
         {/* COMPONENTE DE KPIs ISOLADO */}
-        <IndicadoresKPI 
-          filtrados={filtrados} 
-          filtros={filtros} 
-          setFiltros={setFiltros} 
+        <IndicadoresKPI
+          filtrados={filtrados}
+          filtros={filtros}
+          setFiltros={setFiltros}
         />
 
         {/* GRÁFICOS DE CIMA - Lado a Lado no Desktop */}
@@ -283,7 +331,7 @@ export default function PainelCompleto({ csvUrl }) {
 
         {/* TABELA ISOLADA */}
         <TabelaHistorico filtrados={filtrados} setFiltros={setFiltros} />
-        
+
         {/* GRÁFICOS DE BAIXO */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           <div className="lg:col-span-2">
