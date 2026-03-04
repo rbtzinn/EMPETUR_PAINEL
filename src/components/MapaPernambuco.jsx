@@ -19,7 +19,7 @@ export default function MapaPernambuco({
     onSelectMunicipio
 }) {
     const [hover, setHover] = useState(null);
-    const [geographiesData, setGeographiesData] = useState([]); // Guardar as geos para busca
+    const [geographiesData, setGeographiesData] = useState([]); 
     const [mapPosition, setMapPosition] = useState({
         center: DEFAULT_CENTER,
         zoom: DEFAULT_ZOOM
@@ -34,11 +34,9 @@ export default function MapaPernambuco({
         return map;
     }, [dados]);
 
-    // LÓGICA DE REATIVIDADE GLOBAL
     // Monitora o município selecionado e ajusta o zoom automaticamente
     useEffect(() => {
         if (!municipioSelecionado) {
-            // Se o filtro foi limpo, volta para a visão geral
             setMapPosition({
                 center: DEFAULT_CENTER,
                 zoom: DEFAULT_ZOOM
@@ -46,7 +44,6 @@ export default function MapaPernambuco({
             return;
         }
 
-        // Se houver um município selecionado, precisamos encontrar o centro dele
         if (geographiesData.length > 0) {
             const geoEncontrada = geographiesData.find(geo => 
                 normalizarMunicipio(geo.properties.name) === municipioSelecionado
@@ -75,8 +72,6 @@ export default function MapaPernambuco({
     };
 
     const handleSelect = (geo, nomeNormalizado) => {
-        // Agora o clique apenas dispara o evento de filtro. 
-        // O useEffect acima cuidará do movimento da câmera.
         if (municipioSelecionado === nomeNormalizado) {
             onSelectMunicipio("");
         } else {
@@ -86,62 +81,69 @@ export default function MapaPernambuco({
 
     return (
         <div className="hidden lg:flex w-full h-[300px] mb-8 bg-white rounded-3xl shadow-xl shadow-blue-900/5 p-3 relative flex flex-col items-center overflow-hidden">
-            <ComposableMap
-                projection="geoMercator"
-                projectionConfig={{ scale: 8000 }}
-                width={1000}
-                height={350}
-                className="w-full h-full outline-none"
+            
+            {/* BLOQUEIO DE SCROLL NO MOUSE */}
+            <div 
+                className="w-full h-full"
+                onWheelCapture={(e) => e.stopPropagation()} 
             >
-                <ZoomableGroup
-                    center={mapPosition.center}
-                    zoom={mapPosition.zoom}
-                    style={{ transition: "transform 1.2s ease-in-out" }}
+                <ComposableMap
+                    projection="geoMercator"
+                    projectionConfig={{ scale: 8000 }}
+                    width={1000}
+                    height={350}
+                    className="w-full h-full outline-none"
                 >
-                    <Geographies geography={GEO_URL}>
-                        {({ geographies }) => {
-                            // Sincroniza as geografias com o estado uma única vez
-                            if (geographiesData.length === 0) setGeographiesData(geographies);
+                    <ZoomableGroup
+                        center={mapPosition.center}
+                        zoom={mapPosition.zoom}
+                        disablePanning // <--- A MÁGICA AQUI: Bloqueia o arrastar (drag) com o mouse
+                        style={{ transition: "transform 1.2s ease-in-out" }} // Mantém o voo suave
+                    >
+                        <Geographies geography={GEO_URL}>
+                            {({ geographies }) => {
+                                if (geographiesData.length === 0) setGeographiesData(geographies);
 
-                            return geographies.map((geo) => {
-                                const nomeOriginal = geo.properties.name;
-                                const nomeNormalizado = normalizarMunicipio(nomeOriginal);
+                                return geographies.map((geo) => {
+                                    const nomeOriginal = geo.properties.name;
+                                    const nomeNormalizado = normalizarMunicipio(nomeOriginal);
 
-                                return (
-                                    <Geography
-                                        key={geo.rsmKey}
-                                        geography={geo}
-                                        onMouseEnter={() => setHover(nomeOriginal)}
-                                        onMouseLeave={() => setHover(null)}
-                                        onClick={() => handleSelect(geo, nomeNormalizado)}
-                                        style={{
-                                            default: {
-                                                fill: getFillColor(nomeNormalizado),
-                                                stroke: municipioSelecionado === nomeNormalizado ? "#0B2341" : "#FFFFFF",
-                                                strokeWidth: municipioSelecionado === nomeNormalizado ? 1 : 0.4,
-                                                outline: "none",
-                                                opacity: municipioSelecionado && municipioSelecionado !== nomeNormalizado ? 0.3 : 1,
-                                                transition: "all 500ms ease-in-out"
-                                            },
-                                            hover: {
-                                                fill: "#00AEEF",
-                                                cursor: "pointer",
-                                                outline: "none",
-                                                opacity: 1,
-                                                transition: "all 200ms ease"
-                                            },
-                                            pressed: {
-                                                fill: "#0369A1",
-                                                outline: "none"
-                                            }
-                                        }}
-                                    />
-                                );
-                            });
-                        }}
-                    </Geographies>
-                </ZoomableGroup>
-            </ComposableMap>
+                                    return (
+                                        <Geography
+                                            key={geo.rsmKey}
+                                            geography={geo}
+                                            onMouseEnter={() => setHover(nomeOriginal)}
+                                            onMouseLeave={() => setHover(null)}
+                                            onClick={() => handleSelect(geo, nomeNormalizado)}
+                                            style={{
+                                                default: {
+                                                    fill: getFillColor(nomeNormalizado),
+                                                    stroke: municipioSelecionado === nomeNormalizado ? "#0B2341" : "#FFFFFF",
+                                                    strokeWidth: municipioSelecionado === nomeNormalizado ? 1 : 0.4,
+                                                    outline: "none",
+                                                    opacity: municipioSelecionado && municipioSelecionado !== nomeNormalizado ? 0.3 : 1,
+                                                    transition: "all 500ms ease-in-out"
+                                                },
+                                                hover: {
+                                                    fill: "#00AEEF",
+                                                    cursor: "pointer",
+                                                    outline: "none",
+                                                    opacity: 1,
+                                                    transition: "all 200ms ease"
+                                                },
+                                                pressed: {
+                                                    fill: "#0369A1",
+                                                    outline: "none"
+                                                }
+                                            }}
+                                        />
+                                    );
+                                });
+                            }}
+                        </Geographies>
+                    </ZoomableGroup>
+                </ComposableMap>
+            </div>
 
             {/* LEGENDA DE CORES */}
             <div className="absolute bottom-6 left-6 bg-white/95 backdrop-blur-sm p-5 rounded-2xl shadow-xl shadow-blue-900/5 border border-slate-100 flex flex-col gap-3 z-10 pointer-events-none min-w-[200px]">

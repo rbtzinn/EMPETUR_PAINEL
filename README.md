@@ -1,14 +1,33 @@
-Esta documentação resume a arquitetura e as soluções de engenharia aplicadas no painel.
+# 📊 Portal de Transparência e Inteligência de Dados - EMPETUR
 
-Visão Geral
-O projeto é um ecossistema de dados para monitoramento das contratações artísticas de Pernambuco. Ele transforma bases brutas do eFisco em uma interface de inteligência geográfica e analítica.
+Um ecossistema de dados e governança desenvolvido para o monitoramento das contratações artísticas do Estado de Pernambuco. O projeto transforma bases brutas contábeis (e-Fisco) em uma interface de inteligência geográfica, analítica e de fácil usabilidade para o cidadão.
 
-Destaques de Engenharia:
+Desenvolvido com foco absoluto em **Engenharia de Dados no Frontend** e conformidade com os rigorosos critérios do **Selo Diamante** do Programa Nacional de Transparência Pública (PNTP / TCE).
 
-Motor de Processamento de Dados: Implementação de um pipeline em JavaScript que realiza o saneamento de dados via Regex para unificação de nomes de artistas e normalização de municípios, além de filtragem automática de duplicidade e registros com valor liquidado zerado.
+## 🚀 Visão Geral e Impacto
+Em vez de expor o cidadão a planilhas densas e com jargões técnicos, a aplicação atua como um intermediário inteligente. Ela consome os dados abertos, higieniza as informações em tempo real e as projeta em um Dashboard interativo, garantindo o direito à informação previsto na LAI (Lei de Acesso à Informação) e o respeito à LGPD.
 
-Geoprocessamento Reativo: Uso de D3-geo e React Simple Maps para criar um mapa de calor 100% responsivo. O mapa possui um sistema de zoom "voador" reativo: ao filtrar um município por qualquer componente (sidebar, gráficos ou KPIs), o mapa calcula o centroide geográfico e realiza o foco automático.
+## ⚙️ Destaques de Engenharia & Arquitetura
 
-Arquitetura de Estado Sincronizada: Todo o dashboard é reativo. Filtros aplicados em um gráfico de rosca ou em KPIs de destaque são propagados instantaneamente para a tabela de histórico e para o mapa, garantindo uma "única fonte da verdade".
+* **Motor de Processamento de Dados (ETL in-browser):** Implementação de um pipeline em JavaScript que realiza o saneamento de dados via Regex. Ele unifica nomes de artistas, normaliza divergências de digitação nos municípios e aplica travas automáticas contra duplicidades e notas de empenho com valor liquidado zerado.
+* **Geoprocessamento Reativo:** Uso de `D3-geo` e `React Simple Maps` para criar um mapa de calor 100% responsivo do estado de Pernambuco. O mapa possui um sistema de zoom "voador" reativo: ao filtrar um município por qualquer componente (sidebar, gráficos ou KPIs), o sistema calcula o centroide geográfico e realiza o foco espacial automático.
+* **Arquitetura de Estado Sincronizada:** Dashboard construído sob o conceito de "Única Fonte da Verdade" (Single Source of Truth). Filtros aplicados em um gráfico de rosca, sidebar ou em KPIs de destaque são propagados instantaneamente para a tabela de histórico e para o mapa.
+* **UI/UX Analítico:** Interface fluida construída com `Tailwind CSS` e `Tremor`, focada em performance. Conta com modais didáticos (Linguagem Cidadã), ferramentas de exportação para `.XLSX` (Dados Abertos) e Tooltips explicativos.
 
-UI/UX Analítico: Interface construída com Tailwind CSS e Tremor, focada em acessibilidade e performance, com ferramentas de exportação para XLSX e Tooltips inteligentes.
+## 🛡️ Conformidade Legal e Acessibilidade
+
+O painel foi arquitetado para gabaritar cartilhas de auditoria governamental:
+- **Acessibilidade Plena:** Integração nativa com o **VLibras** (tradução para Língua Brasileira de Sinais) e injeção de manipulação de DOM para **Alto Contraste** visual.
+- **Rastreabilidade Contábil:** Exibição do Número do Empenho original em todas as tabelas para cruzamento de dados com o Diário Oficial.
+- **Dados Abertos:** Disponibilização da base de dados higienizada (exportação de view) e da Base Bruta original, acompanhada de metadados de fonte e data de atualização.
+- **Transparência e LGPD:** Modais detalhando a base legal da publicação dos dados e os contatos oficiais de encarregados de proteção de dados (DPO).
+
+## 🛠️ Tecnologias Utilizadas
+* **React.js** (Vite)
+* **Tailwind CSS** (Estilização e Design System)
+* **Tremor** (Componentes de visualização de dados)
+* **PapaParse** (Processamento e conversão rápida de CSV no lado do cliente)
+* **React Simple Maps / D3-geo** (Renderização cartográfica)
+
+## 👨‍💻 Desenvolvedor
+**Roberto Gabriel Araújo Miranda** *Membro & Desenvolvedor de Controle Interno - EMPETUR*

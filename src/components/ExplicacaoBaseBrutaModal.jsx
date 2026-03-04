@@ -5,6 +5,9 @@ import FadeIn from "./FadeIn";
 export default function ExplicacaoBaseBrutaModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
+  // O link de download agora fica dentro do modal
+  const baseBrutaUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbCY3xmn0T8KAH-c9jA7-HIUlHHTIEgo0TqjS3-y7mYSACBhpcwrOwief4MCzfG8001m-k6P4u4JyY/pub?output=xlsx";
+
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
       {/* Background escurecido com blur */}
@@ -25,21 +28,34 @@ export default function ExplicacaoBaseBrutaModal({ isOpen, onClose }) {
           </div>
 
           <Title className="text-xl font-black text-[#0B2341] mb-4">
-            Base Bruta vs. Painel
+            Aviso sobre a Base Bruta
           </Title>
           
           <Text className="text-slate-500 leading-relaxed mb-8 text-sm">
-            A <strong>Base Bruta (XLSX)</strong> é o arquivo original do sistema e-Fisco sem nenhum filtro. Ela contém <strong className="text-[#0B2341]">todos os registros contábeis brutos</strong>, incluindo notas de empenho estornadas, canceladas, com valor R$ 0,00 ou processos em duplicidade administrativa.
+            O arquivo que você está prestes a baixar contém <strong>todos os registros contábeis brutos</strong> do e-Fisco.
             <br/><br/>
-            Já os dados exibidos no <strong>Painel</strong> passaram pelo nosso algoritmo de saneamento, que limpa esses "ruídos" para exibir apenas a quantidade real de apresentações culturais efetivadas.
+            Ele possui <strong>mais linhas que o painel</strong>, pois inclui notas de empenho estornadas, canceladas (R$ 0,00) ou duplicidades administrativas que nosso sistema já limpou da tela para facilitar a visualização.
           </Text>
 
-          <button
-            onClick={onClose}
-            className="w-full px-6 py-3 rounded-xl bg-[#00AEEF] text-white font-black uppercase tracking-wider shadow-lg shadow-[#00AEEF]/20 hover:bg-[#0B2341] transition-all active:scale-95"
-          >
-            Entendi
-          </button>
+          {/* Botões de Ação */}
+          <div className="flex flex-col sm:flex-row gap-3 w-full">
+            <button
+              onClick={onClose}
+              className="flex-1 px-6 py-3 rounded-xl bg-slate-100 text-slate-500 font-bold hover:bg-slate-200 transition-all active:scale-95"
+            >
+              Cancelar
+            </button>
+            
+            {/* O link de download vira o botão de confirmar */}
+            <a
+              href={baseBrutaUrl}
+              download="base_bruta_empetur.xlsx"
+              onClick={onClose} // Fecha o modal após clicar em baixar
+              className="flex-1 px-6 py-3 rounded-xl bg-[#00AEEF] text-white font-black uppercase tracking-wider shadow-lg shadow-[#00AEEF]/20 hover:bg-[#0B2341] transition-all active:scale-95 flex items-center justify-center"
+            >
+              Baixar Arquivo
+            </a>
+          </div>
         </Card>
       </FadeIn>
     </div>

@@ -56,23 +56,13 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
           <div className="flex flex-col sm:flex-row items-start sm:items-start gap-4 w-full xl:w-auto">
             
             {/* BOTÃO BASE BRUTA + LINK EXPLICATIVO */}
-            <div className="flex flex-col items-center w-full sm:w-auto">
-              <a 
-                href={baseBrutaUrl}
-                download="base_bruta_empetur.xlsx"
-                className="cursor-pointer w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white hover:text-[#0B2341] text-white text-xs font-bold uppercase tracking-widest rounded-xl transition-all duration-300"
-                title="Baixar a planilha original sem filtros (Dados Abertos)"
-              >
-                Base Bruta (XLSX)
-              </a>
-              {/* LINK NOVO AQUI */}
-              <span 
-                onClick={() => setIsExplicacaoOpen(true)}
-                className="mt-2 text-[9px] text-slate-400 hover:text-white cursor-pointer transition-colors underline decoration-slate-400/50 underline-offset-2 uppercase tracking-wider font-bold"
-              >
-                Por que a base tem mais dados?
-              </span>
-            </div>
+            <button 
+              onClick={() => setIsExplicacaoOpen(true)}
+              className="cursor-pointer w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white hover:text-[#0B2341] text-white text-xs font-bold uppercase tracking-widest rounded-xl transition-all duration-300"
+              title="Baixar a planilha original sem filtros (Dados Abertos)"
+            >
+              Base Bruta (XLSX)
+            </button>
 
             {/* BOTÃO EXPORTAR PAINEL */}
             <button 
