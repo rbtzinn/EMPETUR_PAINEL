@@ -16,6 +16,7 @@ import PainelCompleto from './pages/PainelCompleto';
 import InternalControlSection from './components/InternalControlSection';
 import Acessibilidade from './components/Acessibilidade'; // <--- IMPORTAMOS AQUI
 import { fetchAndProcessData } from "./utils/DataProcessor";
+import CookieConsent from './components/CookieConsent';
 
 // 1. Isolamos a sua página principal inteira em um componente "Home"
 function Home({ csvUrl, shareUrl }) {
@@ -56,6 +57,7 @@ function Home({ csvUrl, shareUrl }) {
         <AboutSection id="sobre" />
         <GlossarySection id="glossario" />
         <ContactSection id="contato" />
+        <CookieConsent />
       </main>
       <Footer />
     </div>

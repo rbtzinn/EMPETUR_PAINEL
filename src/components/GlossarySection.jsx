@@ -8,7 +8,7 @@ export default function GlossarySection() {
   // Termos ajustados para uma linguagem mais cultural e menos técnica
   const terms = [
     { t: "Ano Cultural", d: "Refere-se ao ano em que as festividades ocorreram, permitindo comparar como a cultura se expande ano a ano." },
-    { t: "Ciclo Cultural", d: "Os grandes momentos de celebração do nosso estado, como o Carnaval, São João e Festival de Inverno." },
+    { t: "Ciclo Cultural", d: "Os grandes momentos de celebração do nosso estado, como o Carnaval, São João, Pernambuco meu País e etc." },
     { t: "Município Atendido", d: "A cidade pernambucana que recebeu a apresentação artística e a festa." },
     { t: "Artista ou Grupo", d: "A estrela do show. A banda, cantor ou grupo cultural que foi contratado para realizar a apresentação." },
     { t: "Fomento (Valor)", d: "O investimento financeiro realizado para viabilizar a apresentação e fortalecer a cultura local." }
