@@ -1,21 +1,109 @@
 @import "tailwindcss";
 
-/* Fundo padrão */
 body {
-  background-color: #F8FAFC;
+  background-color: #f8fafc;
+  color: #0f172a;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-button{
+button {
   cursor: pointer;
 }
 
-.modo-alto-contraste {
-  filter: contrast(130%) grayscale(100%);
+/* CONTRASTE NEGATIVO */
+body.contraste-negativo,
+body.contraste-negativo #conteudo-site {
+  background: #000 !important;
+  color: #fff !important;
 }
 
-/* Garante legibilidade */
-.modo-alto-contraste text,
-.modo-alto-contraste span,
-.modo-alto-contraste p {
-  color: #000 !important;
+body.contraste-negativo #conteudo-site h1,
+body.contraste-negativo #conteudo-site h2,
+body.contraste-negativo #conteudo-site h3,
+body.contraste-negativo #conteudo-site h4,
+body.contraste-negativo #conteudo-site h5,
+body.contraste-negativo #conteudo-site h6 {
+  color: #ffea00 !important;
+}
+
+body.contraste-negativo #conteudo-site p,
+body.contraste-negativo #conteudo-site span,
+body.contraste-negativo #conteudo-site li,
+body.contraste-negativo #conteudo-site label,
+body.contraste-negativo #conteudo-site strong,
+body.contraste-negativo #conteudo-site small,
+body.contraste-negativo #conteudo-site td,
+body.contraste-negativo #conteudo-site th,
+body.contraste-negativo #conteudo-site div {
+  color: #fff !important;
+}
+
+body.contraste-negativo #conteudo-site a {
+  color: #ffea00 !important;
+}
+
+body.contraste-negativo #conteudo-site header,
+body.contraste-negativo #conteudo-site footer,
+body.contraste-negativo #conteudo-site section,
+body.contraste-negativo #conteudo-site article,
+body.contraste-negativo #conteudo-site aside,
+body.contraste-negativo #conteudo-site nav,
+body.contraste-negativo #conteudo-site main,
+body.contraste-negativo #conteudo-site .bg-white,
+body.contraste-negativo #conteudo-site .bg-slate-50,
+body.contraste-negativo #conteudo-site .bg-slate-100,
+body.contraste-negativo #conteudo-site .bg-\[\#071b34\],
+body.contraste-negativo #conteudo-site .bg-\[\#0B2341\] {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+body.contraste-negativo #conteudo-site button,
+body.contraste-negativo #conteudo-site input,
+body.contraste-negativo #conteudo-site textarea,
+body.contraste-negativo #conteudo-site select {
+  background: #000 !important;
+  color: #fff !important;
+  border-color: #888 !important;
+}
+
+body.contraste-negativo #conteudo-site * {
+  border-color: #666 !important;
+  box-shadow: none !important;
+}
+
+/* ESCALA DE CINZA */
+body.escala-cinza #conteudo-site {
+  filter: grayscale(100%);
+}
+
+/* FONTE LEGÍVEL */
+body.fonte-legivel #conteudo-site,
+body.fonte-legivel #conteudo-site * {
+  font-family: Arial, Helvetica, sans-serif !important;
+  letter-spacing: normal !important;
+}
+
+/* DESTACAR LINKS */
+body.destacar-links #conteudo-site a,
+body.destacar-links #conteudo-site button {
+  text-decoration: underline !important;
+  text-decoration-color: #00AEEF !important;
+  text-decoration-thickness: 3px !important;
+  font-weight: 900 !important;
+}
+
+/* OCULTAR IMAGENS */
+body.ocultar-imagens #conteudo-site img,
+body.ocultar-imagens #conteudo-site svg,
+body.ocultar-imagens #conteudo-site canvas {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/* VLibras intacto */
+[vw],
+[vw-access-button],
+[vw-plugin-wrapper] {
+  filter: none !important;
 }
