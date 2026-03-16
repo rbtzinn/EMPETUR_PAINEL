@@ -109,6 +109,7 @@ export const extrairMunicipio = (obsOriginal) => {
   if (!obsOriginal) return "NÃO IDENTIFICADO";
   let obs = obsOriginal.toUpperCase();
 
+  // 1. LIMPEZA PRÉVIA (Remove ruídos e formatações estranhas)
   obs = obs
     .replace(/\bCUMBUCA\b/g, "CUMBUCÁ")
     .replace(/\bCAMBUCÁ\b/g, "CUMBUCÁ")
@@ -125,11 +126,14 @@ export const extrairMunicipio = (obsOriginal) => {
     .replace(/\bB\s+DE\s+SÃO\s+FRANCISCO\b/g, "BELEM DE SAO FRANCISCO")
     .replace(/\bBEL[EÉ]M DE S[AÃ]O FCO\.?\b/g, "CIDADE DE BELÉM DE SÃO FRANCISCO")
     .replace(/CARNAUBEIRA\s+DAPENHA/g, "CARNAUBEIRA DA PENHA")
+    // 🔴 AQUI ESTÁ A MÁGICA PARA O SEU BUG: Limpa os nomes dos Polos
+    .replace(/DA DIVERSIDADE (NA|EM) /g, "")
+    .replace(/POLO DA DIVERSIDADE\s*-?\s*/g, "")
     .replace(/\s+/g, " ");
 
   let resultado = "NÃO IDENTIFICADO";
 
-  // Tratativa especial para capturar os polos do "Pernambuco Meu País"
+  // 2. EXTRAÇÃO
   const matchPMP = obs.match(/(?:MEU PA[IÍ]S EM|POLO|ETAPA)\s+([A-ZÀ-Ú\s\.]{3,40}?)(?:\/|PE\b|-|,|\.|\s+NO\s+DIA|$)/);
 
   if (matchPMP?.[1] && !matchPMP[1].includes("PERNAMBUCO")) {
@@ -151,8 +155,15 @@ export const extrairMunicipio = (obsOriginal) => {
     }
   }
 
+  // 3. LIMPEZA PÓS-EXTRAÇÃO
   resultado = resultado.replace(/\/.*$/, "").replace(/\bPE\b$/, "").trim();
 
+  // 🔴 TRAVA EXTRA DE SEGURANÇA: Se ainda sobrar algum "CIDADE DE" grudado, ele corta tudo antes e pega só a cidade
+  if (resultado.includes("CIDADE DE ")) {
+    resultado = resultado.split("CIDADE DE ")[1].trim();
+  }
+
+  // 4. CORREÇÕES FINAIS (Dicionário)
   const mapaCorrecoes = {
     "BELEM DE SAO FRANCISCO": "BELÉM DE SÃO FRANCISCO",
     "GLORIA DO GOITA": "GLÓRIA DO GOITÁ",

@@ -6,6 +6,12 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+html,
+body,
+#root {
+  overflow-x: hidden;
+}
+
 button {
   cursor: pointer;
 }
@@ -107,3 +113,4 @@ body.ocultar-imagens #conteudo-site canvas {
 [vw-plugin-wrapper] {
   filter: none !important;
 }
+

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // Componentes da página inicial
 import Topbar from './components/Topbar';
+import Breadcrumb from './components/Breadcrumb'; // 🔴 IMPORT ADICIONADO AQUI
 import Hero from './components/Hero';
 import Banner from './components/Banner';
 import PanelSection from './components/PanelSection';
@@ -41,6 +42,9 @@ function Home({ csvUrl, shareUrl }) {
   return (
     <div className="app bg-[#F8FAFC] min-h-screen">
       <Topbar lookerShareUrl="/dashboard" />
+      
+      {/* 🔴 BREADCRUMB COLOCADO AQUI, LOGO ABAIXO DA TOPBAR */}
+      <Breadcrumb />
 
       <main>
         <Hero
@@ -52,6 +56,7 @@ function Home({ csvUrl, shareUrl }) {
           onSecondaryClickHref="#sobre"
         />
         <Banner image={bannerImage} />
+        
         <PanelSection
           id="painel"
           csvUrl={csvUrl}

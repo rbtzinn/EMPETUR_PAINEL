@@ -9,6 +9,7 @@ import InfoTooltip from "../components/InfoTooltip";
 import MapaPernambuco from "../components/MapaPernambuco";
 import IndicadoresKPI from "../components/IndicadoresKPI";
 import GraficoBarrasNativo from "../components/GraficoBarrasNativo";
+import Breadcrumb from "../components/Breadcrumb"; // 🔴 BREADCRUMB IMPORTADO AQUI
 
 
 export default function PainelCompleto({ csvUrl }) {
@@ -170,11 +171,17 @@ export default function PainelCompleto({ csvUrl }) {
         <div className="lg:hidden h-20"></div>
 
         {/* ========================================================= */}
+        {/* 🔴 BREADCRUMB ADICIONADO AQUI 🔴 */}
+        {/* ========================================================= */}
+        <Breadcrumb isPainel={true} />
+
+
+        {/* ========================================================= */}
         {/* CABEÇALHO DO PAINEL COM OS SELOS DE TRANSPARÊNCIA */}
         {/* ========================================================= */}
         <div className="mb-8 flex flex-col xl:flex-row xl:items-end justify-between gap-4">
           <div>
-            <h1 className="text-3xl md:text-4xl font-black text-[#0B2341] tracking-tight mb-2">
+            <h1 className="text-3xl md:text-4xl font-black text-[#0B2341] tracking-tight mb-2 mt-4">
               Painel de Dados Culturais
             </h1>
             <Text className="text-slate-500 font-medium">
