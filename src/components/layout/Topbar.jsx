@@ -72,7 +72,8 @@ export default function Topbar({ lookerShareUrl }) {
               ))}
             </nav>
 
-            <Link to={lookerShareUrl} className="hidden sm:block px-6 py-2.5 bg-[#00AEEF] hover:bg-white text-[#0B2341] text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 shadow-lg shadow-[#00AEEF]/20 active:scale-95">
+            {/* 🔴 Classe hc-botao-destaque adicionada */}
+            <Link to={lookerShareUrl} className="hc-botao-destaque hidden sm:block px-6 py-2.5 bg-[#00AEEF] hover:bg-white text-[#0B2341] text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 shadow-lg shadow-[#00AEEF]/20 active:scale-95">
               Acessar Painel
             </Link>
 
@@ -91,7 +92,8 @@ export default function Topbar({ lookerShareUrl }) {
                 {id === 'gestao' ? 'Gestão' : id.charAt(0).toUpperCase() + id.slice(1)}
               </a>
             ))}
-            <Link to={lookerShareUrl} onClick={() => setIsMobileMenuOpen(false)} className="mt-4 w-full text-center py-4 bg-[#00AEEF] text-[#0B2341] font-black uppercase tracking-widest rounded-xl">
+            {/* 🔴 Classe hc-botao-destaque adicionada */}
+            <Link to={lookerShareUrl} onClick={() => setIsMobileMenuOpen(false)} className="hc-botao-destaque mt-4 w-full text-center py-4 bg-[#00AEEF] text-[#0B2341] font-black uppercase tracking-widest rounded-xl">
               Acessar Painel
             </Link>
           </div>

@@ -64,7 +64,8 @@ export default function PanelSection({ id, csvUrl, lookerShareUrl }) {
               ↺ Limpar Filtros
             </button>
 
-            <Link to={lookerShareUrl} className="cursor-pointer w-full sm:w-auto text-center px-6 py-3 bg-[#00AEEF] hover:bg-[#0B2341] text-white text-sm font-black uppercase tracking-widest rounded-xl transition-all duration-300 shadow-lg flex items-center justify-center gap-2 group">
+            {/* 🔴 Classe hc-botao-destaque adicionada */}
+            <Link to={lookerShareUrl} className="hc-botao-destaque cursor-pointer w-full sm:w-auto text-center px-6 py-3 bg-[#00AEEF] hover:bg-[#0B2341] text-white text-sm font-black uppercase tracking-widest rounded-xl transition-all duration-300 shadow-lg flex items-center justify-center gap-2 group">
               Acessar Painel
               <svg className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -94,14 +95,14 @@ export default function PanelSection({ id, csvUrl, lookerShareUrl }) {
 
             <div className="h-[600px] overflow-y-auto scrollbar-moderna">
               <table className="w-full text-left border-collapse min-w-[900px]">
-                <thead className="bg-slate-50/95 backdrop-blur-sm sticky top-0 z-10 shadow-sm">
+                <thead className="bg-slate-50/95 backdrop-blur-sm sticky top-0 z-10 shadow-sm hc-th">
                   <tr>
-                    <th className="p-6 text-xs font-black text-[#0B2341] uppercase tracking-wider whitespace-nowrap">Nº Empenho</th>
-                    <th className="p-6 text-xs font-black text-[#0B2341] uppercase tracking-wider whitespace-nowrap">Artista</th>
-                    <th className="p-6 text-xs font-black text-[#0B2341] uppercase tracking-wider whitespace-nowrap">Município</th>
-                    <th className="p-6 text-xs font-black text-[#0B2341] uppercase tracking-wider whitespace-nowrap">Ciclo</th>
-                    <th className="p-6 text-xs font-black text-[#0B2341] uppercase tracking-wider whitespace-nowrap">Data</th>
-                    <th className="p-6 text-xs font-black text-[#0B2341] uppercase tracking-wider text-right whitespace-nowrap">Valor Pago</th>
+                    <th className="p-6 text-xs font-black text-[#0B2341] uppercase tracking-wider whitespace-nowrap hc-text-destaque">Nº Empenho</th>
+                    <th className="p-6 text-xs font-black text-[#0B2341] uppercase tracking-wider whitespace-nowrap hc-text-destaque">Artista</th>
+                    <th className="p-6 text-xs font-black text-[#0B2341] uppercase tracking-wider whitespace-nowrap hc-text-destaque">Município</th>
+                    <th className="p-6 text-xs font-black text-[#0B2341] uppercase tracking-wider whitespace-nowrap hc-text-destaque">Ciclo</th>
+                    <th className="p-6 text-xs font-black text-[#0B2341] uppercase tracking-wider whitespace-nowrap hc-text-destaque">Data</th>
+                    <th className="p-6 text-xs font-black text-[#0B2341] uppercase tracking-wider text-right whitespace-nowrap hc-text-destaque">Valor Pago</th>
                   </tr>
                 </thead>
                 <tbody>

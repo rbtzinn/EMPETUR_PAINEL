@@ -1,58 +1,62 @@
 import React from "react";
 import { Card, Title, DonutChart } from "@tremor/react";
-import InfoTooltip from "../ui/InfoTooltip"; // 🔴 Caminho ajustado
+import InfoTooltip from "../ui/InfoTooltip"; 
 
 export default function TopMunicipiosChart({ data, onFilter }) {
   const customTooltipDonut = ({ payload, active }) => {
     if (!active || !payload || payload.length === 0) return null;
-    const item = payload[0].payload;
     return (
-      <div className="bg-[#0B2341] p-4 rounded-xl shadow-2xl border border-white/10 z-50">
-        <p className="font-bold text-white text-sm mb-1">{item.nome}</p>
-        <p className="text-[#00AEEF] font-black text-lg">{item.total} shows</p>
+      <div className="bg-[#0B2341] p-4 rounded-xl shadow-2xl border border-white/10 z-50 hc-tooltip">
+        <p className="font-bold text-white text-sm mb-1 hc-texto-escuro">{payload[0].payload.nome}</p>
+        <p className="text-[#00AEEF] font-black text-lg hc-texto-escuro">{payload[0].payload.total} shows</p>
       </div>
     );
   };
 
-  const coresHex = ["#0B2341", "#00AEEF", "#38BDF8", "#7DD3FC", "#E0F2FE", "#94A3B8", "#CBD5E1", "#F1F5F9"];
-
   return (
-    <Card className="rounded-3xl border-none shadow-xl shadow-blue-900/5 bg-white p-6 md:p-8 lg:col-span-2 flex flex-col h-full relative">
+    <Card className="rounded-3xl border-none shadow-xl shadow-blue-900/5 bg-white p-6 md:p-8 lg:col-span-2 flex flex-col h-full relative hc-card">
       <style>{`
-        .recharts-pie-sector:nth-child(1) path { fill: #0B2341 !important; }
-        .recharts-pie-sector:nth-child(2) path { fill: #00AEEF !important; }
-        .recharts-pie-sector:nth-child(3) path { fill: #38BDF8 !important; }
-        .recharts-pie-sector:nth-child(4) path { fill: #7DD3FC !important; }
-        .recharts-pie-sector:nth-child(5) path { fill: #E0F2FE !important; }
-        .recharts-pie-sector:nth-child(6) path { fill: #94A3B8 !important; }
-        .recharts-pie-sector:nth-child(7) path { fill: #CBD5E1 !important; }
-        .recharts-pie-sector:nth-child(8) path { fill: #F1F5F9 !important; }
-        .recharts-pie-sector path { stroke: #ffffff !important; stroke-width: 2px !important; }
+        .grafico-municipios {
+            --donut-1: #0B2341; --donut-2: #00AEEF; --donut-3: #38BDF8; --donut-4: #7DD3FC;
+            --donut-5: #E0F2FE; --donut-6: #94A3B8; --donut-7: #CBD5E1; --donut-8: #F1F5F9;
+            --donut-stroke: #ffffff;
+        }
+        body.contraste-negativo .grafico-municipios {
+            --donut-1: #FFFF00; --donut-2: #FFD700; --donut-3: #FFB100; --donut-4: #FF8C00;
+            --donut-5: #FF6600; --donut-6: #FF4000; --donut-7: #FF1A00; --donut-8: #E60000;
+            --donut-stroke: #000000;
+        }
+        .recharts-pie-sector:nth-child(1) path { fill: var(--donut-1) !important; }
+        .recharts-pie-sector:nth-child(2) path { fill: var(--donut-2) !important; }
+        .recharts-pie-sector:nth-child(3) path { fill: var(--donut-3) !important; }
+        .recharts-pie-sector:nth-child(4) path { fill: var(--donut-4) !important; }
+        .recharts-pie-sector:nth-child(5) path { fill: var(--donut-5) !important; }
+        .recharts-pie-sector:nth-child(6) path { fill: var(--donut-6) !important; }
+        .recharts-pie-sector:nth-child(7) path { fill: var(--donut-7) !important; }
+        .recharts-pie-sector:nth-child(8) path { fill: var(--donut-8) !important; }
+        .recharts-pie-sector path { stroke: var(--donut-stroke) !important; stroke-width: 2px !important; }
+        
+        body.contraste-negativo .hc-card { background-color: #000 !important; border: 2px solid #FFFF00 !important; }
+        body.contraste-negativo .hc-texto { color: #FFFF00 !important; }
+        body.contraste-negativo .hc-tooltip { background-color: #FFFF00 !important; border: 2px solid #000 !important; }
+        body.contraste-negativo .hc-texto-escuro { color: #000 !important; }
       `}</style>
 
-      <Title className="text-[#0B2341] font-black mb-8">Top Municípios</Title>
+      <Title className="text-[#0B2341] font-black mb-8 hc-texto">Top Municípios</Title>
+      <div className="absolute top-6 right-6 md:top-8 md:right-8"><InfoTooltip text="Clique na fatia ou no nome da cidade na legenda para filtrar." /></div>
 
-      <div className="absolute top-6 right-6 md:top-8 md:right-8">
-        <InfoTooltip text="Clique na fatia ou no nome da cidade na legenda para filtrar o painel." />
-      </div>
-
-      <div className="flex-1 flex flex-col md:flex-row items-center justify-between gap-8 h-full">
+      <div className="flex-1 flex flex-col md:flex-row items-center justify-between gap-8 h-full grafico-municipios">
         <div className="w-full md:w-1/2 flex items-center justify-center min-h-[250px]">
-          {data.length > 0 ? (
-            <DonutChart data={data} category="total" index="nome" className="h-72 w-full cursor-pointer" customTooltip={customTooltipDonut} onValueChange={(v) => onFilter(v ? v.nome : "")} />
-          ) : (
-            <div className="h-full flex items-center justify-center text-slate-400">Nenhum dado encontrado.</div>
-          )}
+          {data.length > 0 ? <DonutChart data={data} category="total" index="nome" className="h-72 w-full cursor-pointer" customTooltip={customTooltipDonut} onValueChange={(v) => onFilter(v ? v.nome : "")} /> : <div className="text-slate-400 hc-texto">Nenhum dado encontrado.</div>}
         </div>
-
         <div className="w-full md:w-1/2 flex flex-col gap-2 max-h-72 overflow-y-auto pr-2 scrollbar-moderna">
           {data.map((item, idx) => (
-            <div key={idx} onClick={() => onFilter(item.nome)} className="flex items-center justify-between group cursor-pointer p-2 rounded-xl hover:bg-slate-50 transition-colors" title={`Filtrar shows em ${item.nome}`}>
+            <div key={idx} onClick={() => onFilter(item.nome)} className="flex items-center justify-between group cursor-pointer p-2 rounded-xl hover:bg-slate-50 transition-colors">
               <div className="flex items-center gap-3 truncate pr-2">
-                <span className="w-3.5 h-3.5 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: coresHex[idx % coresHex.length] }}></span>
-                <span className="text-sm font-bold text-[#0B2341] group-hover:text-[#00AEEF] transition-colors truncate">{item.nome}</span>
+                <span className="w-3.5 h-3.5 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: `var(--donut-${(idx % 8) + 1})` }}></span>
+                <span className="text-sm font-bold text-[#0B2341] group-hover:text-[#00AEEF] transition-colors truncate hc-texto">{item.nome}</span>
               </div>
-              <div className="text-xs font-black text-slate-400 shrink-0">{item.total} <span className="font-medium text-[10px] uppercase">shows</span></div>
+              <div className="text-xs font-black text-slate-400 shrink-0 hc-texto">{item.total} <span className="font-medium text-[10px] uppercase">shows</span></div>
             </div>
           ))}
         </div>

@@ -133,6 +133,106 @@ body.ocultar-imagens #conteudo-site canvas {
   background-clip: padding-box;
 }
 
+/* ==========================================================================
+   CORREÇÕES EXTRAS DE ALTO CONTRASTE (TAILWIND OPACITY E BOTÕES)
+========================================================================== */
+
+/* Pega os fundos com opacidade (/50, /95) que escaparam da regra principal */
+body.contraste-negativo #conteudo-site .bg-slate-50\/50,
+body.contraste-negativo #conteudo-site .bg-slate-50\/95,
+body.contraste-negativo #conteudo-site .bg-white\/95 {
+  background-color: #000 !important;
+}
+
+/* Transforma os botões azuis (Acessar Painel) em pretos com borda amarela */
+body.contraste-negativo #conteudo-site .bg-\[\#00AEEF\] {
+  background-color: #000 !important;
+  border: 2px solid #ffea00 !important;
+  color: #ffea00 !important;
+}
+
+/* Corrige as réguas do componente Tremor (Opcional, se houver gráficos falhando) */
+body.contraste-negativo .tremor-Card-root {
+  background-color: #000 !important;
+  border: 1px solid #666 !important;
+}
+
+body.contraste-negativo .hc-botao-destaque {
+  background-color: #000 !important;
+  border: 2px solid #ffea00 !important;
+  color: #ffea00 !important;
+}
+
+body.contraste-negativo .hc-botao-destaque:hover {
+  background-color: #ffea00 !important;
+  color: #000 !important;
+}
+
+/* Garante que o ícone SVG (a setinha) acompanhe a cor do texto */
+body.contraste-negativo .hc-botao-destaque svg {
+  color: currentColor !important; 
+}
+
+/* ==========================================================================
+   ALTO CONTRASTE - ÍCONES E BOTÕES VAZADOS (Sessão Sobre)
+========================================================================== */
+
+/* Limpa o fundo pastel dos ícones e coloca uma borda amarela */
+body.contraste-negativo #conteudo-site .hc-icon-wrapper {
+  background-color: transparent !important;
+  border: 2px solid #ffea00 !important;
+}
+
+/* Transforma o botão "Entenda o Processo" em Amarelo */
+body.contraste-negativo #conteudo-site .hc-botao-borda {
+  background-color: transparent !important;
+  border-color: #ffea00 !important;
+  color: #ffea00 !important;
+}
+
+body.contraste-negativo #conteudo-site .hc-botao-borda:hover {
+  background-color: #ffea00 !important;
+  color: #000 !important;
+}
+
+body.contraste-negativo #conteudo-site .hc-botao-borda:hover * {
+  color: #000 !important;
+}
+
+/* DESTACAR LINKS */
+body.destacar-links #conteudo-site a,
+body.destacar-links #conteudo-site button {
+  text-decoration: underline !important;
+  text-decoration-color: #00AEEF !important;
+  text-decoration-thickness: 3px !important;
+  font-weight: 900 !important;
+}
+
+/* 🔴 ADICIONE ISTO AQUI: Quando o Alto Contraste e o Destacar Links estiverem ligados JUNTOS */
+body.destacar-links.contraste-negativo #conteudo-site a,
+body.destacar-links.contraste-negativo #conteudo-site button {
+  text-decoration-color: #ffea00 !important;
+}
+
+/* ==========================================================================
+   ALTO CONTRASTE - CORREÇÕES FINAIS (CARDS E GLOSSÁRIO)
+========================================================================== */
+
+/* Força os Cartões de Contato e a Caixa Principal a ficarem pretos com borda amarela */
+body.contraste-negativo #conteudo-site .hc-card {
+  background-color: #000 !important;
+  border: 1px solid #ffea00 !important;
+}
+
+body.contraste-negativo #conteudo-site .hc-card:hover {
+  background-color: #111 !important;
+}
+
+/* Corrige de vez o fundo branco fantasma da sanfona do Glossário quando aberta */
+body.contraste-negativo #glossario div {
+  background-color: transparent !important;
+}
+
 /* VLibras intacto */
 [vw],
 [vw-access-button],

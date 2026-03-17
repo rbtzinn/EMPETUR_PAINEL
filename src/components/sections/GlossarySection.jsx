@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import FadeIn from '../ui/FadeIn';
+import FadeIn from '../ui/FadeIn'; // Ajuste o caminho se necessário
 
 export default function GlossarySection() {
   const [openIndex, setOpenIndex] = useState(null);
@@ -12,7 +12,9 @@ export default function GlossarySection() {
     { t: "Fomento (Valor)", d: "O investimento financeiro realizado para viabilizar a apresentação e fortalecer a cultura local." }
   ];
 
-  const toggleItem = (index) => setOpenIndex(openIndex === index ? null : index);
+  const toggleItem = (index) => {
+    setOpenIndex(openIndex === index ? null : index);
+  };
 
   return (
     <section id="glossario" className="py-24 bg-white">
@@ -28,16 +30,26 @@ export default function GlossarySection() {
             const isOpen = openIndex === i;
             return (
               <FadeIn key={i} delay={i * 0.1}>
-                <div className={`border border-slate-100 rounded-2xl overflow-hidden transition-all duration-300 ${isOpen ? 'bg-[#F8FAFC] shadow-xl shadow-blue-900/5' : 'bg-white hover:bg-slate-50'}`}>
+                {/* 🔴 A MÁGICA AQUI: Trocamos bg-[#F8FAFC] por bg-slate-50 */}
+                <div className={`border border-slate-100 rounded-2xl overflow-hidden transition-all duration-300 ${isOpen ? 'bg-slate-50 shadow-xl shadow-blue-900/5' : 'bg-white hover:bg-slate-50'}`}>
+                  
                   <button onClick={() => toggleItem(i)} className="w-full flex items-center justify-between p-6 text-left cursor-pointer focus:outline-none">
-                    <h3 className={`text-lg font-bold transition-colors ${isOpen ? 'text-[#00AEEF]' : 'text-[#0B2341]'}`}>{item.t}</h3>
+                    <h3 className={`text-lg font-bold transition-colors ${isOpen ? 'text-[#00AEEF]' : 'text-[#0B2341]'}`}>
+                      {item.t}
+                    </h3>
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${isOpen ? 'bg-[#00AEEF] text-white rotate-180' : 'bg-slate-100 text-[#0B2341]'}`}>
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
                     </div>
                   </button>
+                  
                   <div className={`transition-all duration-300 ease-in-out ${isOpen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
-                    <p className="px-6 pb-6 text-slate-500 text-sm leading-relaxed">{item.d}</p>
+                    <p className="px-6 pb-6 text-slate-500 text-sm leading-relaxed">
+                      {item.d}
+                    </p>
                   </div>
+
                 </div>
               </FadeIn>
             );
