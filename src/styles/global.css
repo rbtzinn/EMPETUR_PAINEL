@@ -1,241 +1,132 @@
 @import "tailwindcss";
 
+/* ==========================================================================
+   CONFIGURAÇÕES GERAIS
+========================================================================== */
 body {
   background-color: #f8fafc;
   color: #0f172a;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-html,
-body,
-#root {
-  overflow-x: hidden;
-}
+html, body, #root { overflow-x: hidden; }
+button { cursor: pointer; }
 
-button {
-  cursor: pointer;
-}
+/* ==========================================================================
+   SCROLLBAR MODERNA GLOBAL
+========================================================================== */
+.scrollbar-moderna::-webkit-scrollbar { width: 8px; height: 8px; }
+.scrollbar-moderna::-webkit-scrollbar-track { background: transparent; border-radius: 10px; }
+.scrollbar-moderna::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; border: 2px solid transparent; background-clip: padding-box; }
+.scrollbar-moderna::-webkit-scrollbar-thumb:hover { background: #94a3b8; border: 2px solid transparent; background-clip: padding-box; }
 
-/* CONTRASTE NEGATIVO */
+/* ==========================================================================
+   ACESSIBILIDADE: ALTO CONTRASTE (OTIMIZADO)
+========================================================================== */
 body.contraste-negativo,
 body.contraste-negativo #conteudo-site {
   background: #000 !important;
   color: #fff !important;
 }
 
-body.contraste-negativo #conteudo-site h1,
-body.contraste-negativo #conteudo-site h2,
-body.contraste-negativo #conteudo-site h3,
-body.contraste-negativo #conteudo-site h4,
-body.contraste-negativo #conteudo-site h5,
-body.contraste-negativo #conteudo-site h6 {
+/* Textos Amarelos (Títulos e Links) */
+body.contraste-negativo #conteudo-site :is(h1, h2, h3, h4, h5, h6, a) {
   color: #ffea00 !important;
 }
 
-body.contraste-negativo #conteudo-site p,
-body.contraste-negativo #conteudo-site span,
-body.contraste-negativo #conteudo-site li,
-body.contraste-negativo #conteudo-site label,
-body.contraste-negativo #conteudo-site strong,
-body.contraste-negativo #conteudo-site small,
-body.contraste-negativo #conteudo-site td,
-body.contraste-negativo #conteudo-site th,
-body.contraste-negativo #conteudo-site div {
+/* Textos Brancos (Parágrafos e textos comuns) */
+body.contraste-negativo #conteudo-site :is(p, span, li, label, strong, small, td, th, div) {
   color: #fff !important;
 }
 
-body.contraste-negativo #conteudo-site a {
-  color: #ffea00 !important;
-}
-
-body.contraste-negativo #conteudo-site header,
-body.contraste-negativo #conteudo-site footer,
-body.contraste-negativo #conteudo-site section,
-body.contraste-negativo #conteudo-site article,
-body.contraste-negativo #conteudo-site aside,
-body.contraste-negativo #conteudo-site nav,
-body.contraste-negativo #conteudo-site main,
-body.contraste-negativo #conteudo-site .bg-white,
-body.contraste-negativo #conteudo-site .bg-slate-50,
-body.contraste-negativo #conteudo-site .bg-slate-100,
-body.contraste-negativo #conteudo-site .bg-\[\#071b34\],
-body.contraste-negativo #conteudo-site .bg-\[\#0B2341\] {
+/* Forçar Fundo Preto em Estruturas e Classes Tailwind Claras */
+body.contraste-negativo #conteudo-site :is(
+  header, footer, section, article, aside, nav, main,
+  .bg-white, .bg-slate-50, .bg-slate-100, .bg-\[\#071b34\], .bg-\[\#0B2341\],
+  .bg-slate-50\/50, .bg-slate-50\/95, .bg-white\/95,
+  .tremor-Card-root
+) {
   background: #000 !important;
   color: #fff !important;
 }
 
-body.contraste-negativo #conteudo-site button,
-body.contraste-negativo #conteudo-site input,
-body.contraste-negativo #conteudo-site textarea,
-body.contraste-negativo #conteudo-site select {
+/* Inputs e Formulários */
+body.contraste-negativo #conteudo-site :is(button, input, textarea, select) {
   background: #000 !important;
   color: #fff !important;
   border-color: #888 !important;
 }
 
+/* Reset Global de Bordas e Sombras */
 body.contraste-negativo #conteudo-site * {
   border-color: #666 !important;
   box-shadow: none !important;
 }
 
-/* ESCALA DE CINZA */
-body.escala-cinza #conteudo-site {
-  filter: grayscale(100%);
+/* Caixas de Destaque (Cards) */
+body.contraste-negativo #conteudo-site .hc-card {
+  background-color: #000 !important;
+  border: 1px solid #ffea00 !important;
+}
+body.contraste-negativo #conteudo-site .hc-card:hover {
+  background-color: #111 !important;
 }
 
-/* FONTE LEGÍVEL */
+/* Botões Azuis -> Fundo Preto com Borda Amarela */
+body.contraste-negativo #conteudo-site :is(.hc-botao-destaque, .bg-\[\#00AEEF\]) {
+  background-color: #000 !important;
+  border: 2px solid #ffea00 !important;
+  color: #ffea00 !important;
+}
+body.contraste-negativo #conteudo-site :is(.hc-botao-destaque, .bg-\[\#00AEEF\]):hover {
+  background-color: #ffea00 !important;
+  color: #000 !important;
+}
+body.contraste-negativo #conteudo-site .hc-botao-destaque svg { color: currentColor !important; }
+
+/* Ícones e Botões Vazados (Sobre/Glossário) */
+body.contraste-negativo #conteudo-site :is(.hc-icon-wrapper, .hc-botao-borda) {
+  background-color: transparent !important;
+  border: 2px solid #ffea00 !important;
+  color: #ffea00 !important;
+}
+body.contraste-negativo #conteudo-site .hc-botao-borda:hover {
+  background-color: #ffea00 !important;
+  color: #000 !important;
+}
+body.contraste-negativo #conteudo-site .hc-botao-borda:hover * { color: #000 !important; }
+body.contraste-negativo #glossario div { background-color: transparent !important; }
+
+/* ==========================================================================
+   OUTRAS FUNÇÕES DE ACESSIBILIDADE
+========================================================================== */
+body.escala-cinza #conteudo-site { filter: grayscale(100%); }
+
 body.fonte-legivel #conteudo-site,
 body.fonte-legivel #conteudo-site * {
   font-family: Arial, Helvetica, sans-serif !important;
   letter-spacing: normal !important;
 }
 
-/* DESTACAR LINKS */
-body.destacar-links #conteudo-site a,
-body.destacar-links #conteudo-site button {
+/* Destacar Links Padrão (Azul) */
+body.destacar-links #conteudo-site :is(a, button) {
   text-decoration: underline !important;
   text-decoration-color: #00AEEF !important;
   text-decoration-thickness: 3px !important;
   font-weight: 900 !important;
 }
 
-/* OCULTAR IMAGENS */
-body.ocultar-imagens #conteudo-site img,
-body.ocultar-imagens #conteudo-site svg,
-body.ocultar-imagens #conteudo-site canvas {
+/* Destacar Links + Alto Contraste (Amarelo) */
+body.destacar-links.contraste-negativo #conteudo-site :is(a, button) {
+  text-decoration-color: #ffea00 !important;
+}
+
+body.ocultar-imagens #conteudo-site :is(img, svg, canvas) {
   opacity: 0 !important;
   visibility: hidden !important;
 }
 
-/* ==========================================================================
-   SCROLLBAR MODERNA GLOBAL
-========================================================================== */
-.scrollbar-moderna::-webkit-scrollbar { 
-  width: 8px; 
-  height: 8px; 
-}
-
-.scrollbar-moderna::-webkit-scrollbar-track { 
-  background: transparent; 
-  border-radius: 10px; 
-}
-
-.scrollbar-moderna::-webkit-scrollbar-thumb { 
-  background: #cbd5e1; 
-  border-radius: 10px; 
-  border: 2px solid transparent; /* Dá um efeito de margem na barra */
-  background-clip: padding-box;
-}
-
-.scrollbar-moderna::-webkit-scrollbar-thumb:hover { 
-  background: #94a3b8; 
-  border: 2px solid transparent;
-  background-clip: padding-box;
-}
-
-/* ==========================================================================
-   CORREÇÕES EXTRAS DE ALTO CONTRASTE (TAILWIND OPACITY E BOTÕES)
-========================================================================== */
-
-/* Pega os fundos com opacidade (/50, /95) que escaparam da regra principal */
-body.contraste-negativo #conteudo-site .bg-slate-50\/50,
-body.contraste-negativo #conteudo-site .bg-slate-50\/95,
-body.contraste-negativo #conteudo-site .bg-white\/95 {
-  background-color: #000 !important;
-}
-
-/* Transforma os botões azuis (Acessar Painel) em pretos com borda amarela */
-body.contraste-negativo #conteudo-site .bg-\[\#00AEEF\] {
-  background-color: #000 !important;
-  border: 2px solid #ffea00 !important;
-  color: #ffea00 !important;
-}
-
-/* Corrige as réguas do componente Tremor (Opcional, se houver gráficos falhando) */
-body.contraste-negativo .tremor-Card-root {
-  background-color: #000 !important;
-  border: 1px solid #666 !important;
-}
-
-body.contraste-negativo .hc-botao-destaque {
-  background-color: #000 !important;
-  border: 2px solid #ffea00 !important;
-  color: #ffea00 !important;
-}
-
-body.contraste-negativo .hc-botao-destaque:hover {
-  background-color: #ffea00 !important;
-  color: #000 !important;
-}
-
-/* Garante que o ícone SVG (a setinha) acompanhe a cor do texto */
-body.contraste-negativo .hc-botao-destaque svg {
-  color: currentColor !important; 
-}
-
-/* ==========================================================================
-   ALTO CONTRASTE - ÍCONES E BOTÕES VAZADOS (Sessão Sobre)
-========================================================================== */
-
-/* Limpa o fundo pastel dos ícones e coloca uma borda amarela */
-body.contraste-negativo #conteudo-site .hc-icon-wrapper {
-  background-color: transparent !important;
-  border: 2px solid #ffea00 !important;
-}
-
-/* Transforma o botão "Entenda o Processo" em Amarelo */
-body.contraste-negativo #conteudo-site .hc-botao-borda {
-  background-color: transparent !important;
-  border-color: #ffea00 !important;
-  color: #ffea00 !important;
-}
-
-body.contraste-negativo #conteudo-site .hc-botao-borda:hover {
-  background-color: #ffea00 !important;
-  color: #000 !important;
-}
-
-body.contraste-negativo #conteudo-site .hc-botao-borda:hover * {
-  color: #000 !important;
-}
-
-/* DESTACAR LINKS */
-body.destacar-links #conteudo-site a,
-body.destacar-links #conteudo-site button {
-  text-decoration: underline !important;
-  text-decoration-color: #00AEEF !important;
-  text-decoration-thickness: 3px !important;
-  font-weight: 900 !important;
-}
-
-/* 🔴 ADICIONE ISTO AQUI: Quando o Alto Contraste e o Destacar Links estiverem ligados JUNTOS */
-body.destacar-links.contraste-negativo #conteudo-site a,
-body.destacar-links.contraste-negativo #conteudo-site button {
-  text-decoration-color: #ffea00 !important;
-}
-
-/* ==========================================================================
-   ALTO CONTRASTE - CORREÇÕES FINAIS (CARDS E GLOSSÁRIO)
-========================================================================== */
-
-/* Força os Cartões de Contato e a Caixa Principal a ficarem pretos com borda amarela */
-body.contraste-negativo #conteudo-site .hc-card {
-  background-color: #000 !important;
-  border: 1px solid #ffea00 !important;
-}
-
-body.contraste-negativo #conteudo-site .hc-card:hover {
-  background-color: #111 !important;
-}
-
-/* Corrige de vez o fundo branco fantasma da sanfona do Glossário quando aberta */
-body.contraste-negativo #glossario div {
-  background-color: transparent !important;
-}
-
-/* VLibras intacto */
-[vw],
-[vw-access-button],
-[vw-plugin-wrapper] {
+/* VLibras Intacto */
+:is([vw], [vw-access-button], [vw-plugin-wrapper]) {
   filter: none !important;
 }
