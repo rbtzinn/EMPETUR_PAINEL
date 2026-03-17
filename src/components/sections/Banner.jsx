@@ -1,4 +1,4 @@
-import FadeIn from "./FadeIn";
+import FadeIn from "../ui/FadeIn";
 
 export default function Banner({ image }) {
     return (

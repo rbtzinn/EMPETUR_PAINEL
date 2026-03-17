@@ -1,25 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-// Componentes da página inicial
-import Topbar from './components/Topbar';
-import Breadcrumb from './components/Breadcrumb'; // 🔴 IMPORT ADICIONADO AQUI
-import Hero from './components/Hero';
-import Banner from './components/Banner';
-import PanelSection from './components/PanelSection';
-import AboutSection from './components/AboutSection';
-import GlossarySection from './components/GlossarySection';
-import ContactSection from './components/ContactSection';
-import Footer from './components/Footer';
+// ========================================================
+// 🔴 IMPORTAÇÕES COM OS NOVOS CAMINHOS DA REFATORAÇÃO
+// ========================================================
 
-// Páginas e componentes extras
+// 1. Layout (Estruturas fixas)
+import Topbar from './components/layout/Topbar';
+import Breadcrumb from './components/layout/Breadcrumb';
+import Footer from './components/layout/Footer';
+import CookieConsent from './components/layout/CookieConsent';
+import Acessibilidade from './components/layout/Acessibilidade';
+
+// 2. Sections (Blocos da Landing Page)
+import Hero from './components/sections/Hero';
+import Banner from './components/sections/Banner';
+import PanelSection from './components/sections/PanelSection';
+import InternalControlSection from './components/sections/InternalControlSection';
+import AboutSection from './components/sections/AboutSection';
+import GlossarySection from './components/sections/GlossarySection';
+import ContactSection from './components/sections/ContactSection'; // <-- O SEU ERRO ESTAVA AQUI!
+
+// 3. Pages e Utils
 import PainelCompleto from './pages/PainelCompleto';
-import InternalControlSection from './components/InternalControlSection';
-import Acessibilidade from './components/Acessibilidade';
 import { fetchAndProcessData } from "./utils/DataProcessor";
-import CookieConsent from './components/CookieConsent';
 
-function Home({ csvUrl, shareUrl }) {
+
+function Home({ csvUrl, lookerShareUrl }) {
   const heroImage = "/images/heroImage.jpg";
   const bannerImage = "/images/bannerImage.jpg";
 
@@ -43,7 +50,6 @@ function Home({ csvUrl, shareUrl }) {
     <div className="app bg-[#F8FAFC] min-h-screen">
       <Topbar lookerShareUrl="/dashboard" />
       
-      {/* 🔴 BREADCRUMB COLOCADO AQUI, LOGO ABAIXO DA TOPBAR */}
       <Breadcrumb />
 
       <main>
@@ -52,15 +58,12 @@ function Home({ csvUrl, shareUrl }) {
           apresentacoes={stats.apresentacoes}
           municipios={stats.municipios}
           artistas={stats.artistas}
-          onPrimaryClickHref="#painel"
-          onSecondaryClickHref="#sobre"
         />
         <Banner image={bannerImage} />
         
         <PanelSection
           id="painel"
           csvUrl={csvUrl}
-          shareUrl={shareUrl}
           lookerShareUrl="/dashboard"
         />
         <InternalControlSection />
@@ -76,17 +79,14 @@ function Home({ csvUrl, shareUrl }) {
 }
 
 function App() {
-  const csvUrl =
-    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbCY3xmn0T8KAH-c9jA7-HIUlHHTIEgo0TqjS3-y7mYSACBhpcwrOwief4MCzfG8001m-k6P4u4JyY/pub?output=csv";
-
-  const shareUrl =
-    "https://docs.google.com/spreadsheets/d/1P94FuVBBiScKlty_slbSVOE5N6uO5g3bzD5giKMtT3I/edit";
+  const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbCY3xmn0T8KAH-c9jA7-HIUlHHTIEgo0TqjS3-y7mYSACBhpcwrOwief4MCzfG8001m-k6P4u4JyY/pub?output=csv";
+  const lookerShareUrl = "/dashboard"; 
 
   return (
     <Router>
       <div id="conteudo-site">
         <Routes>
-          <Route path="/" element={<Home csvUrl={csvUrl} shareUrl={shareUrl} />} />
+          <Route path="/" element={<Home csvUrl={csvUrl} lookerShareUrl={lookerShareUrl} />} />
           <Route path="/dashboard" element={<PainelCompleto csvUrl={csvUrl} />} />
         </Routes>
       </div>

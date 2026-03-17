@@ -1,5 +1,5 @@
 import React from 'react';
-import FadeIn from '../components/FadeIn';
+import FadeIn from './ui/FadeIn';
 import LookerEmbed from './LookerEmbed';
 
 export default function DashboardSection({ embedUrl }) {

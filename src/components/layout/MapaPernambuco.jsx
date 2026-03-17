@@ -6,7 +6,7 @@ import {
     ZoomableGroup
 } from "react-simple-maps";
 import { geoCentroid } from "d3-geo";
-import { normalizarMunicipio } from "../utils/DataProcessor";
+import { normalizarMunicipio } from "../../utils/DataProcessor";
 
 const GEO_URL = "/maps/pernambuco-municipios.json";
 

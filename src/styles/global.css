@@ -107,10 +107,35 @@ body.ocultar-imagens #conteudo-site canvas {
   visibility: hidden !important;
 }
 
+/* ==========================================================================
+   SCROLLBAR MODERNA GLOBAL
+========================================================================== */
+.scrollbar-moderna::-webkit-scrollbar { 
+  width: 8px; 
+  height: 8px; 
+}
+
+.scrollbar-moderna::-webkit-scrollbar-track { 
+  background: transparent; 
+  border-radius: 10px; 
+}
+
+.scrollbar-moderna::-webkit-scrollbar-thumb { 
+  background: #cbd5e1; 
+  border-radius: 10px; 
+  border: 2px solid transparent; /* Dá um efeito de margem na barra */
+  background-clip: padding-box;
+}
+
+.scrollbar-moderna::-webkit-scrollbar-thumb:hover { 
+  background: #94a3b8; 
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
 /* VLibras intacto */
 [vw],
 [vw-access-button],
 [vw-plugin-wrapper] {
   filter: none !important;
 }
-

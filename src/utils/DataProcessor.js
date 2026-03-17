@@ -78,6 +78,11 @@ export const extrairArtista = (obsOriginal) => {
   // Limpa traços que sobram no final
   artistaRaw = artistaRaw.replace(/\s*-\s*$/, "").trim();
 
+  // ========================================================
+  // 🔴 CORREÇÃO DO JOSÉ AUGUSTO: Corta nomes de festivais/polos que grudaram
+  // ========================================================
+  artistaRaw = artistaRaw.replace(/\s*(?:FESTIVAL|PERNAMBUCO MEU PA[IÍ]S|EDI[CÇ][AÃ]O|POLO|NA CIDADE).*$/i, "").trim();
+
   // 2. DICIONÁRIO DE UNIFICAÇÃO
   const mapaArtistas = {
     "BANDA D ROMANCE": "BANDA D' ROMANCE",
@@ -212,7 +217,6 @@ export const fetchAndProcessData = async (url) => {
           const obsLimpa = obs.trim().toUpperCase();
 
           // 1ª TRAVA (O CÃO DE GUARDA): BLACKLIST ADMINISTRATIVA
-          // Se qualquer uma destas palavras existir, expulsa o registro na hora.
           const termosProibidos = [
             "TRANSPORTE", "LOCAÇÃO", "LOCACAO", "HOSPEDAGEM", "PASSAGEM", "PASSAGENS",
             "DIÁRIA", "DIARIA", "DIÁRIAS", "DIARIAS", "DIÁRIAS CIVIL", "DIARIAS CIVIL",
@@ -227,7 +231,6 @@ export const fetchAndProcessData = async (url) => {
           if (ehLixoAdministrativo) return acc;
 
           // 2ª TRAVA: WHITELIST ARTÍSTICA
-          // Mesmo passando na blacklist, TEM QUE TER indicação de que é um show/artista
           const termosObrigatorios = [
             "APRESENTAÇÃO", "APRESENTACAO", "ARTÍSTICA", "ARTISTICA",
             "SHOW", "CACHÊ", "CACHE", "BANDA", "CANTOR", "ORQUESTRA", "GRUPO MUSICAL"
