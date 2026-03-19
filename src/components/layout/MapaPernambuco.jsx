@@ -45,8 +45,21 @@ export default function MapaPernambuco({ dados = [], municipioSelecionado, onSel
     };
 
     return (
-        <div className="hidden lg:flex w-full h-[300px] mb-8 bg-white rounded-3xl shadow-xl shadow-blue-900/5 p-3 relative flex-col items-center overflow-hidden mapa-pe hc-card">
+        <div 
+            // 🔴 CORREÇÃO AQUI: focus-visible no lugar de focus
+            className="hidden lg:flex w-full h-[300px] mb-8 bg-white rounded-3xl shadow-xl shadow-blue-900/5 p-3 relative flex-col items-center overflow-hidden mapa-pe hc-card focus:outline-none focus-visible:ring-4 focus-visible:ring-[#00AEEF] focus-visible:ring-offset-4"
+            role="region"
+            aria-label="Mapa interativo de Pernambuco mostrando a densidade de apresentações por município."
+            tabIndex={0}
+        >
             
+            <div className="sr-only">
+                Gráfico do mapa de Pernambuco. 
+                {municipioSelecionado 
+                    ? `O município atualmente selecionado é ${municipioSelecionado} com ${contagem[municipioSelecionado] || 0} apresentações.` 
+                    : "Nenhum município selecionado. O mapa destaca as regiões com maior volume de contratações em tons mais escuros de azul."}
+            </div>
+
             <style>{`
               .mapa-pe {
                  --mapa-0: #F1F5F9; --mapa-1: #BAE6FD; --mapa-2: #7DD3FC; --mapa-3: #38BDF8; --mapa-4: #0284C7;
@@ -61,7 +74,7 @@ export default function MapaPernambuco({ dados = [], municipioSelecionado, onSel
               body.contraste-negativo .hc-text { color: #FFFF00 !important; }
             `}</style>
 
-            <div className="w-full h-full" onWheelCapture={(e) => e.stopPropagation()}>
+            <div className="w-full h-full" aria-hidden="true" onWheelCapture={(e) => e.stopPropagation()}>
                 <ComposableMap projection="geoMercator" projectionConfig={{ scale: 8000 }} width={1000} height={350} className="w-full h-full outline-none">
                     <ZoomableGroup center={mapPosition.center} zoom={mapPosition.zoom} disablePanning style={{ transition: "transform 1.2s ease-in-out" }}>
                         <Geographies geography={GEO_URL}>
@@ -88,8 +101,7 @@ export default function MapaPernambuco({ dados = [], municipioSelecionado, onSel
                 </ComposableMap>
             </div>
 
-            {/* LEGENDA */}
-            <div className="absolute bottom-6 left-6 bg-white/95 backdrop-blur-sm p-5 rounded-2xl shadow-xl shadow-blue-900/5 border border-slate-100 flex flex-col gap-3 z-10 pointer-events-none min-w-[200px] hc-legenda">
+            <div className="absolute bottom-6 left-6 bg-white/95 backdrop-blur-sm p-5 rounded-2xl shadow-xl shadow-blue-900/5 border border-slate-100 flex flex-col gap-3 z-10 pointer-events-none min-w-[200px] hc-legenda" aria-hidden="true">
                 <div className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mb-1 hc-text">Volume de Apresentações</div>
                 {[
                     { bg: "var(--mapa-0)", label: "0" }, { bg: "var(--mapa-1)", label: "1 A 4" },

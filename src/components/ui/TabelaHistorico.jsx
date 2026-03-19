@@ -1,13 +1,35 @@
 import React, { useState, useMemo } from "react";
 import { Card, Title, Text, Table, TableHead, TableRow, TableHeaderCell, TableBody, TableCell } from "@tremor/react";
+import { Search, Download, Layers, User, MapPin, Calendar, DollarSign } from "lucide-react";
+
 import ExportModal from "./ExportModal";
 import ExplicacaoBaseBrutaModal from "./ExplicacaoBaseBrutaModal";
-import { exportarParaExcelPersonalizado } from "../../utils/ExportUtils";
 
 export default function TabelaHistorico({ filtrados, setFiltros }) {
   const [termoBusca, setTermoBusca] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExplicacaoOpen, setIsExplicacaoOpen] = useState(false);
+
+  // Função inteligente para calcular a Data Limite (30 dias após a apresentação)
+  const calcularDataLimite = (dataString) => {
+    if (!dataString) return "A definir";
+    const datas = dataString.match(/(\d{2}\/\d{2}\/\d{4})/g);
+    
+    if (datas && datas.length > 0) {
+      const ultimaData = datas[datas.length - 1];
+      const partes = ultimaData.split('/');
+      const data = new Date(partes[2], partes[1] - 1, partes[0]);
+      
+      if (!isNaN(data.getTime())) {
+        data.setDate(data.getDate() + 30);
+        const dia = String(data.getDate()).padStart(2, '0');
+        const mes = String(data.getMonth() + 1).padStart(2, '0');
+        const ano = data.getFullYear();
+        return `${dia}/${mes}/${ano}`;
+      }
+    }
+    return "Consulte o Empenho";
+  };
 
   const dadosExibidos = useMemo(() => {
     if (!termoBusca) return filtrados;
@@ -23,83 +45,158 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
   return (
     <div className="w-full mb-8">
       <style>{`
-        body.contraste-negativo .hc-tabela-card { background-color: #000 !important; border: 2px solid #FFFF00 !important; }
-        body.contraste-negativo .hc-tabela-header { background-color: #000 !important; border-bottom: 2px solid #FFFF00 !important; }
-        body.contraste-negativo .hc-tabela-header * { color: #FFFF00 !important; }
-        body.contraste-negativo .hc-th { background-color: #111 !important; color: #FFFF00 !important; border-bottom: 2px solid #FFFF00 !important; }
-        body.contraste-negativo .hc-row:hover { background-color: #333 !important; }
-        body.contraste-negativo .hc-text-destaque { color: #FFFF00 !important; }
-        body.contraste-negativo .hc-bg-destaque { background-color: #FFFF00 !important; color: #000 !important; }
+        body.contraste-negativo .hc-tabela-card { background-color: #000 !important; border: 1px solid #ffea00 !important; }
+        body.contraste-negativo .hc-tabela-header th { background-color: #111 !important; color: #ffea00 !important; border-bottom: 2px solid #ffea00 !important; }
+        body.contraste-negativo .hc-tabela-linha:hover { background-color: #111 !important; }
+        body.contraste-negativo .hc-text-destaque { color: #ffea00 !important; }
+        body.contraste-negativo .hc-pilula { background-color: transparent !important; color: #ffea00 !important; border: 1px solid #ffea00 !important; }
+        body.contraste-negativo .hc-valor { color: #00ff00 !important; }
       `}</style>
 
-      <ExportModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onConfirm={() => exportarParaExcelPersonalizado(dadosExibidos)} totalRegistros={dadosExibidos.length} />
-      <ExplicacaoBaseBrutaModal isOpen={isExplicacaoOpen} onClose={() => setIsExplicacaoOpen(false)} />
+      {/* MODAIS */}
+      <ExportModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        dados={dadosExibidos} 
+      />
+      
+      <ExplicacaoBaseBrutaModal 
+        isOpen={isExplicacaoOpen} 
+        onClose={() => setIsExplicacaoOpen(false)} 
+      />
 
-      <Card className="rounded-3xl border-none shadow-xl shadow-blue-900/5 bg-white p-0 flex flex-col h-full overflow-hidden hc-tabela-card">
-        <div className="p-6 border-b border-slate-50 bg-[#0B2341] shrink-0 flex flex-col xl:flex-row xl:items-start justify-between gap-6 hc-tabela-header">
-          <div>
-            <Title className="text-white font-black text-xl">Histórico de Apresentações</Title>
-            <Text className="text-[#00AEEF] text-xs font-bold uppercase tracking-wider mt-1">Dados validados pelo fomento cultural</Text>
+      <Card className="rounded-[2rem] border-none shadow-2xl shadow-blue-900/5 bg-white p-0 overflow-hidden hc-tabela-card flex flex-col">
+        
+        {/* BARRA SUPERIOR */}
+        <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-6 bg-[#0B2341] p-6 md:p-8 relative overflow-hidden shrink-0">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#00AEEF]/10 rounded-full blur-3xl pointer-events-none"></div>
+          
+          <div className="relative z-10 w-full lg:w-auto">
+            <Title className="text-white font-black text-2xl md:text-3xl tracking-tight mb-2 hc-text-destaque">
+              Histórico de Apresentações
+            </Title>
+            <Text className="text-slate-400 text-sm font-medium uppercase tracking-widest hc-text-destaque">
+              Filtre ou pesquise pelos fomentos
+            </Text>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-start gap-4 w-full xl:w-auto">
-            <button onClick={() => setIsExplicacaoOpen(true)} className="cursor-pointer w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white hover:text-[#0B2341] text-white text-xs font-bold uppercase tracking-widest rounded-xl transition-all">
-              Base Bruta (XLSX)
+          <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
+            
+            <button 
+              onClick={() => setIsExplicacaoOpen(true)} 
+              className="flex items-center gap-1.5 text-[#00AEEF] hover:text-white text-xs font-black uppercase tracking-widest transition-colors whitespace-nowrap hc-text-destaque focus:outline-none focus-visible:underline"
+            >
+              <Download size={14} /> Base Bruta
             </button>
-            <button onClick={() => setIsModalOpen(true)} className="cursor-pointer w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black uppercase tracking-widest rounded-xl transition-all shadow-lg">
-              Exportar Painel
+            
+            <button 
+              onClick={() => setIsModalOpen(true)} 
+              className="flex items-center gap-2 bg-[#00AEEF] hover:bg-sky-400 text-[#0B2341] px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-sky-900/20 hc-text-destaque focus:outline-none focus:ring-2 focus:ring-sky-300 w-full sm:w-auto justify-center"
+            >
+              <Layers size={16} /> Exportar Painel
             </button>
-            <div className="relative w-full sm:w-64 shrink-0">
-              <input type="text" placeholder="Pesquisar registro..." value={termoBusca} onChange={(e) => setTermoBusca(e.target.value)} className="block w-full pl-4 pr-4 py-2.5 border-none rounded-xl text-xs font-bold bg-white/10 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00AEEF] transition-all" />
+            
+            <div className="relative w-full sm:w-64 mt-2 sm:mt-0">
+              <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input 
+                type="text" 
+                placeholder="Pesquisar registro..." 
+                value={termoBusca}
+                onChange={(e) => setTermoBusca(e.target.value)}
+                className="w-full pl-11 pr-4 py-2.5 bg-white/10 border border-white/20 rounded-xl text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00AEEF] transition-all text-sm hc-text-destaque"
+              />
             </div>
           </div>
         </div>
 
-        <div className="overflow-auto max-h-[500px] w-full flex-1 scrollbar-moderna">
-          <Table className="min-w-[900px] w-full">
-            <TableHead className="bg-slate-50 sticky top-0 z-10 shadow-sm hc-th">
+        {/* ÁREA DA TABELA */}
+        <div className="max-h-[600px] overflow-auto scrollbar-moderna bg-white">
+          <Table className="w-full relative">
+            
+            <TableHead className="bg-slate-50 border-b border-slate-100 hc-tabela-header sticky top-0 z-10 shadow-sm">
               <TableRow>
-                <TableHeaderCell className="text-[#0B2341] font-black text-[10px] py-5 px-6 uppercase tracking-wider">Nº Empenho</TableHeaderCell>
-                <TableHeaderCell className="text-[#0B2341] font-black text-[10px] py-5 px-6 uppercase tracking-wider">Artista</TableHeaderCell>
-                <TableHeaderCell className="text-[#0B2341] font-black text-[10px] py-5 px-6 uppercase tracking-wider">Município</TableHeaderCell>
-                <TableHeaderCell className="text-[#0B2341] font-black text-[10px] py-5 px-6 uppercase tracking-wider">Ciclo</TableHeaderCell>
-                <TableHeaderCell className="text-[#0B2341] font-black text-[10px] py-5 px-6 uppercase tracking-wider">Data</TableHeaderCell>
-                <TableHeaderCell className="text-[#0B2341] font-black text-[10px] py-5 px-6 uppercase tracking-wider text-right">Valor Pago</TableHeaderCell>
+                <TableHeaderCell className="py-5 px-6 text-slate-400 font-bold uppercase tracking-wider text-[10px] bg-slate-50 hc-tabela-header">
+                  <div className="flex items-center gap-2"><User size={14} /> Artista / Empenho</div>
+                </TableHeaderCell>
+                <TableHeaderCell className="py-5 px-6 text-slate-400 font-bold uppercase tracking-wider text-[10px] bg-slate-50 hc-tabela-header">
+                  <div className="flex items-center gap-2"><MapPin size={14} /> Município</div>
+                </TableHeaderCell>
+                <TableHeaderCell className="py-5 px-6 text-slate-400 font-bold uppercase tracking-wider text-[10px] bg-slate-50 hc-tabela-header">
+                  <div className="flex items-center gap-2"><Layers size={14} /> Ciclo Cultural</div>
+                </TableHeaderCell>
+                <TableHeaderCell className="py-5 px-6 text-slate-400 font-bold uppercase tracking-wider text-[10px] bg-slate-50 hc-tabela-header">
+                  <div className="flex items-center gap-2"><Calendar size={14} /> Evento / Prazo Pagamento</div>
+                </TableHeaderCell>
+                <TableHeaderCell className="py-5 px-6 text-slate-400 font-bold uppercase tracking-wider text-[10px] text-right bg-slate-50 hc-tabela-header">
+                  <div className="flex items-center justify-end gap-2"><DollarSign size={14} /> Valor Fomento (R$)</div>
+                </TableHeaderCell>
               </TableRow>
             </TableHead>
+
             <TableBody>
               {dadosExibidos.length > 0 ? (
-                dadosExibidos.map((item) => (
-                  <TableRow key={item.id} className="hover:bg-blue-50/50 transition-colors border-b border-slate-100 last:border-0 group">
-                    <TableCell className="py-4 px-6 text-slate-500 font-mono text-[10px] font-bold">{item.numeroEmpenho}</TableCell>
-
-                    <TableCell className="font-bold text-[#0B2341] py-4 px-6 cursor-pointer group-hover:text-[#00AEEF] hc-hover-destaque transition-colors" onClick={() => setFiltros(prev => ({ ...prev, artista: prev.artista === item.artista ? "" : item.artista }))}>
-                      {item.artista}
+                dadosExibidos.map((item, index) => (
+                  <TableRow key={index} className="hover:bg-slate-50/50 transition-colors border-b border-slate-50 hc-tabela-linha">
+                    
+                    <TableCell 
+                      className="py-4 px-6 max-w-xs cursor-pointer group"
+                      onClick={() => setFiltros(prev => ({ ...prev, artista: prev.artista === item.artista ? "" : item.artista }))}
+                    >
+                      <div className="flex flex-col gap-1">
+                        <span 
+                          className="font-bold text-[#0B2341] truncate text-sm transition-colors group-hover:text-[#00AEEF] hc-text-destaque" 
+                          title={`Filtrar por ${item.artista}`}
+                        >
+                          {item.artista}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 hc-text-destaque">Empenho:</span>
+                          <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md hc-tabela-card">{item.numeroEmpenho}</span>
+                        </div>
+                      </div>
                     </TableCell>
 
-                    <TableCell className="text-slate-500 text-xs font-medium py-4 px-6 cursor-pointer hover:text-[#0B2341] hc-hover-destaque" onClick={() => setFiltros(prev => ({ ...prev, municipio: prev.municipioNormalizado === item.municipioNormalizado ? "" : item.municipioNormalizado }))}>
-                      {item.municipio}
+                    <TableCell className="py-4 px-6 cursor-pointer" onClick={() => setFiltros(prev => ({ ...prev, municipio: prev.municipio === item.municipio ? "" : item.municipio }))}>
+                      <div className="flex items-center gap-2 group">
+                        <MapPin size={16} className="text-slate-300 group-hover:text-[#00AEEF] transition-colors" />
+                        <span className="text-sm font-bold text-slate-600 group-hover:text-[#00AEEF] transition-colors hc-text-destaque">{item.municipio}</span>
+                      </div>
                     </TableCell>
 
                     <TableCell className="py-4 px-6 cursor-pointer" onClick={() => setFiltros(prev => ({ ...prev, ciclo: prev.ciclo === item.ciclo ? "" : item.ciclo }))}>
-                      {/* AQUI ESTÁ A PÍLULA */}
                       <span className="inline-block whitespace-nowrap bg-[#0B2341] text-white px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-tighter hover:bg-[#00AEEF] hc-pilula transition-colors">
                         {item.ciclo}
                       </span>
                     </TableCell>
 
-                    <TableCell className="text-slate-500 text-xs py-4 px-6 font-medium">{item.dataEvento}</TableCell>
+                    <TableCell className="py-4 px-6">
+                      <div className="flex flex-col gap-1">
+                        <span className="text-slate-700 font-bold text-sm hc-text-destaque">
+                          {item.dataEvento}
+                        </span>
+                        <span 
+                          className="text-slate-400 text-[10px] uppercase tracking-wider font-black hc-text-destaque" 
+                          title="Prazo máximo legal estipulado para o pagamento (30 dias após o evento) conforme Art. 2º da Lei 16.790/2019"
+                        >
+                          Prazo Pagamento: <span className="text-amber-500 hc-text-destaque">{calcularDataLimite(item.dataEvento)}</span>
+                        </span>
+                      </div>
+                    </TableCell>
 
                     <TableCell className="text-right py-4 px-6">
-                      {/* AQUI ESTÁ O VALOR EM R$ */}
                       <span className="font-mono font-black text-[#00AEEF] text-sm hc-valor">
                         {Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(item.valor) || 0)}
                       </span>
                     </TableCell>
+
                   </TableRow>
                 ))
               ) : (
-                <TableRow><TableCell colSpan={6} className="text-center py-20"><Text className="text-slate-400 font-bold hc-text-destaque">Nenhum registro encontrado para esta busca.</Text></TableCell></TableRow>
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-20">
+                    <Text className="text-slate-400 font-bold hc-text-destaque">Nenhum registro encontrado para esta busca.</Text>
+                  </TableCell>
+                </TableRow>
               )}
             </TableBody>
           </Table>

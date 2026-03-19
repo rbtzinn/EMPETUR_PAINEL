@@ -1,39 +1,67 @@
 import React from "react";
 import { Card, Title, Text } from "@tremor/react";
+import { FileSpreadsheet, FileText, DownloadCloud } from "lucide-react";
 import FadeIn from "./FadeIn";
+// 🔴 Import das duas funções lá do seu arquivo de Utils
+import { exportarParaCSV, exportarParaExcelPersonalizado } from "../../utils/ExportUtils"; 
 
-export default function ExportModal({ isOpen, onClose, onConfirm, totalRegistros }) {
+export default function ExportModal({ isOpen, onClose, dados }) {
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-[#0B2341]/60 backdrop-blur-sm transition-opacity" onClick={onClose} />
+      {/* BACKGROUND BLUR */}
+      <div 
+        className="absolute inset-0 bg-[#0B2341]/60 backdrop-blur-sm transition-opacity" 
+        onClick={onClose} 
+      />
 
-      <FadeIn className="relative w-full max-w-md">
+      <FadeIn className="relative w-full max-w-2xl">
         <Card className="hc-card rounded-[2.5rem] border-none shadow-2xl bg-white p-8 md:p-10 flex flex-col items-center text-center">
           
-          {/* 🔴 ADICIONADO: hc-icon-wrapper */}
-          <div className="hc-icon-wrapper w-20 h-20 rounded-full bg-blue-50 flex items-center justify-center mb-6">
-            <svg className="w-10 h-10 text-[#00AEEF]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
+          {/* ÍCONE DO TOPO */}
+          <div className="hc-icon-wrapper w-24 h-24 rounded-full bg-blue-50 flex items-center justify-center mb-6 shadow-inner">
+            <DownloadCloud className="w-12 h-12 text-[#00AEEF]" />
           </div>
 
-          <Title className="text-2xl font-black text-[#0B2341] mb-4">Confirmar Exportação</Title>
-          <Text className="text-slate-500 leading-relaxed mb-8">
-            Você está prestes a gerar um relatório personalizado contendo <strong className="text-[#0B2341]">{totalRegistros} registros</strong>.<br/><br/>
-            Apenas os dados atualmente visíveis sob seus filtros serão exportados para o Excel.
+          <Title className="text-2xl md:text-3xl font-black text-[#0B2341] mb-2 tracking-tight">
+            Exportar Painel
+          </Title>
+          <Text className="text-slate-500 leading-relaxed mb-8 max-w-sm">
+            Estão visíveis <strong className="text-[#0B2341] font-black">{dados?.length || 0} registros</strong>. Escolha o formato de download desejado para a sua análise.
           </Text>
 
-          <div className="flex flex-col sm:flex-row gap-3 w-full">
-            <button onClick={onClose} className="flex-1 px-6 py-3 rounded-xl bg-slate-100 text-slate-500 font-bold hover:bg-slate-200 transition-all active:scale-95">
+          {/* ÁREA DOS BOTÕES */}
+          <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+            
+            <button 
+              onClick={onClose} 
+              className="flex-1 px-4 py-3.5 rounded-xl bg-slate-100 text-slate-500 font-bold hover:bg-slate-200 transition-all active:scale-95 flex items-center justify-center"
+            >
               Cancelar
             </button>
-
-            {/* 🔴 ADICIONADO: hc-botao-destaque */}
-            <button onClick={() => { onConfirm(); onClose(); }} className="hc-botao-destaque flex-1 px-6 py-3 rounded-xl bg-[#00AEEF] text-white font-black uppercase tracking-wider shadow-lg shadow-[#00AEEF]/20 hover:bg-[#0B2341] transition-all active:scale-95">
-              Gerar Relatório
+            
+            {/* BOTÃO CSV - DADOS ABERTOS */}
+            <button 
+              onClick={() => { exportarParaCSV(dados); onClose(); }} 
+              className="hc-botao-borda flex-[1.2] px-4 py-3.5 rounded-xl border-2 border-[#00AEEF] text-[#00AEEF] font-black uppercase tracking-wider hover:bg-[#00AEEF] hover:text-white transition-all active:scale-95 flex items-center justify-center gap-2 group"
+            >
+              <FileText size={18} className="group-hover:scale-110 transition-transform" />
+              CSV (Dados Abertos)
             </button>
+
+            {/* BOTÃO EXCEL - O VERDÃO BONITÃO */}
+            <button 
+              onClick={async () => { 
+                await exportarParaExcelPersonalizado(dados); 
+                onClose(); 
+              }} 
+              className="hc-botao-destaque flex-[1.2] px-4 py-3.5 rounded-xl bg-emerald-600 text-white font-black uppercase tracking-wider shadow-lg shadow-emerald-900/20 hover:bg-emerald-500 transition-all active:scale-95 flex items-center justify-center gap-2 group"
+            >
+              <FileSpreadsheet size={18} className="group-hover:scale-110 transition-transform" />
+              Excel (.XLSX)
+            </button>
+
           </div>
         </Card>
       </FadeIn>
