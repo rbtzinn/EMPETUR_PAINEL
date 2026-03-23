@@ -1,40 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Lightbulb } from "lucide-react"; // Import do ícone novo
 
-// ========================================================
-// 🔴 IMPORTAÇÕES COM OS NOVOS CAMINHOS DA REFATORAÇÃO
-// ========================================================
-
-// 1. Layout (Estruturas fixas)
+// Layout
 import Topbar from './components/layout/Topbar';
 import Breadcrumb from './components/layout/Breadcrumb';
 import Footer from './components/layout/Footer';
 import CookieConsent from './components/layout/CookieConsent';
 import Acessibilidade from './components/layout/Acessibilidade';
+import ModalSugestao from './components/ui/ModalSugestao';
 
-// 2. Sections (Blocos da Landing Page)
+// Sections (Landing Page)
 import Hero from './components/sections/Hero';
 import Banner from './components/sections/Banner';
 import PanelSection from './components/sections/PanelSection';
 import InternalControlSection from './components/sections/InternalControlSection';
 import AboutSection from './components/sections/AboutSection';
 import GlossarySection from './components/sections/GlossarySection';
-import ContactSection from './components/sections/ContactSection'; // <-- O SEU ERRO ESTAVA AQUI!
+import ContactSection from './components/sections/ContactSection';
 
-// 3. Pages e Utils
+// Pages e Utils
 import PainelCompleto from './pages/PainelCompleto';
 import { fetchAndProcessData } from "./utils/DataProcessor";
 
 
-function Home({ csvUrl, lookerShareUrl }) {
+function Home({ csvUrl }) {
   const heroImage = "/images/heroImage.jpg";
   const bannerImage = "/images/bannerImage.jpg";
 
-  const [stats, setStats] = useState({
-    apresentacoes: 0,
-    municipios: 0,
-    artistas: 0
-  });
+  const [stats, setStats] = useState({ apresentacoes: 0, municipios: 0, artistas: 0 });
 
   useEffect(() => {
     fetchAndProcessData(csvUrl).then((data) => {
@@ -49,30 +43,16 @@ function Home({ csvUrl, lookerShareUrl }) {
   return (
     <div className="app bg-[#F8FAFC] min-h-screen">
       <Topbar lookerShareUrl="/dashboard" />
-      
       <Breadcrumb />
-
       <main>
-        <Hero
-          heroImage={heroImage}
-          apresentacoes={stats.apresentacoes}
-          municipios={stats.municipios}
-          artistas={stats.artistas}
-        />
+        <Hero heroImage={heroImage} apresentacoes={stats.apresentacoes} municipios={stats.municipios} artistas={stats.artistas} />
         <Banner image={bannerImage} />
-        
-        <PanelSection
-          id="painel"
-          csvUrl={csvUrl}
-          lookerShareUrl="/dashboard"
-        />
+        <PanelSection id="painel" csvUrl={csvUrl} lookerShareUrl="/dashboard" />
         <InternalControlSection />
         <AboutSection id="sobre" />
         <GlossarySection id="glossario" />
         <ContactSection id="contato" />
-        <CookieConsent />
       </main>
-
       <Footer />
     </div>
   );
@@ -80,18 +60,47 @@ function Home({ csvUrl, lookerShareUrl }) {
 
 function App() {
   const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbCY3xmn0T8KAH-c9jA7-HIUlHHTIEgo0TqjS3-y7mYSACBhpcwrOwief4MCzfG8001m-k6P4u4JyY/pub?output=csv";
-  const lookerShareUrl = "/dashboard"; 
+
+  // ESTADO GLOBAL DO MODAL DE SUGESTÃO
+  const [isSugestaoOpen, setIsSugestaoOpen] = useState(false);
 
   return (
     <Router>
+      {/* 🔴 CORREÇÃO DO CSS DO ALTO CONTRASTE PARA O BOTÃO FLUTUANTE */}
+      <style>{`
+        /* 🔵 CORES NORMAIS (Injeção de Ciano vibrante) */
+        .hc-btn-flutuante-sugestao { background-color: #fff; color: #0B2341; border: 2px solid #e2e8f0; box-shadow: 0 25px 50px -12px rgba(11, 35, 65, 0.05); }
+        .hc-btn-flutuante-sugestao:hover { border-color: #00AEEF; color: #00AEEF; }
+
+        /* 🟡 ALTO CONTRASTE (Substitui TUDO por cores vibrantes para daltónicos e baixa visão) */
+        body.contraste-negativo .hc-btn-flutuante-sugestao { background-color: transparent !important; color: #ffea00 !important; border: 1px solid #ffea00 !important; box-shadow: none !important; }
+        body.contraste-negativo .hc-btn-flutuante-sugestao:hover { background-color: #111 !important; color: #fff !important; }
+      `}</style>
+
       <div id="conteudo-site">
         <Routes>
-          <Route path="/" element={<Home csvUrl={csvUrl} lookerShareUrl={lookerShareUrl} />} />
+          <Route path="/" element={<Home csvUrl={csvUrl} />} />
           <Route path="/dashboard" element={<PainelCompleto csvUrl={csvUrl} />} />
         </Routes>
       </div>
 
+      {/* COMPONENTES GLOBAIS */}
       <Acessibilidade />
+      <CookieConsent />
+
+      {/* 🔴 O NOVO MODAL ESTILIZADO E PREMIUM */}
+      <ModalSugestao isOpen={isSugestaoOpen} onClose={() => setIsSugestaoOpen(false)} />
+
+      {/* 🔴 BOTÃO FLUTUANTE ESTILIZADO (Agora blindado com hc-btn-flutuante-sugestao) */}
+      <button 
+        onClick={() => setIsSugestaoOpen(true)}
+        className="fixed bottom-6 left-6 z-[140] px-5 py-3.5 rounded-full font-bold text-sm flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95 hc-btn-flutuante-sugestao focus:outline-none focus:ring-4 focus:ring-[#00AEEF]/50"
+        title="Enviar uma sugestão de melhoria"
+      >
+        <Lightbulb className="w-5 h-5" />
+        <span className="hidden md:inline">Sugerir Melhoria</span>
+      </button>
+
     </Router>
   );
 }
