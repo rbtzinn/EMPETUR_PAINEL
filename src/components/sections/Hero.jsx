@@ -58,7 +58,7 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
             </h1>
             <h1 className="hidden sm:block w-full min-w-0 text-5xl md:text-6xl lg:text-7xl font-black text-[#0B2341] tracking-tight leading-[0.95] mb-8">
               Contratações Artísticas
-              <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-[#0B2341] to-[#00AEEF]">em Pernambuco.</span>
+              <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-[#0B2341] to-[#00AEEF]">da EMPETUR.</span>
             </h1>
           </div>
         </FadeIn>

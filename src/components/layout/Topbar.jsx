@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom'; // 🔴 Import do Link mantido!
-import ConfirmModal from '../ui/ConfirmModal'; // 🔴 Caminho ajustado
+import { Link } from 'react-router-dom';
+import ConfirmModal from '../ui/ConfirmModal';
 
 export default function Topbar({ lookerShareUrl }) {
   const [activeSection, setActiveSection] = useState('');
@@ -16,13 +16,15 @@ export default function Topbar({ lookerShareUrl }) {
       });
     }, { rootMargin: '-25% 0px -25% 0px', threshold: [0.3] });
 
-    const sectionsToObserve = ['inicio', 'painel', 'gestao', 'sobre', 'glossario'];
+    // ✅ Adicionado 'contato' ao Observer
+    const sectionsToObserve = ['inicio', 'painel', 'gestao', 'sobre', 'glossario', 'contato'];
+    
     const timeoutId = setTimeout(() => {
       sectionsToObserve.forEach((id) => {
         const el = document.getElementById(id);
         if (el) observer.observe(el);
       });
-    }, 100);
+    }, { rootMargin: '-25% 0px -25% 0px', threshold: [0.3] });
 
     return () => { clearTimeout(timeoutId); observer.disconnect(); };
   }, []);
@@ -42,7 +44,7 @@ export default function Topbar({ lookerShareUrl }) {
 
   const confirmarVisitaSite = () => {
     setIsModalOpen(false);
-    window.open('https://www.empetur.pe.gov.br/', '_self'); // 🔴 Mesma aba
+    window.open('https://www.empetur.pe.gov.br/', '_self');
   };
 
   const getLinkClass = (sectionId) => `relative py-2 text-sm font-medium transition-all duration-300 ${activeSection === sectionId ? 'text-[#00AEEF]' : 'text-slate-300 hover:text-white'}`;
@@ -58,13 +60,14 @@ export default function Topbar({ lookerShareUrl }) {
             <div className="hidden xs:block w-[1px] h-8 bg-gradient-to-b from-transparent via-slate-500 to-transparent"></div>
             <div className="flex flex-col">
               <span className="text-white font-bold text-[10px] md:text-xs tracking-tight uppercase">Gestão Cultural</span>
-              <span className="text-[#00AEEF] font-black text-[8px] md:text-[9px] uppercase tracking-[0.2em]">Pernambuco</span>
+              <span className="text-[#00AEEF] font-black text-[8px] md:text-[9px] uppercase tracking-[0.2em]">Empresa de Turismo de Pernambuco</span>
             </div>
           </div>
 
           <div className="flex items-center gap-4 lg:gap-10">
             <nav className="hidden lg:flex gap-8">
-              {['painel', 'gestao', 'sobre', 'glossario'].map((id) => (
+              {/* ✅ Adicionado 'contato' ao array do Desktop */}
+              {['painel', 'gestao', 'sobre', 'glossario', 'contato'].map((id) => (
                 <a key={id} href={`#${id}`} onClick={handleScroll} className={getLinkClass(id)}>
                   {id === 'gestao' ? 'Gestão' : id.charAt(0).toUpperCase() + id.slice(1)}
                   {activeSection === id && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#00AEEF] rounded-full" />}
@@ -72,7 +75,6 @@ export default function Topbar({ lookerShareUrl }) {
               ))}
             </nav>
 
-            {/* 🔴 Classe hc-botao-destaque adicionada */}
             <Link to={lookerShareUrl} className="hc-botao-destaque hidden sm:block px-6 py-2.5 bg-[#00AEEF] hover:bg-white text-[#0B2341] text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 shadow-lg shadow-[#00AEEF]/20 active:scale-95">
               Acessar Painel
             </Link>
@@ -87,12 +89,12 @@ export default function Topbar({ lookerShareUrl }) {
 
         {isMobileMenuOpen && (
           <div className="lg:hidden bg-[#0B2341] border-b border-white/10 px-6 py-6 flex flex-col gap-4 animate-in slide-in-from-top duration-300">
-            {['painel', 'gestao', 'sobre', 'glossario'].map((id) => (
+            {/* ✅ Adicionado 'contato' ao array do Mobile */}
+            {['painel', 'gestao', 'sobre', 'glossario', 'contato'].map((id) => (
               <a key={id} href={`#${id}`} onClick={handleScroll} className={`text-lg font-bold uppercase tracking-widest ${activeSection === id ? 'text-[#00AEEF]' : 'text-white'}`}>
                 {id === 'gestao' ? 'Gestão' : id.charAt(0).toUpperCase() + id.slice(1)}
               </a>
             ))}
-            {/* 🔴 Classe hc-botao-destaque adicionada */}
             <Link to={lookerShareUrl} onClick={() => setIsMobileMenuOpen(false)} className="hc-botao-destaque mt-4 w-full text-center py-4 bg-[#00AEEF] text-[#0B2341] font-black uppercase tracking-widest rounded-xl">
               Acessar Painel
             </Link>

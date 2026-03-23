@@ -4,39 +4,37 @@ import FadeIn from '../ui/FadeIn';
 export default function InternalControlSection() {
   const steps = [
     {
-      icon: <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
-      title: "Análise e Validação",
-      desc: "Nossa equipe revisa cada detalhe das contratações para garantir que tudo ocorra dentro das normas, dando segurança jurídica aos eventos."
+      icon: <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>,
+      title: "Governança e Riscos",
+      desc: "Atuamos na 2ª linha de defesa, implementando mecanismos para mitigar riscos e assegurar o cumprimento estrito da Lei das Estatais (13.303/2016)."
     },
     {
-      icon: <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>,
-      title: "Garantia ao Artista",
-      desc: "Atuamos para que o fomento financeiro chegue de forma ágil e correta a quem realmente faz a nossa cultura brilhar nos palcos."
+      icon: <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>,
+      title: "Integridade e Normatização",
+      desc: "Padronizamos procedimentos e orientamos gestores na correção de controles, promovendo a transparência e a ética na gestão dos recursos públicos."
     },
     {
-      icon: <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" /></svg>,
-      title: "Responsabilidade Pública",
-      desc: "Cuidamos dos recursos do estado com eficiência, permitindo que as festividades de Pernambuco cresçam e se destaquem a cada ano."
+      icon: <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>,
+      title: "Monitoramento Estratégico",
+      desc: "Acompanhamos a implementação de recomendações dos órgãos de controle, assegurando que a EMPETUR mantenha a excelência perante a SCGE."
     }
   ];
 
   return (
     <section id="gestao" className="py-24 bg-[#0B2341] text-white relative overflow-hidden">
+      {/* Background decorativo */}
       <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_bottom_right,_var(--tw-gradient-stops))] from-[#00AEEF] via-transparent to-transparent pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10 flex flex-col items-center">
         <FadeIn className="mb-12">
           <div className="bg-white/10 p-6 rounded-[2.5rem] backdrop-blur-md border border-white/10 shadow-2xl">
-            <img src="images/controleinternologo.png" alt="Logo Controle Interno" className="h-30 md:h-32 object-contain filter brightness-0 invert" />
+            <img src="images/controleinternologo.png" alt="AECI EMPETUR" className="h-20 md:h-24 object-contain filter brightness-0 invert" />
           </div>
         </FadeIn>
 
         <FadeIn className="text-center mb-16">
-          <h2 className="text-[#00AEEF] font-bold tracking-widest uppercase text-xs mb-3">Gestão Institucional</h2>
-          <h3 className="text-3xl md:text-5xl font-black tracking-tight mb-6">Excelência nos Bastidores</h3>
-          <p className="text-slate-300 max-w-2xl mx-auto text-lg leading-relaxed">
-            Para que a cultura aconteça nos palcos, nossa equipe de <span className="text-white font-bold">Controle Interno</span> garante a conformidade e a agilidade em cada etapa do processo.
-          </p>
+          <h2 className="text-[#00AEEF] font-bold tracking-widest uppercase text-xs mb-3">Assessoria Especial de Controle Interno</h2>
+          <h3 className="text-3xl md:text-5xl font-black tracking-tight mb-6">Transparência e Eficiência</h3>
         </FadeIn>
 
         <div className="grid md:grid-cols-3 gap-6 lg:gap-10 w-full">
@@ -52,6 +50,13 @@ export default function InternalControlSection() {
             </FadeIn>
           ))}
         </div>
+
+        {/* Rodapé informativo discreto */}
+        <FadeIn delay={0.8} className="mt-16 pt-8 border-t border-white/5 w-full text-center">
+          <p className="text-xs text-slate-500 uppercase tracking-[0.2em]">
+            Em conformidade com o Decreto Estadual nº 47.087/2019 e Lei nº 13.303/2016
+          </p>
+        </FadeIn>
       </div>
     </section>
   );

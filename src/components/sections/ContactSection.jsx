@@ -15,10 +15,10 @@ export default function ContactSection({ id }) {
     { 
       id: "email", 
       label: "E-mail Oficial", 
-      value: "contato@empetur.pe.gov.br", 
+      value: "empetur@empetur.pe.gov.br", 
       subValue: "Clique para enviar um e-mail",
       color: "bg-blue-50 text-blue-600",
-      link: "https://mail.google.com/mail/?view=cm&fs=1&to=contato@empetur.pe.gov.br", 
+      link: "https://mail.google.com/mail/?view=cm&fs=1&to=empetur@empetur.pe.gov.br", 
       icon: <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
     },
     { 
@@ -46,7 +46,7 @@ export default function ContactSection({ id }) {
     { 
       id: "location", 
       label: "Localização", 
-      value: "Centro de Convenções de PE", 
+      value: "EMPETUR - Empresa de Turismo de Pernambuco", 
       subValue: "Clique para abrir no Google Maps", 
       color: "bg-orange-50 text-orange-600",
       link: "https://maps.google.com/?q=Centro+de+Convencoes+de+Pernambuco+Salgadinho+Olinda", 
