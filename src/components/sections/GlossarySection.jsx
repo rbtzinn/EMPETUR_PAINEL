@@ -8,8 +8,8 @@ export default function GlossarySection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const terms = [
-    { t: "Ano Cultural", d: "Refere-se ao ano em que as festividades ocorreram, permitindo comparar como a cultura se expande ano a ano." },
-    { t: "Ciclo Cultural", d: "Os grandes momentos de celebração do nosso estado, como o Carnaval, São João, Pernambuco meu País e etc." },
+    { t: "Ano Cultural", d: "Refere-se ao exercício em que as festividades ocorreram, permitindo comparar como a cultura se expande ano a ano." },
+    { t: "Ciclo Cultural", d: "Os grandes momentos de celebração do nosso estado, como o Carnaval, São João, Pernambuco meu País, entre outros eventos apoiados pela EMPETUR." },
     { t: "Município Atendido", d: "A cidade pernambucana que recebeu a apresentação artística e a festa." },
     { t: "Artista ou Grupo", d: "A estrela do show. A banda, cantor ou grupo cultural que foi contratado para realizar a apresentação." },
     { t: "Fomento (Valor)", d: "O investimento financeiro realizado para viabilizar a apresentação e fortalecer a cultura local." },

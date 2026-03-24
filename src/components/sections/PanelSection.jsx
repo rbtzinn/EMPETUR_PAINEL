@@ -159,7 +159,7 @@ export default function PanelSection({ id, csvUrl, lookerShareUrl }) {
                       <div className="flex items-center gap-2"><Layers size={14} /> Ciclo</div>
                     </th>
                     <th className="py-5 px-6 text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap bg-slate-50 hc-tabela-header">
-                      <div className="flex items-center gap-2"><Calendar size={14} /> Apresentação / Prazo Limite</div>
+                      <div className="flex items-center gap-2"><Calendar size={14} /> Apresentação / Data Limite</div>
                     </th>
                     <th className="py-5 px-6 text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap text-right bg-slate-50 hc-tabela-header">
                       <div className="flex items-center justify-end gap-2"><DollarSign size={14} /> Valor Pago</div>
@@ -207,8 +207,8 @@ export default function PanelSection({ id, csvUrl, lookerShareUrl }) {
                         <td className="py-4 px-6">
                           <div className="flex flex-col gap-1">
                             <span className="text-sm font-bold text-slate-700 hc-text-destaque">{d.dataEvento}</span>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 hc-text-destaque" title="Prazo máximo legal estipulado para o pagamento (30 dias após o serviço)">
-                              Prazo Legal: <span className="text-amber-500 hc-text-destaque">{calcularPrazoPagamento(d.dataEvento)}</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 hc-text-destaque" title="Data máxima legal estipulada para o pagamento (30 dias após o serviço)">
+                              Data limite para pagamento: <span className="text-amber-500 hc-text-destaque">{calcularPrazoPagamento(d.dataEvento)}</span>
                             </span>
                           </div>
                         </td>

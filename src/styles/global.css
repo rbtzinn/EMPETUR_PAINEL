@@ -116,6 +116,69 @@ body.destacar-links #conteudo-site :is(a, button) {
   font-weight: 900 !important;
 }
 
+/* ==========================================================================
+   HERO - AJUSTES DE ACESSIBILIDADE / ALTO CONTRASTE
+========================================================================== */
+
+body.contraste-negativo #conteudo-site .hero-section {
+  background: #000 !important;
+}
+
+/* remove imagem e efeitos decorativos no alto contraste */
+body.contraste-negativo #conteudo-site .hero-bg-image,
+body.contraste-negativo #conteudo-site .hero-overlay,
+body.contraste-negativo #conteudo-site .hero-glow,
+body.contraste-negativo #conteudo-site .hero-fade {
+  display: none !important;
+}
+
+/* badge */
+body.contraste-negativo #conteudo-site .hero-badge {
+  background: #000 !important;
+  border: 2px solid #ffea00 !important;
+  color: #fff !important;
+}
+
+body.contraste-negativo #conteudo-site .hero-chip-dot {
+  background: #ffea00 !important;
+}
+
+/* gradiente do título */
+body.contraste-negativo #conteudo-site .hero-title-gradient {
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  -webkit-text-fill-color: #ffea00 !important;
+  color: #ffea00 !important;
+}
+
+/* card dos números */
+body.contraste-negativo #conteudo-site .hero-stats {
+  background: #000 !important;
+  border: 2px solid #fff !important;
+  box-shadow: none !important;
+}
+
+body.contraste-negativo #conteudo-site .hero-counter-value {
+  color: #fff !important;
+}
+
+body.contraste-negativo #conteudo-site .hero-counter-label {
+  color: #ffea00 !important;
+}
+
+/* botão do hero */
+body.contraste-negativo #conteudo-site .hero-button {
+  background: #ffea00 !important;
+  color: #000 !important;
+  border: 2px solid #fff !important;
+  box-shadow: none !important;
+}
+
+body.contraste-negativo #conteudo-site .hero-button svg {
+  color: #000 !important;
+}
+
 /* Destacar Links + Alto Contraste (Amarelo) */
 body.destacar-links.contraste-negativo #conteudo-site :is(a, button) {
   text-decoration-color: #ffea00 !important;
@@ -124,6 +187,15 @@ body.destacar-links.contraste-negativo #conteudo-site :is(a, button) {
 body.ocultar-imagens #conteudo-site :is(img, svg, canvas) {
   opacity: 0 !important;
   visibility: hidden !important;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* VLibras Intacto */

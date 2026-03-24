@@ -5,18 +5,18 @@ export default function InternalControlSection() {
   const steps = [
     {
       icon: <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>,
-      title: "Governança e Riscos",
-      desc: "Atuamos na 2ª linha de defesa, implementando mecanismos para mitigar riscos e assegurar o cumprimento estrito da Lei das Estatais (13.303/2016)."
+      title: "Monitoramento de Contratações",
+      desc: "Acompanhamos os fluxos de fomento e inexigibilidade, mitigando riscos para garantir que a contratação de artistas siga rigorosamente a Lei das Estatais."
     },
     {
       icon: <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>,
-      title: "Integridade e Normatização",
-      desc: "Padronizamos procedimentos e orientamos gestores na correção de controles, promovendo a transparência e a ética na gestão dos recursos públicos."
+      title: "Transparência Cultural",
+      desc: "Orientamos os gestores na padronização de documentos e controles, promovendo a ética e a clareza na aplicação dos recursos nos eventos do estado."
     },
     {
       icon: <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>,
-      title: "Monitoramento Estratégico",
-      desc: "Acompanhamos a implementação de recomendações dos órgãos de controle, assegurando que a EMPETUR mantenha a excelência perante a SCGE."
+      title: "Foco no Resultado Final",
+      desc: "Monitoramos as recomendações de melhoria para que a máquina pública funcione com segurança e as festividades cheguem com agilidade à população."
     }
   ];
 
@@ -34,7 +34,10 @@ export default function InternalControlSection() {
 
         <FadeIn className="text-center mb-16">
           <h2 className="text-[#00AEEF] font-bold tracking-widest uppercase text-xs mb-3">Assessoria Especial de Controle Interno</h2>
-          <h3 className="text-3xl md:text-5xl font-black tracking-tight mb-6">Transparência e Eficiência</h3>
+          <h3 className="text-3xl md:text-5xl font-black tracking-tight mb-6">Excelência nos Bastidores</h3>
+          <p className="text-slate-300 max-w-2xl mx-auto text-lg leading-relaxed">
+            Nossa equipe atua nos bastidores das <span className="text-white font-bold">contratações artísticas</span>, monitorando processos e orientando gestores para que a cultura pernambucana brilhe com total conformidade.
+          </p>
         </FadeIn>
 
         <div className="grid md:grid-cols-3 gap-6 lg:gap-10 w-full">

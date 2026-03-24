@@ -125,7 +125,7 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
                   <div className="flex items-center gap-2"><Layers size={14} /> Ciclo Cultural</div>
                 </TableHeaderCell>
                 <TableHeaderCell className="py-5 px-6 text-slate-400 font-bold uppercase tracking-wider text-[10px] bg-slate-50 hc-tabela-header">
-                  <div className="flex items-center gap-2"><Calendar size={14} /> Evento / Prazo Pagamento</div>
+                  <div className="flex items-center gap-2"><Calendar size={14} /> Evento / Data limite</div>
                 </TableHeaderCell>
                 <TableHeaderCell className="py-5 px-6 text-slate-400 font-bold uppercase tracking-wider text-[10px] text-right bg-slate-50 hc-tabela-header">
                   <div className="flex items-center justify-end gap-2"><DollarSign size={14} /> Valor Fomento (R$)</div>
@@ -176,9 +176,9 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
                         </span>
                         <span 
                           className="text-slate-400 text-[10px] uppercase tracking-wider font-black hc-text-destaque" 
-                          title="Prazo máximo legal estipulado para o pagamento (30 dias após o evento) conforme Art. 2º da Lei 16.790/2019"
+                          title="Data limite legal estipulada para o pagamento (30 dias após o evento) conforme Art. 2º da Lei 16.790/2019"
                         >
-                          Prazo Pagamento: <span className="text-amber-500 hc-text-destaque">{calcularDataLimite(item.dataEvento)}</span>
+                          Data limite para pagamento: <span className="text-amber-500 hc-text-destaque">{calcularDataLimite(item.dataEvento)}</span>
                         </span>
                       </div>
                     </TableCell>

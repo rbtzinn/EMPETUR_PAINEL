@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Lightbulb } from "lucide-react"; // Import do ícone novo
 
 // Layout
 import Topbar from './components/layout/Topbar';
@@ -9,6 +8,7 @@ import Footer from './components/layout/Footer';
 import CookieConsent from './components/layout/CookieConsent';
 import Acessibilidade from './components/layout/Acessibilidade';
 import ModalSugestao from './components/ui/ModalSugestao';
+import BotaoSugestaoFlutuante from './components/ui/BotaoSugestaoFlutuante';
 
 // Sections (Landing Page)
 import Hero from './components/sections/Hero';
@@ -28,7 +28,11 @@ function Home({ csvUrl }) {
   const heroImage = "/images/heroImage.jpg";
   const bannerImage = "/images/bannerImage.jpg";
 
-  const [stats, setStats] = useState({ apresentacoes: 0, municipios: 0, artistas: 0 });
+  const [stats, setStats] = useState({
+    apresentacoes: 0,
+    municipios: 0,
+    artistas: 0
+  });
 
   useEffect(() => {
     fetchAndProcessData(csvUrl).then((data) => {
@@ -45,7 +49,12 @@ function Home({ csvUrl }) {
       <Topbar lookerShareUrl="/dashboard" />
       <Breadcrumb />
       <main>
-        <Hero heroImage={heroImage} apresentacoes={stats.apresentacoes} municipios={stats.municipios} artistas={stats.artistas} />
+        <Hero
+          heroImage={heroImage}
+          apresentacoes={stats.apresentacoes}
+          municipios={stats.municipios}
+          artistas={stats.artistas}
+        />
         <Banner image={bannerImage} />
         <PanelSection id="painel" csvUrl={csvUrl} lookerShareUrl="/dashboard" />
         <InternalControlSection />
@@ -59,24 +68,13 @@ function Home({ csvUrl }) {
 }
 
 function App() {
-  const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbCY3xmn0T8KAH-c9jA7-HIUlHHTIEgo0TqjS3-y7mYSACBhpcwrOwief4MCzfG8001m-k6P4u4JyY/pub?output=csv";
+  const csvUrl =
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbCY3xmn0T8KAH-c9jA7-HIUlHHTIEgo0TqjS3-y7mYSACBhpcwrOwief4MCzfG8001m-k6P4u4JyY/pub?output=csv";
 
-  // ESTADO GLOBAL DO MODAL DE SUGESTÃO
   const [isSugestaoOpen, setIsSugestaoOpen] = useState(false);
 
   return (
     <Router>
-      {/* 🔴 CORREÇÃO DO CSS DO ALTO CONTRASTE PARA O BOTÃO FLUTUANTE */}
-      <style>{`
-        /* 🔵 CORES NORMAIS (Injeção de Ciano vibrante) */
-        .hc-btn-flutuante-sugestao { background-color: #fff; color: #0B2341; border: 2px solid #e2e8f0; box-shadow: 0 25px 50px -12px rgba(11, 35, 65, 0.05); }
-        .hc-btn-flutuante-sugestao:hover { border-color: #00AEEF; color: #00AEEF; }
-
-        /* 🟡 ALTO CONTRASTE (Substitui TUDO por cores vibrantes para daltónicos e baixa visão) */
-        body.contraste-negativo .hc-btn-flutuante-sugestao { background-color: transparent !important; color: #ffea00 !important; border: 1px solid #ffea00 !important; box-shadow: none !important; }
-        body.contraste-negativo .hc-btn-flutuante-sugestao:hover { background-color: #111 !important; color: #fff !important; }
-      `}</style>
-
       <div id="conteudo-site">
         <Routes>
           <Route path="/" element={<Home csvUrl={csvUrl} />} />
@@ -88,19 +86,14 @@ function App() {
       <Acessibilidade />
       <CookieConsent />
 
-      {/* 🔴 O NOVO MODAL ESTILIZADO E PREMIUM */}
-      <ModalSugestao isOpen={isSugestaoOpen} onClose={() => setIsSugestaoOpen(false)} />
+      {/* MODAL */}
+      <ModalSugestao
+        isOpen={isSugestaoOpen}
+        onClose={() => setIsSugestaoOpen(false)}
+      />
 
-      {/* 🔴 BOTÃO FLUTUANTE ESTILIZADO (Agora blindado com hc-btn-flutuante-sugestao) */}
-      <button 
-        onClick={() => setIsSugestaoOpen(true)}
-        className="fixed bottom-6 left-6 z-[140] px-5 py-3.5 rounded-full font-bold text-sm flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95 hc-btn-flutuante-sugestao focus:outline-none focus:ring-4 focus:ring-[#00AEEF]/50"
-        title="Enviar uma sugestão de melhoria"
-      >
-        <Lightbulb className="w-5 h-5" />
-        <span className="hidden md:inline">Sugerir Melhoria</span>
-      </button>
-
+      {/* BOTÃO FLUTUANTE SEPARADO */}
+      <BotaoSugestaoFlutuante onOpen={() => setIsSugestaoOpen(true)} />
     </Router>
   );
 }
