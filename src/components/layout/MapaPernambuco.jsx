@@ -9,6 +9,7 @@ const DEFAULT_ZOOM = 1;
 
 export default function MapaPernambuco({ dados = [], municipioSelecionado, onSelectMunicipio }) {
     const [hover, setHover] = useState(null);
+    const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 }); // 🔴 Novo estado para posição do mouse
     const [geographiesData, setGeographiesData] = useState([]); 
     const [mapPosition, setMapPosition] = useState({ center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM });
 
@@ -46,7 +47,8 @@ export default function MapaPernambuco({ dados = [], municipioSelecionado, onSel
 
     return (
         <div 
-            // 🔴 CORREÇÃO AQUI: focus-visible no lugar de focus
+            // 🔴 onMouseMove adicionado para rastrear o cursor em toda a div
+            onMouseMove={(e) => setTooltipPos({ x: e.clientX, y: e.clientY })}
             className="hidden lg:flex w-full h-[300px] mb-8 bg-white rounded-3xl shadow-xl shadow-blue-900/5 p-3 relative flex-col items-center overflow-hidden mapa-pe hc-card focus:outline-none focus-visible:ring-4 focus-visible:ring-[#00AEEF] focus-visible:ring-offset-4"
             role="region"
             aria-label="Mapa interativo de Pernambuco mostrando a densidade de apresentações por município."
@@ -72,6 +74,9 @@ export default function MapaPernambuco({ dados = [], municipioSelecionado, onSel
               }
               body.contraste-negativo .hc-legenda { background-color: #000000 !important; border: 1px solid #FFFF00 !important; }
               body.contraste-negativo .hc-text { color: #FFFF00 !important; }
+              /* Blindagem do Tooltip no Alto Contraste */
+              body.contraste-negativo .hc-tooltip { background-color: #000000 !important; border: 2px solid #FFFF00 !important; }
+              body.contraste-negativo .hc-tooltip * { color: #FFFF00 !important; }
             `}</style>
 
             <div className="w-full h-full" aria-hidden="true" onWheelCapture={(e) => e.stopPropagation()}>
@@ -101,6 +106,7 @@ export default function MapaPernambuco({ dados = [], municipioSelecionado, onSel
                 </ComposableMap>
             </div>
 
+            {/* Legenda */}
             <div className="absolute bottom-6 left-6 bg-white/95 backdrop-blur-sm p-5 rounded-2xl shadow-xl shadow-blue-900/5 border border-slate-100 flex flex-col gap-3 z-10 pointer-events-none min-w-[200px] hc-legenda" aria-hidden="true">
                 <div className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mb-1 hc-text">Volume de Apresentações</div>
                 {[
@@ -117,6 +123,22 @@ export default function MapaPernambuco({ dados = [], municipioSelecionado, onSel
                     </div>
                 ))}
             </div>
+
+            {/* 🔴 TOOLTIP FLUTUANTE QUE SEGUE O MOUSE */}
+            {hover && (
+                <div 
+                    className="fixed z-[9999] pointer-events-none bg-[#0B2341]/95 backdrop-blur-md text-white px-4 py-3 rounded-2xl shadow-2xl border border-white/10 transform -translate-x-1/2 -translate-y-[120%] hc-tooltip transition-opacity duration-200"
+                    style={{ left: tooltipPos.x, top: tooltipPos.y }}
+                >
+                    <div className="text-[10px] font-black uppercase tracking-widest text-[#00AEEF] mb-1">
+                        {hover}
+                    </div>
+                    <div className="text-sm font-bold flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+                        {contagem[normalizarMunicipio(hover)] || 0} Apresentações
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
