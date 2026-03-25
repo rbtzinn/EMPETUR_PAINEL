@@ -6,7 +6,7 @@ import Topbar from './components/layout/Topbar';
 import Breadcrumb from './components/layout/Breadcrumb';
 import Footer from './components/layout/Footer';
 import CookieConsent from './components/layout/CookieConsent';
-import Acessibilidade from './components/layout/Acessibilidade';
+import Acessibilidade from './components/Acessibilidade/Acessibilidade';
 import ModalSugestao from './components/ui/ModalSugestao';
 import BotaoSugestaoFlutuante from './components/ui/BotaoSugestaoFlutuante';
 
@@ -78,7 +78,6 @@ function App() {
   const csvUrls = [
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbCY3xmn0T8KAH-c9jA7-HIUlHHTIEgo0TqjS3-y7mYSACBhpcwrOwief4MCzfG8001m-k6P4u4JyY/pub?gid=317201990&single=true&output=csv",
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbCY3xmn0T8KAH-c9jA7-HIUlHHTIEgo0TqjS3-y7mYSACBhpcwrOwief4MCzfG8001m-k6P4u4JyY/pub?gid=325255945&single=true&output=csv",
-  
   ];
 
   const [isSugestaoOpen, setIsSugestaoOpen] = useState(false);

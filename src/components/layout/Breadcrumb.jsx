@@ -66,7 +66,7 @@ function Separator() {
 export default function Breadcrumb({ isPainel = false }) {
   return (
     <div
-      className={`w-full relative z-40 ${
+      className={`w-full relative z-10 ${
         isPainel
           ? "mb-3 sm:mb-4"
           : "bg-white pt-[4.2rem] sm:pt-[5.5rem] pb-2.5 sm:pb-3 border-b border-slate-200 shadow-sm"
