@@ -1,6 +1,6 @@
 import React from "react";
 import { Text } from "@tremor/react";
-import DropdownPesquisavel from "../ui/DropdownPesquisavel"; // 🔴 Caminho ajustado
+import DropdownPesquisavel from "../ui/DropdownPesquisavel";
 
 export default function Sidebar({
   isMobileMenuOpen,
@@ -28,7 +28,7 @@ export default function Sidebar({
             className="h-30 w-auto object-contain filter invert opacity-80"
           />
 
-          {/* Botão de fechar (Mobile) - Posicionado no canto para não empurrar a logo */}
+          {/* Botão de fechar (Mobile) */}
           <button
             onClick={() => setIsMobileMenuOpen(false)}
             className="lg:hidden p-2 text-slate-400 hover:text-[#0B2341] absolute right-4"
@@ -39,25 +39,28 @@ export default function Sidebar({
           </button>
         </div>
 
-        {/* Área de Filtros com scroll mais discreto */}
-        <div className="p-6 overflow-y-auto flex-1 scrollbar-thin scrollbar-thumb-slate-200">
+        {/* 🔴 CORREÇÃO AQUI: Trocamos as classes antigas pela "scrollbar-moderna" */}
+        <div className="p-6 pb-32 overflow-y-auto flex-1 scrollbar-moderna">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-1 h-4 bg-[#00AEEF] rounded-full"></div>
             <Text className="text-[#0B2341] font-black text-xs uppercase tracking-widest">Filtros Avançados</Text>
           </div>
 
-          {/* Agrupando os filtros com espaçamento menor (gap-4 em vez de mb-6) */}
+          {/* Agrupando os filtros */}
           <div className="flex flex-col gap-3">
             <DropdownPesquisavel label="Município" value={filtros.municipio} onChange={(v) => setFiltros({ ...filtros, municipio: v })} options={getOpcoes('municipio')} />
             <DropdownPesquisavel label="Ciclo Cultural" value={filtros.ciclo} onChange={(v) => setFiltros({ ...filtros, ciclo: v })} options={getOpcoes('ciclo')} />
             <DropdownPesquisavel label="Ano" value={filtros.ano} onChange={(v) => setFiltros({ ...filtros, ano: v })} options={getOpcoes('ano')} />
+            
+            <DropdownPesquisavel label="Razão Social (Credor)" value={filtros.nomeCredor} onChange={(v) => setFiltros({ ...filtros, nomeCredor: v })} options={getOpcoes('nomeCredor')} />
+            
             <DropdownPesquisavel label="Artista" value={filtros.artista} onChange={(v) => setFiltros({ ...filtros, artista: v })} options={getOpcoes('artista')} />
             <DropdownPesquisavel label="Data do Evento" value={filtros.dataEvento} onChange={(v) => setFiltros({ ...filtros, dataEvento: v })} options={getOpcoes('dataEvento')} />
           </div>
 
           <button
             onClick={() => {
-              setFiltros({ municipio: "", ciclo: "", ano: "", artista: "", dataEvento: "" });
+              setFiltros({ municipio: "", ciclo: "", ano: "", artista: "", dataEvento: "", nomeCredor: "" });
               setIsMobileMenuOpen(false);
             }}
             className="w-full mt-6 py-3 rounded-xl bg-slate-100 text-slate-500 font-bold text-xs hover:bg-red-50 hover:text-red-500 transition-all shadow-sm active:scale-95 flex items-center justify-center gap-2"

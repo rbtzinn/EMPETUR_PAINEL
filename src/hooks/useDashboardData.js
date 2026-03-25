@@ -6,7 +6,7 @@ export function useDashboardData(csvUrls) { // 🔴 Recebe Array
   const [loading, setLoading] = useState(true);
 
   const [filtros, setFiltros] = useState({
-    municipio: "", ciclo: "", ano: "", artista: "", dataEvento: "",
+    municipio: "", ciclo: "", ano: "", artista: "", dataEvento: "", nomeCredor: ""
   });
 
   const temFiltroAtivo = useMemo(() => {
@@ -16,7 +16,7 @@ export function useDashboardData(csvUrls) { // 🔴 Recebe Array
   useEffect(() => {
     // 🔴 FETCH EM PARALELO DE TODAS AS PLANILHAS
     const urls = Array.isArray(csvUrls) ? csvUrls : [csvUrls];
-    
+
     Promise.all(urls.map(url => fetchAndProcessData(url)))
       .then(resultados => {
         const todosOsDados = resultados.flat(); // Esmaga tudo num array só
@@ -43,7 +43,8 @@ export function useDashboardData(csvUrls) { // 🔴 Recebe Array
         (filtros.ciclo === "" || d.ciclo === filtros.ciclo) &&
         (filtros.ano === "" || d.ano === filtros.ano) &&
         (filtros.artista === "" || d.artista === filtros.artista) &&
-        (filtros.dataEvento === "" || d.dataEvento === filtros.dataEvento)
+        (filtros.dataEvento === "" || d.dataEvento === filtros.dataEvento) &&
+        (filtros.nomeCredor === "" || d.nomeCredor === filtros.nomeCredor)
       );
     });
   }, [dados, filtros]);
@@ -80,7 +81,9 @@ export function useDashboardData(csvUrls) { // 🔴 Recebe Array
         (filtros.municipio === "" || campoCorrente === "municipio" || d.municipioNormalizado === filtros.municipio) &&
         (filtros.ciclo === "" || campoCorrente === "ciclo" || d.ciclo === filtros.ciclo) &&
         (filtros.ano === "" || campoCorrente === "ano" || d.ano === filtros.ano) &&
-        (filtros.artista === "" || campoCorrente === "artista" || d.artista === filtros.artista)
+        (filtros.artista === "" || campoCorrente === "artista" || d.artista === filtros.artista) &&
+        (filtros.dataEvento === "" || campoCorrente === "dataEvento" || d.dataEvento === filtros.dataEvento) &&
+        (filtros.nomeCredor === "" || campoCorrente === "nomeCredor" || d.nomeCredor === filtros.nomeCredor)
       );
     });
 

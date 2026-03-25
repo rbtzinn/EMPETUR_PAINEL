@@ -295,6 +295,8 @@ export const fetchAndProcessData = async (url) => {
             dataEmpenho: dataEmpenho || "---",
             ano: extrairAno(dataEmpenho),
             valor,
+            documentoCredor: linha["CPF, CNPJ, IG ou UG/Gestão do Credor"] || "N/A",
+            nomeCredor: linha["Nome ou Razão Social do Credor"] || "NÃO IDENTIFICADO",
             municipioNormalizado: normalizarMunicipio(municipio),
           });
 

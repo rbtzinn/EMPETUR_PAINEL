@@ -1,21 +1,21 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Card, Text, Badge } from "@tremor/react";
 import { Link } from "react-router-dom";
-import { User, MapPin, Layers, Calendar, DollarSign, FileDigit, RefreshCw, ExternalLink } from "lucide-react";
+import { User, MapPin, Layers, Calendar, DollarSign, FileDigit, RefreshCw, ExternalLink, ShieldAlert } from "lucide-react";
 import FadeIn from "../ui/FadeIn";
 import { fetchAndProcessData } from "../../utils/DataProcessor";
 import DropdownPesquisavel from "../ui/DropdownPesquisavel";
 
-export default function PanelSection({ id, csvUrls, lookerShareUrl }) { // 🔴 Recebe Array
+export default function PanelSection({ id, csvUrls, lookerShareUrl }) {
   const [dados, setDados] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // 🔴 NOVO ESTADO: nomeCredor adicionado aos filtros locais
   const [filtros, setFiltros] = useState({
-    municipio: "", ciclo: "", ano: "", artista: "", dataEvento: "",
+    municipio: "", ciclo: "", ano: "", artista: "", dataEvento: "", nomeCredor: ""
   });
 
   useEffect(() => {
-    // 🔴 FETCH EM PARALELO AQUI TAMBÉM
     const urls = Array.isArray(csvUrls) ? csvUrls : [csvUrls];
     
     Promise.all(urls.map(url => fetchAndProcessData(url)))
@@ -43,6 +43,21 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) { // 🔴 
     return "Consulte o Empenho";
   };
 
+  // 🔴 MÁGICA DA LGPD: Função copiada para a Landing Page
+  const mascararDocumento = (doc) => {
+    if (!doc || doc === "N/A" || doc === "NÃO IDENTIFICADO") return "---";
+    const limpo = doc.replace(/[^\w\d]/g, ''); 
+    if (limpo.length === 11) {
+      return `***.${limpo.substring(3, 6)}.${limpo.substring(6, 9)}-**`;
+    } else if (limpo.length === 14) {
+      return `**.${limpo.substring(2, 5)}.${limpo.substring(5, 8)}/${limpo.substring(8, 12)}-**`;
+    } else {
+      if (limpo.length <= 4) return "***";
+      return `${limpo.substring(0, 2)}...${limpo.substring(limpo.length - 2)}`;
+    }
+  };
+
+  // 🔴 Lógica de filtros atualizada para checar o nomeCredor
   const filtrados = useMemo(() => {
     return dados.filter((d) => {
       return (
@@ -50,11 +65,13 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) { // 🔴 
         (filtros.ciclo === "" || d.ciclo === filtros.ciclo) &&
         (filtros.ano === "" || d.ano === filtros.ano) &&
         (filtros.artista === "" || d.artista === filtros.artista) &&
-        (filtros.dataEvento === "" || d.dataEvento === filtros.dataEvento)
+        (filtros.dataEvento === "" || d.dataEvento === filtros.dataEvento) &&
+        (filtros.nomeCredor === "" || d.nomeCredor === filtros.nomeCredor)
       );
     });
   }, [dados, filtros]);
 
+  // 🔴 Cascata atualizada para checar o nomeCredor
   const getOpcoesCascata = (campoCorrente) => {
     const dadosPossiveis = dados.filter((d) => {
       return (
@@ -62,7 +79,8 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) { // 🔴 
         (filtros.ciclo === "" || campoCorrente === "ciclo" || d.ciclo === filtros.ciclo) &&
         (filtros.ano === "" || campoCorrente === "ano" || d.ano === filtros.ano) &&
         (filtros.artista === "" || campoCorrente === "artista" || d.artista === filtros.artista) &&
-        (filtros.dataEvento === "" || campoCorrente === "dataEvento" || d.dataEvento === filtros.dataEvento)
+        (filtros.dataEvento === "" || campoCorrente === "dataEvento" || d.dataEvento === filtros.dataEvento) &&
+        (filtros.nomeCredor === "" || campoCorrente === "nomeCredor" || d.nomeCredor === filtros.nomeCredor)
       );
     });
     return [...new Set(dadosPossiveis.map((d) => d[campoCorrente]))].filter(Boolean).sort();
@@ -102,7 +120,7 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) { // 🔴 
 
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto shrink-0">
             <button 
-              onClick={() => setFiltros({ municipio: "", ciclo: "", ano: "", artista: "", dataEvento: "" })} 
+              onClick={() => setFiltros({ municipio: "", ciclo: "", ano: "", artista: "", dataEvento: "", nomeCredor: "" })} 
               className="flex items-center justify-center gap-2 w-full sm:w-auto text-[#00AEEF] font-bold text-sm uppercase tracking-wider hover:text-[#0B2341] hover:bg-blue-100 bg-blue-50 px-5 py-3 rounded-xl transition-colors hc-text-destaque"
             >
               <RefreshCw size={16} /> Limpar Filtros
@@ -112,21 +130,22 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) { // 🔴 
               to={lookerShareUrl} 
               className="hc-botao-destaque cursor-pointer w-full sm:w-auto px-6 py-3 bg-[#00AEEF] hover:bg-[#0B2341] text-[#0B2341] hover:text-white text-sm font-black uppercase tracking-widest rounded-xl transition-all duration-300 shadow-lg shadow-sky-900/20 flex items-center justify-center gap-2 group"
             >
-              Acessar Painel
+              Acessar Painel Completo
               <ExternalLink size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </Link>
           </div>
         </FadeIn>
 
-        {/* ÁREA DOS FILTROS (DROPDOWNS) */}
+        {/* ÁREA DOS FILTROS (DROPDOWNS) - 🔴 Ajustado para grid-cols-3 para caber 6 filtros perfeitamente */}
         <FadeIn delay={0.1} className="relative z-30">
           <Card className="rounded-[2rem] border-none shadow-xl shadow-blue-900/5 bg-white p-6 mb-8 overflow-visible hc-tabela-card">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <DropdownPesquisavel label="Todos os Municípios" value={filtros.municipio} onChange={(v) => setFiltros({ ...filtros, municipio: v })} options={getOpcoesCascata("municipio")} />
               <DropdownPesquisavel label="Todos os Ciclos" value={filtros.ciclo} onChange={(v) => setFiltros({ ...filtros, ciclo: v })} options={getOpcoesCascata("ciclo")} />
               <DropdownPesquisavel label="Todos os Anos" value={filtros.ano} onChange={(v) => setFiltros({ ...filtros, ano: v })} options={getOpcoesCascata("ano")} />
-              <DropdownPesquisavel label="Todos os Artistas" value={filtros.artista} onChange={(v) => setFiltros({ ...filtros, artista: v })} options={getOpcoesCascata("artista")} />
               <DropdownPesquisavel label="Todas as Datas" value={filtros.dataEvento} onChange={(v) => setFiltros({ ...filtros, dataEvento: v })} options={getOpcoesCascata("dataEvento")} />
+              <DropdownPesquisavel label="Todos os Artistas" value={filtros.artista} onChange={(v) => setFiltros({ ...filtros, artista: v })} options={getOpcoesCascata("artista")} />
+              <DropdownPesquisavel label="Razão Social (Credor)" value={filtros.nomeCredor} onChange={(v) => setFiltros({ ...filtros, nomeCredor: v })} options={getOpcoesCascata("nomeCredor")} />
             </div>
           </Card>
         </FadeIn>
@@ -135,7 +154,6 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) { // 🔴 
         <FadeIn delay={0.2}>
           <Card className="rounded-[2rem] border-none shadow-2xl shadow-blue-900/5 bg-white p-0 flex flex-col hc-tabela-card">
             
-            {/* TÍTULO INTERNO DA TABELA */}
             <div className="p-6 md:px-8 md:pt-8 md:pb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100">
               <div>
                 <h3 className="font-black text-[#0B2341] text-xl hc-text-destaque">Detalhamento dos Fomentos</h3>
@@ -148,15 +166,16 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) { // 🔴 
 
             {/* TABELA EM SI */}
             <div className="h-[600px] overflow-y-auto scrollbar-moderna rounded-b-[2rem]">
-              <table className="w-full text-left border-collapse min-w-[900px]">
+              <table className="w-full text-left border-collapse min-w-[1000px]">
                 
                 <thead className="bg-slate-50/95 backdrop-blur-md sticky top-0 z-10 shadow-sm hc-tabela-header">
                   <tr>
+                    {/* 🔴 CABEÇALHOS ATUALIZADOS PARA O NOVO PADRÃO */}
                     <th className="py-5 px-6 text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap bg-slate-50 hc-tabela-header">
-                      <div className="flex items-center gap-2"><FileDigit size={14} /> Nº Empenho</div>
+                      <div className="flex items-center gap-2"><User size={14} /> Artista / Empenho</div>
                     </th>
-                    <th className="py-5 px-6 text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap bg-slate-50 hc-tabela-header">
-                      <div className="flex items-center gap-2"><User size={14} /> Artista</div>
+                    <th className="py-5 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap bg-slate-50 hc-tabela-header">
+                      <div className="flex items-center gap-2" title="Nome e documento parcialmente anonimizado (LGPD)"><ShieldAlert size={14} /> PJ / PF - Contratado</div>
                     </th>
                     <th className="py-5 px-6 text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap bg-slate-50 hc-tabela-header">
                       <div className="flex items-center gap-2"><MapPin size={14} /> Município</div>
@@ -178,15 +197,41 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) { // 🔴 
                     filtrados.map((d) => (
                       <tr key={d.id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-50 last:border-0 group hc-tabela-linha">
                         
-                        <td className="py-4 px-6 text-slate-500 font-mono text-xs font-bold hc-text-destaque">
-                          <span className="bg-slate-100 px-2 py-1 rounded-md hc-tabela-card">{d.numeroEmpenho}</span>
-                        </td>
-
-                        <td
-                          className="py-4 px-6 text-sm font-bold text-[#0B2341] cursor-pointer group-hover:text-[#00AEEF] transition-colors hc-text-destaque"
+                        {/* 🔴 CÉLULA DO ARTISTA / EMPENHO */}
+                        <td 
+                          className="py-4 px-6 max-w-[200px] cursor-pointer group"
                           onClick={() => setFiltros(prev => ({ ...prev, artista: prev.artista === d.artista ? "" : d.artista }))}
                         >
-                          {d.artista}
+                          <div className="flex flex-col gap-1">
+                            <span 
+                              className="font-bold text-[#0B2341] truncate text-sm transition-colors group-hover:text-[#00AEEF] hc-text-destaque" 
+                              title={`Filtrar por ${d.artista}`}
+                            >
+                              {d.artista}
+                            </span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 hc-text-destaque">Empenho:</span>
+                              <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md hc-tabela-card">{d.numeroEmpenho}</span>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* 🔴 NOVA CÉLULA DO CREDOR / MÁSCARA LGPD */}
+                        <td 
+                          className="py-4 px-4 max-w-[220px] cursor-pointer group"
+                          onClick={() => setFiltros(prev => ({ ...prev, nomeCredor: prev.nomeCredor === d.nomeCredor ? "" : d.nomeCredor }))}
+                        >
+                          <div className="flex flex-col gap-1.5 items-start">
+                            <span 
+                              className="font-bold text-slate-700 truncate w-full text-xs transition-colors group-hover:text-[#00AEEF] hc-text-destaque" 
+                              title={`Filtrar por ${d.nomeCredor}`}
+                            >
+                              {d.nomeCredor}
+                            </span>
+                            <span className="font-mono text-[10px] font-bold text-slate-500 hc-text-destaque bg-slate-100/80 px-2 py-0.5 rounded-md border border-slate-200/50">
+                              {mascararDocumento(d.documentoCredor)}
+                            </span>
+                          </div>
                         </td>
 
                         <td
@@ -214,7 +259,7 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) { // 🔴 
                           <div className="flex flex-col gap-1">
                             <span className="text-sm font-bold text-slate-700 hc-text-destaque">{d.dataEvento}</span>
                             <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 hc-text-destaque" title="Data máxima legal estipulada para o pagamento (30 dias após o serviço)">
-                              Data limite para pagamento: <span className="text-amber-500 hc-text-destaque">{calcularPrazoPagamento(d.dataEvento)}</span>
+                              Data limite: <span className="text-amber-500 hc-text-destaque">{calcularPrazoPagamento(d.dataEvento)}</span>
                             </span>
                           </div>
                         </td>
