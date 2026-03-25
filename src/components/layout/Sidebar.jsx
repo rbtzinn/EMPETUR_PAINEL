@@ -17,14 +17,25 @@ export default function Sidebar({
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
-      
+
       <aside className={`fixed lg:static inset-y-0 left-0 w-80 bg-white border-r border-slate-200 shadow-2xl z-40 flex flex-col shrink-0 transform transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}>
 
         {/* Header da Sidebar mais compacto */}
-        <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-          <img src="/images/empeturlogobranca.png" alt="Logo" className="h-10 object-contain filter invert opacity-80" />
-          <button onClick={() => setIsMobileMenuOpen(false)} className="lg:hidden p-2 text-slate-400 hover:text-[#0B2341]">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+        <div className="p-6 border-b border-slate-100 flex items-center justify-center bg-slate-50/50 relative">
+          <img
+            src="/images/empeturlogobranca.png"
+            alt="Logo"
+            className="h-30 w-auto object-contain filter invert opacity-80"
+          />
+
+          {/* Botão de fechar (Mobile) - Posicionado no canto para não empurrar a logo */}
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="lg:hidden p-2 text-slate-400 hover:text-[#0B2341] absolute right-4"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         </div>
 

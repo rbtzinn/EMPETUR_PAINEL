@@ -29,12 +29,26 @@ const extrairValor = (valorString) => {
    DATA DO EVENTO
 ====================== */
 export const extrairDataEvento = (obsOriginal) => {
+  // Regex atualizada: Agora aceita anos com 2 ou 4 dígitos ([0-9]{2,4})
   const match = (obsOriginal || "").match(
-    /([0-9]{1,2}[ \/-][0-9]{1,2}[ \/-][0-9]{4})/
+    /([0-9]{1,2})[ \/-]([0-9]{1,2})[ \/-]([0-9]{2,4})/
   );
-  return match ? match[1].replace(/[ -]/g, "/") : "---";
+  
+  if (match) {
+    let dia = match[1].padStart(2, '0');
+    let mes = match[2].padStart(2, '0');
+    let ano = match[3];
+    
+    // Se o ano vier só com 2 dígitos (ex: "26"), transforma magicamente em "2026"
+    if (ano.length === 2) {
+      ano = `20${ano}`;
+    }
+    
+    return `${dia}/${mes}/${ano}`;
+  }
+  
+  return "---";
 };
-
 /* ======================
    ARTISTA (RIGOROSO E SEM PREFIXOS E NÚMEROS)
 ====================== */
