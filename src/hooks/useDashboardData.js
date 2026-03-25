@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { fetchAndProcessData } from '../utils/DataProcessor';
 
-export function useDashboardData(csvUrl) {
+export function useDashboardData(csvUrls) { // 🔴 Recebe Array
   const [dados, setDados] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -14,11 +14,20 @@ export function useDashboardData(csvUrl) {
   }, [filtros]);
 
   useEffect(() => {
-    fetchAndProcessData(csvUrl).then(data => {
-      setDados(data);
-      setLoading(false);
-    });
-  }, [csvUrl]);
+    // 🔴 FETCH EM PARALELO DE TODAS AS PLANILHAS
+    const urls = Array.isArray(csvUrls) ? csvUrls : [csvUrls];
+    
+    Promise.all(urls.map(url => fetchAndProcessData(url)))
+      .then(resultados => {
+        const todosOsDados = resultados.flat(); // Esmaga tudo num array só
+        setDados(todosOsDados);
+        setLoading(false);
+      })
+      .catch(erro => {
+        console.error("Erro ao baixar dados das planilhas:", erro);
+        setLoading(false);
+      });
+  }, [csvUrls]);
 
   // Aplicação dos Filtros e Limpeza de Dados
   const filtrados = useMemo(() => {

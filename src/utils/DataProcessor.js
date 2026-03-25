@@ -36,14 +36,14 @@ export const extrairDataEvento = (obsOriginal) => {
 };
 
 /* ======================
-   ARTISTA (RIGOROSO E SEM PREFIXOS)
+   ARTISTA (RIGOROSO E SEM PREFIXOS E NÚMEROS)
 ====================== */
 export const extrairArtista = (obsOriginal) => {
   if (!obsOriginal) return "NÃO IDENTIFICADO";
   let obs = normalizarEspacos(obsOriginal.toUpperCase());
 
-  // 1. REGEX PRINCIPAL BLINDADA
-  const regexArtista = /(?:APRESENTAÇÃO|ART[IÍ]STIC[A-Z]*|AP\.|APRESENT|SHOW|CONTRATAÇÃO DE|CACH[EÊ] DE)(?:.*?)\s+(?:DE|DA|DO|DAS|DOS)\s+(.+?)(?:,|\s+NO\s+|\s+NA\s+|\s+EM\s+|\s+PARA\s+|\s+DURANTE\s+|\s+NO\s+DIA|$)/;
+  // 1. REGEX MUTANTE BLINDADA CONTRA NÚMEROS E PLURAIS
+  const regexArtista = /(?:(?:\d{1,2}\s+)?(?:A?PRE[A-ZÇÃ\.]*|PRESENT[A-ZÇÃ\.]*)(?:\s*ART[IÍ]STIC[A-Z\.]*)?|ART[IÍ]STIC[A-Z\.]*|SHOW|CONTRATA[ÇC][ÃA]O|CACH[EÊ])(?:.*?)\s+(?:DE|DA|DO|DAS|DOS)\s+(.+?)(?:,|\s+NO\s+|\s+NA\s+|\s+EM\s+|\s+PARA\s+|\s+DURANTE\s+|\s+NO\s+DIA|\s*EVENTO|\s*-\s*|$)/;
 
   const match = obs.match(regexArtista);
   let artistaRaw = "NÃO IDENTIFICADO";
@@ -51,7 +51,7 @@ export const extrairArtista = (obsOriginal) => {
   if (match?.[1]) {
     artistaRaw = match[1].replace(/\(.*?\)/g, "").trim();
   } else {
-    // PLANO B EXTREMAMENTE RESTRITO: Só busca se for claramente um evento
+    // PLANO B EXTREMAMENTE RESTRITO
     if (/FESTIVAL|PERNAMBUCO MEU PA[IÍ]S|CARNAVAL|S[AÃ]O JO[AÃ]O|FESTA/i.test(obs)) {
       const regexFallback = /^(.+?)(?:,|\s+NO\s+|\s+NA\s+|\s+EM\s+)/;
       const fallbackMatch = obs.match(regexFallback);
@@ -61,26 +61,33 @@ export const extrairArtista = (obsOriginal) => {
     }
   }
 
-  // Limpeza de palavras administrativas que podem ter grudado no nome
-  const palavrasSujas = ["APRESENTAÇÃO", "ARTÍSTICA", "CONTRATAÇÃO", "VALOR", "REFERENTE", "PROCESSO", "PAGAMENTO"];
+  // 🔴 LIMPEZA EXTRA JURÍDICA: Arranca "DUAS (02) APRESENTAÇÕES DE" que pode ter vindo grudado no nome!
+  artistaRaw = artistaRaw.replace(/^(?:UM|UMA|DOIS|DUAS|TR[EÊ]S|QUATRO)?\s*(?:\(\d{1,2}\))?\s*(?:APRESENTA[ÇC][OÕ]ES|APRESENTA[ÇC][ÃA]O|SHOWS?|ART[IÍ]STIC[A-Z\.]*)*\s*(?:DE|DA|DO|DAS|DOS)?\s*/i, "").trim();
+
+  // Limpeza de lixo de quantidades numéricas no início ("02 ", "1 ")
+  artistaRaw = artistaRaw.replace(/^\d{1,2}\s+/, "").trim();
+
+  // Limpeza de palavras administrativas
+  const palavrasSujas = [
+    "APRESENTAÇÕES", "APRESENTACOES", "APRESENTAÇÃO", "APRESENTACAO", "PRESENTAÇÃO", "PRESENTACAO", "APRESEN", 
+    "PRESE", "ARTÍSTICAS", "ARTISTICAS", "ARTÍSTICA", "ARTISTICA", "CONTRATAÇÃO", "VALOR", "REFERENTE", "PROCESSO", "PAGAMENTO"
+  ];
   palavrasSujas.forEach(ps => {
     if (artistaRaw.startsWith(ps)) {
       artistaRaw = artistaRaw.replace(ps, "").trim();
     }
   });
 
-  // Limpeza de preposições que sobram
+  // Limpeza de preposições que sobram no início
   artistaRaw = artistaRaw.replace(/^(DE|DA|DO|DAS|DOS)\s+/, "").trim();
 
-  // 🔴 A MÁGICA AQUI: Limpeza de "CANTOR", "CANTORA", "O CANTOR", "A CANTORA" ou "ARTISTA"
-  artistaRaw = artistaRaw.replace(/^(?:O\s+|A\s+)?(?:CANTORA?|ARTISTA)\s+/i, "").trim();
+  // Limpeza de "CANTOR", "CANTORA", "O CANTOR", "A CANTORA", "ARTISTA" ou "BANDA"
+  artistaRaw = artistaRaw.replace(/^(?:O\s+|A\s+)?(?:CANTORA?|ARTISTA|BANDA)\s+/i, "").trim();
 
   // Limpa traços que sobram no final
   artistaRaw = artistaRaw.replace(/\s*-\s*$/, "").trim();
 
-  // ========================================================
-  // 🔴 CORREÇÃO DO JOSÉ AUGUSTO: Corta nomes de festivais/polos que grudaram
-  // ========================================================
+  // Corta nomes de festivais/polos que grudaram
   artistaRaw = artistaRaw.replace(/\s*(?:FESTIVAL|PERNAMBUCO MEU PA[IÍ]S|EDI[CÇ][AÃ]O|POLO|NA CIDADE).*$/i, "").trim();
 
   // 2. DICIONÁRIO DE UNIFICAÇÃO
@@ -100,6 +107,7 @@ export const extrairArtista = (obsOriginal) => {
     "MATHEUS VINI": "MATHEUS VINI",
     "ORQUESTRA DE FREVO MEXE COM TUDO -": "ORQUESTRA DE FREVO MEXE COM TUDO",
     "ORQUESTRA DE FREVO MEXE COM TUDO": "ORQUESTRA DE FREVO MEXE COM TUDO",
+    "ORQ DE FREVO MEXE COM TUDO": "ORQUESTRA DE FREVO MEXE COM TUDO",
     "BFULÔ DE MANDACARÚ": "FULÔ DE MANDACARÚ",
     "BFULO DE MANDACARU": "FULÔ DE MANDACARÚ"
   };
@@ -108,7 +116,7 @@ export const extrairArtista = (obsOriginal) => {
 };
 
 /* ======================
-   MUNICÍPIO (PREPARADO PARA PERNAMBUCO MEU PAÍS)
+   MUNICÍPIO (PREPARADO PARA PERNAMBUCO MEU PAÍS E ERROS DE DIGITAÇÃO)
 ====================== */
 export const extrairMunicipio = (obsOriginal) => {
   if (!obsOriginal) return "NÃO IDENTIFICADO";
@@ -131,7 +139,6 @@ export const extrairMunicipio = (obsOriginal) => {
     .replace(/\bB\s+DE\s+SÃO\s+FRANCISCO\b/g, "BELEM DE SAO FRANCISCO")
     .replace(/\bBEL[EÉ]M DE S[AÃ]O FCO\.?\b/g, "CIDADE DE BELÉM DE SÃO FRANCISCO")
     .replace(/CARNAUBEIRA\s+DAPENHA/g, "CARNAUBEIRA DA PENHA")
-    // 🔴 AQUI ESTÁ A MÁGICA PARA O SEU BUG: Limpa os nomes dos Polos
     .replace(/DA DIVERSIDADE (NA|EM) /g, "")
     .replace(/POLO DA DIVERSIDADE\s*-?\s*/g, "")
     .replace(/\s+/g, " ");
@@ -163,12 +170,12 @@ export const extrairMunicipio = (obsOriginal) => {
   // 3. LIMPEZA PÓS-EXTRAÇÃO
   resultado = resultado.replace(/\/.*$/, "").replace(/\bPE\b$/, "").trim();
 
-  // 🔴 TRAVA EXTRA DE SEGURANÇA: Se ainda sobrar algum "CIDADE DE" grudado, ele corta tudo antes e pega só a cidade
+  // TRAVA EXTRA DE SEGURANÇA
   if (resultado.includes("CIDADE DE ")) {
     resultado = resultado.split("CIDADE DE ")[1].trim();
   }
 
-  // 4. CORREÇÕES FINAIS (Dicionário)
+  // 4. CORREÇÕES FINAIS (Dicionário de acentuações e grafias brutas)
   const mapaCorrecoes = {
     "BELEM DE SAO FRANCISCO": "BELÉM DE SÃO FRANCISCO",
     "GLORIA DO GOITA": "GLÓRIA DO GOITÁ",
@@ -176,10 +183,12 @@ export const extrairMunicipio = (obsOriginal) => {
     "JOAQUIM NABUCO": "JOAQUIM NABUCO",
     "NAZARÉ DA MATA": "NAZARÉ DA MATA",
     "ILHA DE ITAMARACÁ": "ILHA DE ITAMARACÁ",
-    "RECFE": "RECIFE"
+    "RECFE": "RECIFE",
+    "INAJA": "INAJÁ" // 🔴 Inajá sem acento corrigido!
   };
 
-  if (resultado.includes("JABOATAO") || resultado.includes("JABOATÃO")) {
+  // 🔴 MÁGICA DO JABOATÃO: Pega qualquer bizarrice (JABOATAO, JABOATÃO, JABAOTAO, JABAOTÃO)
+  if (/JAB[AO]AT[AÃ]O/i.test(resultado) || resultado.includes("GUARARAPES")) {
     return "JABOATÃO DOS GUARARAPES";
   }
 
@@ -230,9 +239,9 @@ export const fetchAndProcessData = async (url) => {
           const ehLixoAdministrativo = termosProibidos.some(termo => obsLimpa.includes(termo));
           if (ehLixoAdministrativo) return acc;
 
-          // 2ª TRAVA: WHITELIST ARTÍSTICA
+         // 2ª TRAVA: WHITELIST ARTÍSTICA
           const termosObrigatorios = [
-            "APRESENTAÇÃO", "APRESENTACAO", "ARTÍSTICA", "ARTISTICA",
+            "APRES", "APRE.", "PRESE", "PRESENTA", "AP.", "AP ", "ARTÍSTIC", "ARTISTIC",
             "SHOW", "CACHÊ", "CACHE", "BANDA", "CANTOR", "ORQUESTRA", "GRUPO MUSICAL"
           ];
 

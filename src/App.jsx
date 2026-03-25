@@ -24,7 +24,7 @@ import PainelCompleto from './pages/PainelCompleto';
 import { fetchAndProcessData } from "./utils/DataProcessor";
 
 
-function Home({ csvUrl }) {
+function Home({ csvUrls }) {
   const heroImage = "/images/heroImage.jpg";
   const bannerImage = "/images/bannerImage.jpg";
 
@@ -35,14 +35,19 @@ function Home({ csvUrl }) {
   });
 
   useEffect(() => {
-    fetchAndProcessData(csvUrl).then((data) => {
-      setStats({
-        apresentacoes: data.length,
-        municipios: new Set(data.map(d => d.municipio)).size,
-        artistas: new Set(data.map(d => d.artista)).size
+    // 🔴 AGORA BAIXA MÚLTIPLAS PLANILHAS NA TELA INICIAL TAMBÉM
+    const urls = Array.isArray(csvUrls) ? csvUrls : [csvUrls];
+    
+    Promise.all(urls.map(url => fetchAndProcessData(url)))
+      .then(resultados => {
+        const todosOsDados = resultados.flat();
+        setStats({
+          apresentacoes: todosOsDados.length,
+          municipios: new Set(todosOsDados.map(d => d.municipio)).size,
+          artistas: new Set(todosOsDados.map(d => d.artista)).size
+        });
       });
-    });
-  }, [csvUrl]);
+  }, [csvUrls]);
 
   return (
     <div className="app bg-[#F8FAFC] min-h-screen">
@@ -56,7 +61,8 @@ function Home({ csvUrl }) {
           artistas={stats.artistas}
         />
         <Banner image={bannerImage} />
-        <PanelSection id="painel" csvUrl={csvUrl} lookerShareUrl="/dashboard" />
+        {/* Passando csvUrls no plural */}
+        <PanelSection id="painel" csvUrls={csvUrls} lookerShareUrl="/dashboard" />
         <InternalControlSection />
         <AboutSection id="sobre" />
         <GlossarySection id="glossario" />
@@ -68,8 +74,12 @@ function Home({ csvUrl }) {
 }
 
 function App() {
-  const csvUrl =
-    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbCY3xmn0T8KAH-c9jA7-HIUlHHTIEgo0TqjS3-y7mYSACBhpcwrOwief4MCzfG8001m-k6P4u4JyY/pub?output=csv";
+  // 🔴 AQUI É ONDE VOCÊ COLOCA OS LINKS DAS ABAS (2024, 2025, 2026...)
+  const csvUrls = [
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbCY3xmn0T8KAH-c9jA7-HIUlHHTIEgo0TqjS3-y7mYSACBhpcwrOwief4MCzfG8001m-k6P4u4JyY/pub?gid=317201990&single=true&output=csv",
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbCY3xmn0T8KAH-c9jA7-HIUlHHTIEgo0TqjS3-y7mYSACBhpcwrOwief4MCzfG8001m-k6P4u4JyY/pub?gid=325255945&single=true&output=csv",
+  
+  ];
 
   const [isSugestaoOpen, setIsSugestaoOpen] = useState(false);
 
@@ -77,8 +87,9 @@ function App() {
     <Router>
       <div id="conteudo-site">
         <Routes>
-          <Route path="/" element={<Home csvUrl={csvUrl} />} />
-          <Route path="/dashboard" element={<PainelCompleto csvUrl={csvUrl} />} />
+          {/* Passando csvUrls no plural */}
+          <Route path="/" element={<Home csvUrls={csvUrls} />} />
+          <Route path="/dashboard" element={<PainelCompleto csvUrls={csvUrls} />} />
         </Routes>
       </div>
 

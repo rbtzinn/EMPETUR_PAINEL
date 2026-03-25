@@ -6,7 +6,7 @@ import FadeIn from "../ui/FadeIn";
 import { fetchAndProcessData } from "../../utils/DataProcessor";
 import DropdownPesquisavel from "../ui/DropdownPesquisavel";
 
-export default function PanelSection({ id, csvUrl, lookerShareUrl }) {
+export default function PanelSection({ id, csvUrls, lookerShareUrl }) { // 🔴 Recebe Array
   const [dados, setDados] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -15,10 +15,16 @@ export default function PanelSection({ id, csvUrl, lookerShareUrl }) {
   });
 
   useEffect(() => {
-    fetchAndProcessData(csvUrl).then((data) => { setDados(data); setLoading(false); });
-  }, [csvUrl]);
+    // 🔴 FETCH EM PARALELO AQUI TAMBÉM
+    const urls = Array.isArray(csvUrls) ? csvUrls : [csvUrls];
+    
+    Promise.all(urls.map(url => fetchAndProcessData(url)))
+      .then(resultados => {
+        setDados(resultados.flat());
+        setLoading(false);
+      });
+  }, [csvUrls]);
 
-  // 🔴 FUNÇÃO INTELIGENTE PARA CALCULAR O PRAZO LEGAL
   const calcularPrazoPagamento = (dataString) => {
     if (!dataString) return "A definir";
     const datas = dataString.match(/(\d{2}\/\d{2}\/\d{4})/g);

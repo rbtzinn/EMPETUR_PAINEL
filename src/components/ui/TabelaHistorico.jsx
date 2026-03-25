@@ -156,9 +156,14 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
                       </div>
                     </TableCell>
 
-                    <TableCell className="py-4 px-6 cursor-pointer" onClick={() => setFiltros(prev => ({ ...prev, municipio: prev.municipio === item.municipio ? "" : item.municipio }))}>
+                    {/* 🔴 A CORREÇÃO ESTÁ AQUI: Usando item.municipioNormalizado no onClick */}
+                    <TableCell 
+                      className="py-4 px-6 cursor-pointer" 
+                      onClick={() => setFiltros(prev => ({ ...prev, municipio: prev.municipio === item.municipioNormalizado ? "" : item.municipioNormalizado }))}
+                    >
                       <div className="flex items-center gap-2 group">
                         <MapPin size={16} className="text-slate-300 group-hover:text-[#00AEEF] transition-colors" />
+                        {/* Mantemos o item.municipio na exibição para o usuário ver o acento bonitinho */}
                         <span className="text-sm font-bold text-slate-600 group-hover:text-[#00AEEF] transition-colors hc-text-destaque">{item.municipio}</span>
                       </div>
                     </TableCell>

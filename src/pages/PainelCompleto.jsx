@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, Title, Text } from "@tremor/react";
 import { normalizarMunicipio } from "../utils/DataProcessor";
-import { useDashboardData } from "../hooks/useDashboardData"; // 🔴 A inteligência centralizada aqui!
+import { useDashboardData } from "../hooks/useDashboardData"; 
 
 // Componentes
 import Sidebar from "../components/layout/Sidebar";
@@ -16,15 +16,14 @@ import GraficoBarrasNativo from "../components/charts/GraficoBarrasNativo";
 import TopMunicipiosChart from "../components/charts/TopMunicipiosChart";
 import TopArtistasCard from "../components/charts/TopArtistasCard";
 
-export default function PainelCompleto({ csvUrl }) {
-  const dataUltimaAtualizacao = "27/02/2026";
+export default function PainelCompleto({ csvUrls }) { // 🔴 Recebe Array
+  const dataUltimaAtualizacao = "25/03/2026";
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // 🔴 PUXANDO TODA A LÓGICA DO HOOK
   const { 
     loading, filtros, setFiltros, temFiltroAtivo, filtrados, 
     registrosPorCiclo, registrosPorMunicipio, registrosPorAno, getOpcoes 
-  } = useDashboardData(csvUrl);
+  } = useDashboardData(csvUrls); // 🔴 Passa pro Hook
 
   if (loading) {
     return (
