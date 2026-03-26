@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simple-maps";
 import { geoCentroid } from "d3-geo";
+import { Card } from "@tremor/react";
 import { normalizarMunicipio } from "../../utils/DataProcessor";
 
 const GEO_URL = "/maps/pernambuco-municipios.json";
@@ -9,7 +10,7 @@ const DEFAULT_ZOOM = 1;
 
 export default function MapaPernambuco({ dados = [], municipioSelecionado, onSelectMunicipio }) {
     const [hover, setHover] = useState(null);
-    const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 }); // 🔴 Novo estado para posição do mouse
+    const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 }); 
     const [geographiesData, setGeographiesData] = useState([]); 
     const [mapPosition, setMapPosition] = useState({ center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM });
 
@@ -46,10 +47,9 @@ export default function MapaPernambuco({ dados = [], municipioSelecionado, onSel
     };
 
     return (
-        <div 
-            // 🔴 onMouseMove adicionado para rastrear o cursor em toda a div
+        <Card 
             onMouseMove={(e) => setTooltipPos({ x: e.clientX, y: e.clientY })}
-            className="hidden lg:flex w-full h-[300px] mb-8 bg-white rounded-3xl shadow-xl shadow-blue-900/5 p-3 relative flex-col items-center overflow-hidden mapa-pe hc-card focus:outline-none focus-visible:ring-4 focus-visible:ring-[#00AEEF] focus-visible:ring-offset-4"
+            className="hidden lg:flex w-full h-[300px] mb-8 bg-white border-none rounded-3xl shadow-xl shadow-blue-900/5 p-3 relative flex-col items-center overflow-hidden mapa-pe hc-card focus:outline-none focus-visible:ring-4 focus-visible:ring-[#00AEEF] focus-visible:ring-offset-4"
             role="region"
             aria-label="Mapa interativo de Pernambuco mostrando a densidade de apresentações por município."
             tabIndex={0}
@@ -64,8 +64,10 @@ export default function MapaPernambuco({ dados = [], municipioSelecionado, onSel
 
             <style>{`
               .mapa-pe {
-                 --mapa-0: #F1F5F9; --mapa-1: #BAE6FD; --mapa-2: #7DD3FC; --mapa-3: #38BDF8; --mapa-4: #0284C7;
-                 --mapa-alvo: #00AEEF; --mapa-inativo: #E5E7EB; --mapa-stroke: #FFFFFF; --mapa-stroke-alvo: #0B2341;
+                 /* 🔴 AQUI: --mapa-0 alterado de #F1F5F9 para #E2E8F0 para dar mais contraste com o fundo branco */
+                 --mapa-0: #E2E8F0; --mapa-1: #BAE6FD; --mapa-2: #7DD3FC; --mapa-3: #38BDF8; --mapa-4: #0284C7;
+                 /* 🔴 AQUI: --mapa-inativo alterado para acompanhar a cor base */
+                 --mapa-alvo: #00AEEF; --mapa-inativo: #CBD5E1; --mapa-stroke: #FFFFFF; --mapa-stroke-alvo: #0B2341;
               }
               body.contraste-negativo .mapa-pe {
                  --mapa-0: #000000; --mapa-1: #333300; --mapa-2: #666600; --mapa-3: #999900; --mapa-4: #CCCC00;
@@ -74,7 +76,6 @@ export default function MapaPernambuco({ dados = [], municipioSelecionado, onSel
               }
               body.contraste-negativo .hc-legenda { background-color: #000000 !important; border: 1px solid #FFFF00 !important; }
               body.contraste-negativo .hc-text { color: #FFFF00 !important; }
-              /* Blindagem do Tooltip no Alto Contraste */
               body.contraste-negativo .hc-tooltip { background-color: #000000 !important; border: 2px solid #FFFF00 !important; }
               body.contraste-negativo .hc-tooltip * { color: #FFFF00 !important; }
             `}</style>
@@ -124,7 +125,7 @@ export default function MapaPernambuco({ dados = [], municipioSelecionado, onSel
                 ))}
             </div>
 
-            {/* 🔴 TOOLTIP FLUTUANTE QUE SEGUE O MOUSE */}
+            {/* TOOLTIP FLUTUANTE */}
             {hover && (
                 <div 
                     className="fixed z-[9999] pointer-events-none bg-[#0B2341]/95 backdrop-blur-md text-white px-4 py-3 rounded-2xl shadow-2xl border border-white/10 transform -translate-x-1/2 -translate-y-[120%] hc-tooltip transition-opacity duration-200"
@@ -139,6 +140,6 @@ export default function MapaPernambuco({ dados = [], municipioSelecionado, onSel
                     </div>
                 </div>
             )}
-        </div>
+        </Card>
     );
 }

@@ -50,7 +50,7 @@ export default function PainelCompleto({ csvUrls }) {
       {/* 1. SIDEBAR APENAS PARA MOBILE */}
       <Sidebar isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} filtros={filtros} setFiltros={setFiltros} getOpcoes={getOpcoes} />
 
-      {/* 🔴 2. NAVBAR FIXA (APENAS DESKTOP) - COMPACTA E COM CORES DE PERNAMBUCO */}
+      {/* 2. NAVBAR FIXA (APENAS DESKTOP) */}
       <div className="hidden lg:block sticky top-0 z-40 bg-[#0B2341] shadow-2xl w-full pt-5 px-6 relative">
         <div className="flex items-end gap-4 max-w-[1800px] mx-auto">
           
@@ -64,7 +64,7 @@ export default function PainelCompleto({ csvUrls }) {
             <DropdownPesquisavel label="Data do Evento" value={filtros.dataEvento} onChange={(v) => setFiltros({ ...filtros, dataEvento: v })} options={getOpcoes('dataEvento')} />
           </div>
 
-          {/* Botão de Limpar (Aparece alinhado apenas se houver filtros) */}
+          {/* Botão de Limpar */}
           {temFiltroAtivo ? (
             <button 
               onClick={limparFiltros} 
@@ -74,16 +74,16 @@ export default function PainelCompleto({ csvUrls }) {
               <X size={16} className="group-hover:scale-110 transition-transform" /> Limpar
             </button>
           ) : (
-            <div className="w-[120px] shrink-0 hidden xl:block mb-5"></div> /* Espaçador para manter o grid alinhado quando não tem filtro */
+            <div className="w-[120px] shrink-0 hidden xl:block mb-5"></div>
           )}
         </div>
 
-        {/* 🌈 LINHA PERNAMBUCO (As 4 cores da bandeira na base da Navbar) */}
+        {/* 🌈 LINHA PERNAMBUCO */}
         <div className="absolute bottom-0 left-0 w-full h-1.5 flex">
-          <div className="h-full flex-1 bg-[#002776]"></div> {/* Azul PE */}
-          <div className="h-full flex-1 bg-[#FFB81C]"></div> {/* Amarelo PE */}
-          <div className="h-full flex-1 bg-[#E4002B]"></div> {/* Vermelho PE */}
-          <div className="h-full flex-1 bg-[#009B3A]"></div> {/* Verde PE */}
+          <div className="h-full flex-1 bg-[#002776]"></div>
+          <div className="h-full flex-1 bg-[#FFB81C]"></div>
+          <div className="h-full flex-1 bg-[#E4002B]"></div>
+          <div className="h-full flex-1 bg-[#009B3A]"></div>
         </div>
       </div>
 
@@ -111,8 +111,9 @@ export default function PainelCompleto({ csvUrls }) {
           <MapaPernambuco dados={filtrados} municipioSelecionado={filtros.municipio} onSelectMunicipio={(nome) => setFiltros((prev) => ({ ...prev, municipio: nome }))} />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <div className="lg:col-span-2">
+        {/* 🔴 AQUI ESTÁ A MÁGICA 50/50: grid-cols-2 em vez de 3, e sem col-span-2 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div className="w-full h-full">
             <Card className="relative rounded-3xl border-none shadow-xl shadow-blue-900/5 bg-white p-6 md:p-8 flex flex-col h-full">
               <Title className="text-[#0B2341] font-black mb-6">Apresentações por Ciclo</Title>
               <div className="absolute top-6 right-6 md:top-8 md:right-8"><InfoTooltip text="Clique nas barras para filtrar os dados por este ciclo cultural específico." /></div>
@@ -128,8 +129,9 @@ export default function PainelCompleto({ csvUrls }) {
 
         <TabelaHistorico filtrados={filtrados} setFiltros={setFiltros} />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <div className="lg:col-span-2">
+        {/* 🔴 AQUI TAMBÉM 50/50 PARA MANTER ALINHADO COM OS DE CIMA */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div className="w-full h-full">
             <Card className="relative rounded-3xl border-none shadow-xl shadow-blue-900/5 bg-white p-6 md:p-8 h-full flex flex-col">
               <Title className="text-[#0B2341] font-black mb-6">Apresentações por Ano</Title>
               <div className="absolute top-6 right-6 md:top-8 md:right-8"><InfoTooltip text="Estatísticas baseadas na data do empenho oficial emitida pela EMPETUR." /></div>
@@ -138,7 +140,9 @@ export default function PainelCompleto({ csvUrls }) {
               </div>
             </Card>
           </div>
-          <TopArtistasCard filtrados={filtrados} />
+          <div className="w-full h-full">
+            <TopArtistasCard filtrados={filtrados} />
+          </div>
         </div>
       </main>
     </div>
