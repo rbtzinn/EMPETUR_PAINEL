@@ -33,20 +33,20 @@ export const extrairDataEvento = (obsOriginal) => {
   const match = (obsOriginal || "").match(
     /([0-9]{1,2})[ \/-]([0-9]{1,2})[ \/-]([0-9]{2,4})/
   );
-  
+
   if (match) {
     let dia = match[1].padStart(2, '0');
     let mes = match[2].padStart(2, '0');
     let ano = match[3];
-    
+
     // Se o ano vier só com 2 dígitos (ex: "26"), transforma magicamente em "2026"
     if (ano.length === 2) {
       ano = `20${ano}`;
     }
-    
+
     return `${dia}/${mes}/${ano}`;
   }
-  
+
   return "---";
 };
 /* ======================
@@ -83,7 +83,7 @@ export const extrairArtista = (obsOriginal) => {
 
   // Limpeza de palavras administrativas
   const palavrasSujas = [
-    "APRESENTAÇÕES", "APRESENTACOES", "APRESENTAÇÃO", "APRESENTACAO", "PRESENTAÇÃO", "PRESENTACAO", "APRESEN", 
+    "APRESENTAÇÕES", "APRESENTACOES", "APRESENTAÇÃO", "APRESENTACAO", "PRESENTAÇÃO", "PRESENTACAO", "APRESEN",
     "PRESE", "ARTÍSTICAS", "ARTISTICAS", "ARTÍSTICA", "ARTISTICA", "CONTRATAÇÃO", "VALOR", "REFERENTE", "PROCESSO", "PAGAMENTO"
   ];
   palavrasSujas.forEach(ps => {
@@ -210,6 +210,50 @@ export const extrairMunicipio = (obsOriginal) => {
 };
 
 /* ======================
+   NOME DO EVENTO (MÁGICA PARA APOIO A EVENTOS CULTURAIS)
+====================== */
+export const extrairNomeEvento = (obsOriginal, artista) => {
+  if (!obsOriginal || !artista || artista === "NÃO IDENTIFICADO") return null;
+
+  const obs = normalizarEspacos(obsOriginal.toUpperCase());
+  const indexArtista = obs.indexOf(artista);
+
+  if (indexArtista === -1) return null;
+
+  // Isola o trecho que vem exatamente depois do nome do artista
+  const trecho = obs.substring(indexArtista + artista.length);
+
+  // Regex Ninja: Pega o que está entre o artista e a cidade/dia/processo
+  const regex = /^(?:\s*[:,]?\s*)(?:NO EVENTO|NO|NA|O|A|EM)?\s+(.*?)\s*(?:,|NA CIDADE|NO MUNIC[IÍ]PIO|EM\s+[A-ZÀ-Ú]|NO DIA|DIA\s+\d|PROCESSO|SEI|$)/i;
+  const match = trecho.match(regex);
+
+  if (match && match[1]) {
+    let evento = match[1].trim();
+
+    // Remove palavras de introdução que sobraram
+    evento = evento.replace(/^(?:EVENTO|FESTIVIDADE|CELEBRAÇÃO|FESTA DE|COMEMORAÇÃO DE)\s+/i, "");
+
+    // 🔴 TRAVA DE SEGURANÇA: Se não tinha evento escrito e a regex pegou a cidade direto
+    const lixo = ["CIDADE", "MUNIC", "DIA", "PROCESSO", "SEI", "ESTADO", "APRESENTA", "CARNAVAL", "SÃO JOÃO"];
+    if (lixo.some(l => evento.startsWith(l)) || evento.length <= 3) {
+      return null;
+    }
+
+    // Transformar em Title Case para ficar elegante no gráfico (ex: "Culto do Monte")
+    let eventoFormatado = evento.split(' ')
+      .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      .join(' ');
+
+    // Arruma as preposições que ficaram maiúsculas no Title Case
+    eventoFormatado = eventoFormatado.replace(/\s(De|Da|Do|Das|Dos|E|Em|Na|No|Para)\s/ig, match => match.toLowerCase());
+
+    return eventoFormatado;
+  }
+
+  return null;
+};
+
+/* ======================
    PROCESSADOR PRINCIPAL E TRAVAS DE SEGURANÇA
 ====================== */
 export const fetchAndProcessData = async (url) => {
@@ -253,7 +297,7 @@ export const fetchAndProcessData = async (url) => {
           const ehLixoAdministrativo = termosProibidos.some(termo => obsLimpa.includes(termo));
           if (ehLixoAdministrativo) return acc;
 
-         // 2ª TRAVA: WHITELIST ARTÍSTICA
+          // 2ª TRAVA: WHITELIST ARTÍSTICA
           const termosObrigatorios = [
             "APRES", "APRE.", "PRESE", "PRESENTA", "AP.", "AP ", "ARTÍSTIC", "ARTISTIC",
             "SHOW", "CACHÊ", "CACHE", "BANDA", "CANTOR", "ORQUESTRA", "GRUPO MUSICAL"
@@ -271,10 +315,24 @@ export const fetchAndProcessData = async (url) => {
             return acc;
           }
 
-          // CICLO INTELIGENTE: Corrige "Pernambuco Meu País" se vier como "Outros"
+          // CICLO INTELIGENTE E EVENTOS ESPECÍFICOS
           let ciclo = linha["Detalhamento da Despesa Gerencial"] || "Outros";
+          let cicloMacro = ciclo; 
+
           if (obsLimpa.includes("PERNAMBUCO MEU PAÍS") || obsLimpa.includes("PERNAMBUCO MEU PAIS")) {
             ciclo = "Festival Pernambuco Meu País";
+            cicloMacro = "Festival Pernambuco Meu País";
+          }
+          else if (ciclo.toUpperCase().includes("APOIO A EVENTOS CULTURAIS") || ciclo === "Outros") {
+            const extraido = extrairNomeEvento(obs, artista);
+
+            cicloMacro = "Apoio a Eventos Culturais"; 
+
+            if (extraido) {
+              ciclo = extraido; 
+            } else {
+              ciclo = "Apoio a Eventos Culturais";
+            }
           }
 
           const chaveUnica = `${artista}-${municipio}-${dataEvento}-${valor}`;
@@ -290,7 +348,8 @@ export const fetchAndProcessData = async (url) => {
             numeroEmpenho: linha["Número do Empenho"] || "N/A",
             artista,
             municipio,
-            ciclo,
+            ciclo, 
+            cicloMacro,
             dataEvento,
             dataEmpenho: dataEmpenho || "---",
             ano: extrairAno(dataEmpenho),

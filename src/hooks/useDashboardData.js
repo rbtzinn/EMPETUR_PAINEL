@@ -40,7 +40,8 @@ export function useDashboardData(csvUrls) { // 🔴 Recebe Array
       return (
         ehShowCultural &&
         (filtros.municipio === "" || d.municipioNormalizado === filtros.municipio) &&
-        (filtros.ciclo === "" || d.ciclo === filtros.ciclo) &&
+        // 🔴 MÁGICA AQUI: O filtro agora aceita tanto o ciclo exato quanto o ciclo macro!
+        (filtros.ciclo === "" || d.ciclo === filtros.ciclo || d.cicloMacro === filtros.ciclo) &&
         (filtros.ano === "" || d.ano === filtros.ano) &&
         (filtros.artista === "" || d.artista === filtros.artista) &&
         (filtros.dataEvento === "" || d.dataEvento === filtros.dataEvento) &&
@@ -52,7 +53,7 @@ export function useDashboardData(csvUrls) { // 🔴 Recebe Array
   // Processamento para Gráficos
   const registrosPorCiclo = useMemo(() => {
     const mapa = {};
-    filtrados.forEach((d) => { mapa[d.ciclo] = (mapa[d.ciclo] || 0) + 1; });
+    filtrados.forEach((d) => { mapa[d.cicloMacro] = (mapa[d.cicloMacro] || 0) + 1; });
     return Object.entries(mapa).map(([ciclo, total]) => ({ ciclo, total })).sort((a, b) => b.total - a.total);
   }, [filtrados]);
 
@@ -79,7 +80,8 @@ export function useDashboardData(csvUrls) { // 🔴 Recebe Array
       return (
         ehShowCultural &&
         (filtros.municipio === "" || campoCorrente === "municipio" || d.municipioNormalizado === filtros.municipio) &&
-        (filtros.ciclo === "" || campoCorrente === "ciclo" || d.ciclo === filtros.ciclo) &&
+        // 🔴 MÁGICA AQUI TAMBÉM:
+        (filtros.ciclo === "" || campoCorrente === "ciclo" || d.ciclo === filtros.ciclo || d.cicloMacro === filtros.ciclo) &&
         (filtros.ano === "" || campoCorrente === "ano" || d.ano === filtros.ano) &&
         (filtros.artista === "" || campoCorrente === "artista" || d.artista === filtros.artista) &&
         (filtros.dataEvento === "" || campoCorrente === "dataEvento" || d.dataEvento === filtros.dataEvento) &&

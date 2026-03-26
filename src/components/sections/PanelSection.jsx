@@ -17,7 +17,7 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) {
 
   useEffect(() => {
     const urls = Array.isArray(csvUrls) ? csvUrls : [csvUrls];
-    
+
     Promise.all(urls.map(url => fetchAndProcessData(url)))
       .then(resultados => {
         setDados(resultados.flat());
@@ -43,17 +43,22 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) {
     return "Consulte o Empenho";
   };
 
-  // 🔴 MÁGICA DA LGPD: Função copiada para a Landing Page
+  // 🔴 MÁGICA DA LGPD E TRANSPARÊNCIA: Mascara apenas CPF. CNPJ fica público.
   const mascararDocumento = (doc) => {
     if (!doc || doc === "N/A" || doc === "NÃO IDENTIFICADO") return "---";
-    const limpo = doc.replace(/[^\w\d]/g, ''); 
+
+    // Remove tudo que não for número para contar os dígitos certinho
+    const limpo = doc.replace(/[^\w\d]/g, '');
+
     if (limpo.length === 11) {
+      // É CPF (Pessoa Física): Mascara por causa da LGPD
       return `***.${limpo.substring(3, 6)}.${limpo.substring(6, 9)}-**`;
     } else if (limpo.length === 14) {
-      return `**.${limpo.substring(2, 5)}.${limpo.substring(5, 8)}/${limpo.substring(8, 12)}-**`;
+      // É CNPJ (Pessoa Jurídica): Dado Público, mostra formatação completa
+      return `${limpo.substring(0, 2)}.${limpo.substring(2, 5)}.${limpo.substring(5, 8)}/${limpo.substring(8, 12)}-${limpo.substring(12, 14)}`;
     } else {
-      if (limpo.length <= 4) return "***";
-      return `${limpo.substring(0, 2)}...${limpo.substring(limpo.length - 2)}`;
+      // UG, IG ou outra matrícula do estado: mostra como veio do e-Fisco
+      return doc;
     }
   };
 
@@ -106,7 +111,7 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) {
       `}</style>
 
       <div className="w-full max-w-7xl mx-auto px-4 md:px-10">
-        
+
         {/* CABEÇALHO DA SEÇÃO */}
         <FadeIn className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
           <div>
@@ -119,15 +124,15 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) {
           </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto shrink-0">
-            <button 
-              onClick={() => setFiltros({ municipio: "", ciclo: "", ano: "", artista: "", dataEvento: "", nomeCredor: "" })} 
+            <button
+              onClick={() => setFiltros({ municipio: "", ciclo: "", ano: "", artista: "", dataEvento: "", nomeCredor: "" })}
               className="flex items-center justify-center gap-2 w-full sm:w-auto text-[#00AEEF] font-bold text-sm uppercase tracking-wider hover:text-[#0B2341] hover:bg-blue-100 bg-blue-50 px-5 py-3 rounded-xl transition-colors hc-text-destaque"
             >
               <RefreshCw size={16} /> Limpar Filtros
             </button>
 
-            <Link 
-              to={lookerShareUrl} 
+            <Link
+              to={lookerShareUrl}
               className="hc-botao-destaque cursor-pointer w-full sm:w-auto px-6 py-3 bg-[#00AEEF] hover:bg-[#0B2341] text-[#0B2341] hover:text-white text-sm font-black uppercase tracking-widest rounded-xl transition-all duration-300 shadow-lg shadow-sky-900/20 flex items-center justify-center gap-2 group"
             >
               Acessar Painel Completo
@@ -153,7 +158,7 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) {
         {/* ÁREA DA TABELA */}
         <FadeIn delay={0.2}>
           <Card className="rounded-[2rem] border-none shadow-2xl shadow-blue-900/5 bg-white p-0 flex flex-col hc-tabela-card">
-            
+
             <div className="p-6 md:px-8 md:pt-8 md:pb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100">
               <div>
                 <h3 className="font-black text-[#0B2341] text-xl hc-text-destaque">Detalhamento dos Fomentos</h3>
@@ -167,7 +172,7 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) {
             {/* TABELA EM SI */}
             <div className="h-[600px] overflow-y-auto scrollbar-moderna rounded-b-[2rem]">
               <table className="w-full text-left border-collapse min-w-[1000px]">
-                
+
                 <thead className="bg-slate-50/95 backdrop-blur-md sticky top-0 z-10 shadow-sm hc-tabela-header">
                   <tr>
                     {/* 🔴 CABEÇALHOS ATUALIZADOS PARA O NOVO PADRÃO */}
@@ -196,15 +201,15 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) {
                   {filtrados.length > 0 ? (
                     filtrados.map((d) => (
                       <tr key={d.id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-50 last:border-0 group hc-tabela-linha">
-                        
+
                         {/* 🔴 CÉLULA DO ARTISTA / EMPENHO */}
-                        <td 
+                        <td
                           className="py-4 px-6 max-w-[200px] cursor-pointer group"
                           onClick={() => setFiltros(prev => ({ ...prev, artista: prev.artista === d.artista ? "" : d.artista }))}
                         >
                           <div className="flex flex-col gap-1">
-                            <span 
-                              className="font-bold text-[#0B2341] truncate text-sm transition-colors group-hover:text-[#00AEEF] hc-text-destaque" 
+                            <span
+                              className="font-bold text-[#0B2341] truncate text-sm transition-colors group-hover:text-[#00AEEF] hc-text-destaque"
                               title={`Filtrar por ${d.artista}`}
                             >
                               {d.artista}
@@ -217,13 +222,13 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) {
                         </td>
 
                         {/* 🔴 NOVA CÉLULA DO CREDOR / MÁSCARA LGPD */}
-                        <td 
+                        <td
                           className="py-4 px-4 max-w-[220px] cursor-pointer group"
                           onClick={() => setFiltros(prev => ({ ...prev, nomeCredor: prev.nomeCredor === d.nomeCredor ? "" : d.nomeCredor }))}
                         >
                           <div className="flex flex-col gap-1.5 items-start">
-                            <span 
-                              className="font-bold text-slate-700 truncate w-full text-xs transition-colors group-hover:text-[#00AEEF] hc-text-destaque" 
+                            <span
+                              className="font-bold text-slate-700 truncate w-full text-xs transition-colors group-hover:text-[#00AEEF] hc-text-destaque"
                               title={`Filtrar por ${d.nomeCredor}`}
                             >
                               {d.nomeCredor}
@@ -246,11 +251,11 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) {
                           </div>
                         </td>
 
-                        <td
-                          className="py-4 px-6 cursor-pointer"
+                       <td
+                          className="py-6 px-6 cursor-pointer align-top"
                           onClick={() => setFiltros(prev => ({ ...prev, ciclo: prev.ciclo === d.ciclo ? "" : d.ciclo }))}
                         >
-                          <span className="inline-block whitespace-nowrap bg-[#0B2341] text-white px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-tighter hover:bg-[#00AEEF] hc-pilula transition-colors">
+                          <span className="inline-block bg-[#0B2341] text-white px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-tight hover:bg-[#00AEEF] hc-pilula transition-colors max-w-[180px] break-words whitespace-normal text-left leading-snug">
                             {d.ciclo}
                           </span>
                         </td>
@@ -267,7 +272,7 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) {
                         <td className="py-4 px-6 text-sm font-mono font-black text-[#00AEEF] text-right hc-valor">
                           {Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(d.valor) || 0)}
                         </td>
-                        
+
                       </tr>
                     ))
                   ) : (

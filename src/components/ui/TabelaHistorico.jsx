@@ -30,16 +30,21 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
     return "Consulte o Empenho";
   };
 
+  // 🔴 MÁGICA DA LGPD E TRANSPARÊNCIA: Mascara apenas CPF. CNPJ fica público.
   const mascararDocumento = (doc) => {
     if (!doc || doc === "N/A" || doc === "NÃO IDENTIFICADO") return "---";
+    
     const limpo = doc.replace(/[^\w\d]/g, ''); 
+    
     if (limpo.length === 11) {
+      // CPF (Pessoa Física): Mascara por causa da LGPD
       return `***.${limpo.substring(3, 6)}.${limpo.substring(6, 9)}-**`;
     } else if (limpo.length === 14) {
-      return `**.${limpo.substring(2, 5)}.${limpo.substring(5, 8)}/${limpo.substring(8, 12)}-**`;
+      // CNPJ (Pessoa Jurídica): Dado Público, mostra formatação completa
+      return `${limpo.substring(0, 2)}.${limpo.substring(2, 5)}.${limpo.substring(5, 8)}/${limpo.substring(8, 12)}-${limpo.substring(12, 14)}`;
     } else {
-      if (limpo.length <= 4) return "***";
-      return `${limpo.substring(0, 2)}...${limpo.substring(limpo.length - 2)}`;
+      // UG, IG ou outra matrícula do estado
+      return doc;
     }
   };
 
@@ -115,7 +120,6 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
         </div>
 
         <div className="max-h-[600px] overflow-auto scrollbar-moderna bg-white">
-          {/* 🔴 AQUI: min-w-[1200px] para dar espaço pras colunas respirarem */}
           <Table className="w-full relative min-w-[1200px]">
             
             <TableHead className="bg-slate-50 border-b border-slate-100 hc-tabela-header sticky top-0 z-10 shadow-sm">
@@ -124,7 +128,7 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
                   <div className="flex items-center gap-2"><User size={14} /> Artista / Empenho</div>
                 </TableHeaderCell>
                 <TableHeaderCell className="py-6 px-6 text-slate-400 font-bold uppercase tracking-wider text-[10px] bg-slate-50 hc-tabela-header">
-                  <div className="flex items-center gap-2" title="Nome e documento parcialmente anonimizado (LGPD)"><ShieldAlert size={14} /> PJ / PF - Contratado</div>
+                  <div className="flex items-center gap-2" title="Nome e documento parcialmente anonimizado (LGPD)"><ShieldAlert size={14} /> Credor / Documento</div>
                 </TableHeaderCell>
                 <TableHeaderCell className="py-6 px-6 text-slate-400 font-bold uppercase tracking-wider text-[10px] bg-slate-50 hc-tabela-header">
                   <div className="flex items-center gap-2"><MapPin size={14} /> Município</div>
@@ -146,12 +150,11 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
                 dadosExibidos.map((item, index) => (
                   <TableRow key={index} className="hover:bg-slate-50/50 transition-colors border-b border-slate-50 hc-tabela-linha">
                     
-                    {/* 🔴 AQUI: py-6 (mais espaço em cima e embaixo) e gap-2 (mais respiro interno) */}
                     <TableCell 
-                      className="py-6 px-6 max-w-[220px] cursor-pointer group"
+                      className="py-6 px-6 max-w-[220px] cursor-pointer group align-top"
                       onClick={() => setFiltros(prev => ({ ...prev, artista: prev.artista === item.artista ? "" : item.artista }))}
                     >
-                      <div className="flex flex-col gap-2">
+                      <div className="flex flex-col gap-2 mt-1">
                         <span className="font-bold text-[#0B2341] truncate text-sm transition-colors group-hover:text-[#00AEEF] hc-text-destaque" title={`Filtrar por ${item.artista}`}>
                           {item.artista}
                         </span>
@@ -163,10 +166,10 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
                     </TableCell>
 
                     <TableCell 
-                      className="py-6 px-6 max-w-[240px] cursor-pointer group"
+                      className="py-6 px-6 max-w-[240px] cursor-pointer group align-top"
                       onClick={() => setFiltros(prev => ({ ...prev, nomeCredor: prev.nomeCredor === item.nomeCredor ? "" : item.nomeCredor }))}
                     >
-                      <div className="flex flex-col gap-2 items-start">
+                      <div className="flex flex-col gap-2 items-start mt-1">
                         <span className="font-bold text-slate-700 truncate w-full text-xs transition-colors group-hover:text-[#00AEEF] hc-text-destaque" title={`Filtrar por ${item.nomeCredor}`}>
                           {item.nomeCredor}
                         </span>
@@ -176,32 +179,35 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
                       </div>
                     </TableCell>
 
-                    <TableCell className="py-6 px-6 cursor-pointer" onClick={() => setFiltros(prev => ({ ...prev, municipio: prev.municipio === item.municipioNormalizado ? "" : item.municipioNormalizado }))}>
-                      <div className="flex items-center gap-2 group">
+                    <TableCell className="py-6 px-6 cursor-pointer align-top" onClick={() => setFiltros(prev => ({ ...prev, municipio: prev.municipio === item.municipioNormalizado ? "" : item.municipioNormalizado }))}>
+                      <div className="flex items-center gap-2 group/mun mt-1">
                         <MapPin size={16} className="text-slate-300 group-hover:text-[#00AEEF] transition-colors" />
                         <span className="text-sm font-bold text-slate-600 group-hover:text-[#00AEEF] transition-colors hc-text-destaque">{item.municipio}</span>
                       </div>
                     </TableCell>
 
-                    <TableCell className="py-6 px-6 cursor-pointer" onClick={() => setFiltros(prev => ({ ...prev, ciclo: prev.ciclo === item.ciclo ? "" : item.ciclo }))}>
-                      <span className="inline-block whitespace-nowrap bg-[#0B2341] text-white px-3 py-2 rounded-full text-[9px] font-black uppercase tracking-tighter hover:bg-[#00AEEF] hc-pilula transition-colors">
+                    {/* 🔴 AQUI: Pílula flexível que cresce com nomes longos e o clique usa item.ciclo corretamente */}
+                    <TableCell className="py-6 px-6 cursor-pointer align-top" onClick={() => setFiltros(prev => ({ ...prev, ciclo: prev.ciclo === item.ciclo ? "" : item.ciclo }))}>
+                      <span className="inline-block bg-[#0B2341] text-white px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-tight hover:bg-[#00AEEF] hc-pilula transition-colors max-w-[180px] break-words whitespace-normal text-left leading-snug mt-1">
                         {item.ciclo}
                       </span>
                     </TableCell>
 
-                    <TableCell className="py-6 px-6">
-                      <div className="flex flex-col gap-2">
-                        <span className="text-slate-700 font-bold text-sm hc-text-destaque">{item.dataEvento}</span>
+                    <TableCell className="py-6 px-6 align-top">
+                      <div className="flex flex-col gap-2 mt-1">
+                        <span className="text-sm font-bold text-slate-700 hc-text-destaque">{item.dataEvento}</span>
                         <span className="text-[10px] uppercase tracking-wider font-black text-slate-400 hc-text-destaque">
                           Data limite: <span className="text-amber-500 hc-text-destaque">{calcularDataLimite(item.dataEvento)}</span>
                         </span>
                       </div>
                     </TableCell>
 
-                    <TableCell className="text-right py-6 px-6">
-                      <span className="font-mono font-black text-[#00AEEF] text-sm hc-valor">
-                        {Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(item.valor) || 0)}
-                      </span>
+                    <TableCell className="text-right py-6 px-6 align-top">
+                      <div className="mt-1">
+                        <span className="font-mono font-black text-[#00AEEF] text-sm hc-valor">
+                          {Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(item.valor) || 0)}
+                        </span>
+                      </div>
                     </TableCell>
 
                   </TableRow>
