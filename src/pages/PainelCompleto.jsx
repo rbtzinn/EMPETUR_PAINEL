@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Card, Title, Text } from "@tremor/react";
+import { Filter, X } from "lucide-react";
 import { normalizarMunicipio } from "../utils/DataProcessor";
 import { useDashboardData } from "../hooks/useDashboardData"; 
 
 // Componentes
 import Sidebar from "../components/layout/Sidebar";
-import MobileSidebarHeader from "../components/layout/MobileSidebarHeader";
 import DashboardHeader from "../components/layout/DashboardHeader";
 import Breadcrumb from "../components/layout/Breadcrumb";
 import MapaPernambuco from "../components/layout/MapaPernambuco";
@@ -15,15 +15,20 @@ import IndicadoresKPI from "../components/charts/IndicadoresKPI";
 import GraficoBarrasNativo from "../components/charts/GraficoBarrasNativo";
 import TopMunicipiosChart from "../components/charts/TopMunicipiosChart";
 import TopArtistasCard from "../components/charts/TopArtistasCard";
+import DropdownPesquisavel from "../components/ui/DropdownPesquisavel"; 
 
-export default function PainelCompleto({ csvUrls }) { // 🔴 Recebe Array
+export default function PainelCompleto({ csvUrls }) {
   const dataUltimaAtualizacao = "25/03/2026";
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const { 
     loading, filtros, setFiltros, temFiltroAtivo, filtrados, 
     registrosPorCiclo, registrosPorMunicipio, registrosPorAno, getOpcoes 
-  } = useDashboardData(csvUrls); // 🔴 Passa pro Hook
+  } = useDashboardData(csvUrls);
+
+  const limparFiltros = () => {
+    setFiltros({ municipio: "", ciclo: "", ano: "", artista: "", dataEvento: "", nomeCredor: "" });
+  };
 
   if (loading) {
     return (
@@ -34,7 +39,7 @@ export default function PainelCompleto({ csvUrls }) { // 🔴 Recebe Array
   }
 
   return (
-    <div className="flex h-screen bg-[#F8FAFC] overflow-hidden relative">
+    <div className="flex flex-col h-screen bg-[#F8FAFC] overflow-hidden">
       <style>{`
         .scrollbar-moderna::-webkit-scrollbar { width: 6px; height: 6px; }
         .scrollbar-moderna::-webkit-scrollbar-track { background: transparent; }
@@ -42,24 +47,70 @@ export default function PainelCompleto({ csvUrls }) { // 🔴 Recebe Array
         .scrollbar-moderna::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
       `}</style>
 
-      {/* 1. BARRA LATERAL (Filtros) */}
+      {/* 1. SIDEBAR APENAS PARA MOBILE */}
       <Sidebar isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} filtros={filtros} setFiltros={setFiltros} getOpcoes={getOpcoes} />
 
-      <main className="flex-1 overflow-y-auto p-4 md:p-10 scrollbar-moderna min-w-0">
-        {/* 2. CABEÇALHOS E NAVEGAÇÃO */}
-        <MobileSidebarHeader isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} temFiltroAtivo={temFiltroAtivo} />
+      {/* 🔴 2. NAVBAR FIXA (APENAS DESKTOP) - COMPACTA E COM CORES DE PERNAMBUCO */}
+      <div className="hidden lg:block sticky top-0 z-40 bg-[#0B2341] shadow-2xl w-full pt-5 px-6 relative">
+        <div className="flex items-end gap-4 max-w-[1800px] mx-auto">
+          
+          {/* Grade de Filtros */}
+          <div className="grid grid-cols-3 xl:grid-cols-6 gap-3 flex-1">
+            <DropdownPesquisavel label="Município" value={filtros.municipio} onChange={(v) => setFiltros({ ...filtros, municipio: v })} options={getOpcoes('municipio')} />
+            <DropdownPesquisavel label="Ciclo Cultural" value={filtros.ciclo} onChange={(v) => setFiltros({ ...filtros, ciclo: v })} options={getOpcoes('ciclo')} />
+            <DropdownPesquisavel label="Ano" value={filtros.ano} onChange={(v) => setFiltros({ ...filtros, ano: v })} options={getOpcoes('ano')} />
+            <DropdownPesquisavel label="Razão Social (Credor)" value={filtros.nomeCredor} onChange={(v) => setFiltros({ ...filtros, nomeCredor: v })} options={getOpcoes('nomeCredor')} />
+            <DropdownPesquisavel label="Artista" value={filtros.artista} onChange={(v) => setFiltros({ ...filtros, artista: v })} options={getOpcoes('artista')} />
+            <DropdownPesquisavel label="Data do Evento" value={filtros.dataEvento} onChange={(v) => setFiltros({ ...filtros, dataEvento: v })} options={getOpcoes('dataEvento')} />
+          </div>
+
+          {/* Botão de Limpar (Aparece alinhado apenas se houver filtros) */}
+          {temFiltroAtivo ? (
+            <button 
+              onClick={limparFiltros} 
+              className="h-[46px] mb-5 px-6 bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white border border-red-500/30 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 shrink-0 group"
+              title="Limpar todos os filtros"
+            >
+              <X size={16} className="group-hover:scale-110 transition-transform" /> Limpar
+            </button>
+          ) : (
+            <div className="w-[120px] shrink-0 hidden xl:block mb-5"></div> /* Espaçador para manter o grid alinhado quando não tem filtro */
+          )}
+        </div>
+
+        {/* 🌈 LINHA PERNAMBUCO (As 4 cores da bandeira na base da Navbar) */}
+        <div className="absolute bottom-0 left-0 w-full h-1.5 flex">
+          <div className="h-full flex-1 bg-[#002776]"></div> {/* Azul PE */}
+          <div className="h-full flex-1 bg-[#FFB81C]"></div> {/* Amarelo PE */}
+          <div className="h-full flex-1 bg-[#E4002B]"></div> {/* Vermelho PE */}
+          <div className="h-full flex-1 bg-[#009B3A]"></div> {/* Verde PE */}
+        </div>
+      </div>
+
+      {/* 3. ÁREA PRINCIPAL FULL SCREEN */}
+      <main className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-10 scrollbar-moderna w-full">
+        
+        {/* Botão de Abrir Filtros (Apenas Mobile) */}
+        <div className="lg:hidden mb-6 mt-2">
+          <button 
+            onClick={() => setIsMobileMenuOpen(true)} 
+            className="w-full bg-[#0B2341] text-white p-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-[#0B2341]/20 active:scale-95 transition-transform"
+          >
+            <Filter size={16} /> 
+            Filtrar Resultados
+            {temFiltroAtivo && <span className="flex h-2.5 w-2.5 rounded-full bg-red-500 ml-1"></span>}
+          </button>
+        </div>
+
         <Breadcrumb isPainel={true} />
         <DashboardHeader dataUltimaAtualizacao={dataUltimaAtualizacao} />
 
-        {/* 3. KPIS (Cards Superiores) */}
         <IndicadoresKPI filtrados={filtrados} filtros={filtros} setFiltros={setFiltros} />
 
-        {/* 4. MAPA GERAL */}
         <div className="w-full mt-6">
           <MapaPernambuco dados={filtrados} municipioSelecionado={filtros.municipio} onSelectMunicipio={(nome) => setFiltros((prev) => ({ ...prev, municipio: nome }))} />
         </div>
 
-        {/* 5. LINHA CENTRAL DE GRÁFICOS (Ciclos e Municípios) */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           <div className="lg:col-span-2">
             <Card className="relative rounded-3xl border-none shadow-xl shadow-blue-900/5 bg-white p-6 md:p-8 flex flex-col h-full">
@@ -75,10 +126,8 @@ export default function PainelCompleto({ csvUrls }) { // 🔴 Recebe Array
           </div>
         </div>
 
-        {/* 6. TABELA DETALHADA */}
         <TabelaHistorico filtrados={filtrados} setFiltros={setFiltros} />
 
-        {/* 7. LINHA INFERIOR DE GRÁFICOS (Anos e Top Artistas) */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           <div className="lg:col-span-2">
             <Card className="relative rounded-3xl border-none shadow-xl shadow-blue-900/5 bg-white p-6 md:p-8 h-full flex flex-col">

@@ -30,20 +30,16 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
     return "Consulte o Empenho";
   };
 
-  // 🔴 MÁGICA DA LGPD E TRANSPARÊNCIA: Mascara apenas CPF. CNPJ fica público.
   const mascararDocumento = (doc) => {
     if (!doc || doc === "N/A" || doc === "NÃO IDENTIFICADO") return "---";
     
     const limpo = doc.replace(/[^\w\d]/g, ''); 
     
     if (limpo.length === 11) {
-      // CPF (Pessoa Física): Mascara por causa da LGPD
       return `***.${limpo.substring(3, 6)}.${limpo.substring(6, 9)}-**`;
     } else if (limpo.length === 14) {
-      // CNPJ (Pessoa Jurídica): Dado Público, mostra formatação completa
       return `${limpo.substring(0, 2)}.${limpo.substring(2, 5)}.${limpo.substring(5, 8)}/${limpo.substring(8, 12)}-${limpo.substring(12, 14)}`;
     } else {
-      // UG, IG ou outra matrícula do estado
       return doc;
     }
   };
@@ -148,7 +144,8 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
             <TableBody>
               {dadosExibidos.length > 0 ? (
                 dadosExibidos.map((item, index) => (
-                  <TableRow key={index} className="hover:bg-slate-50/50 transition-colors border-b border-slate-50 hc-tabela-linha">
+                  // 🔴 MÁGICA AQUI: O 'even:bg-blue-50/30' cria o efeito zebrado sutil nas linhas pares
+                  <TableRow key={index} className="bg-white even:bg-blue-50/30 hover:bg-slate-100 transition-colors border-b border-slate-50 hc-tabela-linha">
                     
                     <TableCell 
                       className="py-6 px-6 max-w-[220px] cursor-pointer group align-top"
@@ -160,7 +157,7 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
                         </span>
                         <div className="flex items-center gap-2">
                           <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 hc-text-destaque">Empenho:</span>
-                          <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md hc-tabela-card">{item.numeroEmpenho}</span>
+                          <span className="text-[10px] font-bold text-slate-500 bg-white/50 border border-slate-200 px-2 py-0.5 rounded-md hc-tabela-card">{item.numeroEmpenho}</span>
                         </div>
                       </div>
                     </TableCell>
@@ -173,7 +170,7 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
                         <span className="font-bold text-slate-700 truncate w-full text-xs transition-colors group-hover:text-[#00AEEF] hc-text-destaque" title={`Filtrar por ${item.nomeCredor}`}>
                           {item.nomeCredor}
                         </span>
-                        <span className="font-mono text-[10px] font-bold text-slate-500 hc-text-destaque bg-slate-100/80 px-2 py-1 rounded-md border border-slate-200/50">
+                        <span className="font-mono text-[10px] font-bold text-slate-500 hc-text-destaque bg-white/50 px-2 py-1 rounded-md border border-slate-200/50">
                           {mascararDocumento(item.documentoCredor)}
                         </span>
                       </div>
@@ -186,7 +183,6 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
                       </div>
                     </TableCell>
 
-                    {/* 🔴 AQUI: Pílula flexível que cresce com nomes longos e o clique usa item.ciclo corretamente */}
                     <TableCell className="py-6 px-6 cursor-pointer align-top" onClick={() => setFiltros(prev => ({ ...prev, ciclo: prev.ciclo === item.ciclo ? "" : item.ciclo }))}>
                       <span className="inline-block bg-[#0B2341] text-white px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-tight hover:bg-[#00AEEF] hc-pilula transition-colors max-w-[180px] break-words whitespace-normal text-left leading-snug mt-1">
                         {item.ciclo}
