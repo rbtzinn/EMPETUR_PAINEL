@@ -133,7 +133,7 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
                   <div className="flex items-center gap-2"><Layers size={14} /> Ciclo Cultural</div>
                 </TableHeaderCell>
                 <TableHeaderCell className="py-6 px-6 text-slate-400 font-bold uppercase tracking-wider text-[10px] bg-slate-50 hc-tabela-header">
-                  <div className="flex items-center gap-2"><Calendar size={14} /> Evento / Data limite</div>
+                  <div className="flex items-center gap-2"><Calendar size={14} /> Evento / Data limite para Pagamento</div>
                 </TableHeaderCell>
                 <TableHeaderCell className="py-6 px-6 text-slate-400 font-bold uppercase tracking-wider text-[10px] text-right bg-slate-50 hc-tabela-header">
                   <div className="flex items-center justify-end gap-2"><DollarSign size={14} /> Valor Fomento (R$)</div>
