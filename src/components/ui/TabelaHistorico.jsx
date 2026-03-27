@@ -86,14 +86,13 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
           </div>
 
           <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
-            <a 
-              href="https://docs.google.com/spreadsheets/d/1P94FuVBBiScKlty_slbSVOE5N6uO5g3bzD5giKMtT3I/view" 
-              target="_blank"
-              rel="noopener noreferrer"
+            <button 
+              onClick={() => setIsExplicacaoOpen(true)}
               className="flex items-center gap-1.5 text-[#00AEEF] hover:text-white text-xs font-black uppercase tracking-widest transition-colors whitespace-nowrap hc-text-destaque focus:outline-none focus-visible:underline cursor-pointer"
             >
-              <Download size={14} /> Base Bruta Completa
-            </a>
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+              Base Bruta Completa
+            </button>
             
             <button 
               onClick={() => setIsModalOpen(true)} 

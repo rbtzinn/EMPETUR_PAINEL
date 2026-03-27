@@ -47,6 +47,7 @@ export default function MapaPernambuco({ dados = [], municipioSelecionado, onSel
     };
 
     return (
+        // 🔴 SUBSTITUÍMOS A 'DIV' PELO 'CARD' COM AS MESMAS CLASSES DO TopMunicipiosChart
         <Card 
             onMouseMove={(e) => setTooltipPos({ x: e.clientX, y: e.clientY })}
             className="hidden lg:flex w-full h-[300px] mb-8 bg-white border-none rounded-3xl shadow-xl shadow-blue-900/5 p-3 relative flex-col items-center overflow-hidden mapa-pe hc-card focus:outline-none focus-visible:ring-4 focus-visible:ring-[#00AEEF] focus-visible:ring-offset-4"
@@ -64,10 +65,8 @@ export default function MapaPernambuco({ dados = [], municipioSelecionado, onSel
 
             <style>{`
               .mapa-pe {
-                 /* 🔴 AQUI: --mapa-0 alterado de #F1F5F9 para #E2E8F0 para dar mais contraste com o fundo branco */
-                 --mapa-0: #E2E8F0; --mapa-1: #BAE6FD; --mapa-2: #7DD3FC; --mapa-3: #38BDF8; --mapa-4: #0284C7;
-                 /* 🔴 AQUI: --mapa-inativo alterado para acompanhar a cor base */
-                 --mapa-alvo: #00AEEF; --mapa-inativo: #CBD5E1; --mapa-stroke: #FFFFFF; --mapa-stroke-alvo: #0B2341;
+                 --mapa-0: #dddddd; --mapa-1: #BAE6FD; --mapa-2: #7DD3FC; --mapa-3: #38BDF8; --mapa-4: #0284C7;
+                 --mapa-alvo: #00AEEF; --mapa-inativo: #E5E7EB; --mapa-stroke: #FFFFFF; --mapa-stroke-alvo: #0B2341;
               }
               body.contraste-negativo .mapa-pe {
                  --mapa-0: #000000; --mapa-1: #333300; --mapa-2: #666600; --mapa-3: #999900; --mapa-4: #CCCC00;
