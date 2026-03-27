@@ -30,7 +30,7 @@ export default function IndicadoresKPI({ filtrados, filtros, setFiltros }) {
       `}</style>
 
       {/* Card 1: Total de Apresentações */}
-      <Card onClick={() => setFiltros({ municipio: "", ciclo: "", ano: "", artista: "", dataEvento: "" })} className={`flex-1 w-full rounded-3xl border-none shadow-xl shadow-blue-900/5 transition-all duration-300 relative overflow-hidden group flex flex-col justify-center hc-kpi-card ${temFiltroAtivo ? 'bg-[#0B2341] cursor-pointer hover:bg-[#0f2d52] hc-kpi-active' : 'bg-[#0B2341]/80'}`}>
+      <Card className={`flex-1 w-full rounded-3xl border-none shadow-xl shadow-blue-900/5 transition-all duration-300 relative overflow-hidden group flex flex-col justify-center hc-kpi-card ${temFiltroAtivo ? 'bg-[#0B2341] cursor-pointer hover:bg-[#0f2d52] hc-kpi-active' : 'bg-[#0B2341]/80'}`}>
         <Text className="text-white/60 font-bold uppercase tracking-widest text-[10px]">Apresentações Encontradas</Text>
         <Metric className="text-white text-5xl font-black mt-2">{totalApresentacoes}</Metric>
         {temFiltroAtivo && (<div className="absolute bottom-4 right-5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 bg-[#00AEEF] text-[#0B2341] text-[9px] font-black uppercase px-2 py-1.5 rounded-md shadow-md">Limpar Filtros</div>)}

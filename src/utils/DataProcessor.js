@@ -26,29 +26,48 @@ const extrairValor = (valorString) => {
 };
 
 /* ======================
-   DATA DO EVENTO
+   DATA DO EVENTO (🔴 ATUALIZADA PARA 2025: LÊ DATAS POR EXTENSO)
 ====================== */
 export const extrairDataEvento = (obsOriginal) => {
-  // Regex atualizada: Agora aceita anos com 2 ou 4 dígitos ([0-9]{2,4})
-  const match = (obsOriginal || "").match(
-    /([0-9]{1,2})[ \/-]([0-9]{1,2})[ \/-]([0-9]{2,4})/
-  );
+  if (!obsOriginal) return "---";
+  const obs = obsOriginal.toUpperCase();
 
-  if (match) {
-    let dia = match[1].padStart(2, '0');
-    let mes = match[2].padStart(2, '0');
-    let ano = match[3];
+  // 1. Tenta o padrão clássico com números (ex: 01/05/2025 ou 01-05-25)
+  const matchNum = obs.match(/([0-9]{1,2})[ \/-]([0-9]{1,2})[ \/-]([0-9]{2,4})/);
 
-    // Se o ano vier só com 2 dígitos (ex: "26"), transforma magicamente em "2026"
+  if (matchNum) {
+    let dia = matchNum[1].padStart(2, '0');
+    let mes = matchNum[2].padStart(2, '0');
+    let ano = matchNum[3];
+
     if (ano.length === 2) {
       ano = `20${ano}`;
     }
+    return `${dia}/${mes}/${ano}`;
+  }
 
+  // 🔴 2. NOVO PLANO B: Tenta padrão por extenso (ex: 01 DE MAIO DE 2025)
+  const meses = {
+    "JANEIRO": "01", "FEVEREIRO": "02", "MARÇO": "03", "MARCO": "03",
+    "ABRIL": "04", "MAIO": "05", "JUNHO": "06", "JULHO": "07",
+    "AGOSTO": "08", "SETEMBRO": "09", "OUTUBRO": "10",
+    "NOVEMBRO": "11", "DEZEMBRO": "12"
+  };
+  
+  // Cria uma Regex dinâmica com todos os meses
+  const regexExtenso = new RegExp(`([0-9]{1,2})\\s+DE\\s+(${Object.keys(meses).join('|')})\\s+DE\\s+([0-9]{4})`);
+  const matchExtenso = obs.match(regexExtenso);
+
+  if (matchExtenso) {
+    let dia = matchExtenso[1].padStart(2, '0');
+    let mes = meses[matchExtenso[2]];
+    let ano = matchExtenso[3];
     return `${dia}/${mes}/${ano}`;
   }
 
   return "---";
 };
+
 /* ======================
    ARTISTA (RIGOROSO E SEM PREFIXOS E NÚMEROS)
 ====================== */
@@ -75,13 +94,9 @@ export const extrairArtista = (obsOriginal) => {
     }
   }
 
-  // 🔴 LIMPEZA EXTRA JURÍDICA: Arranca "DUAS (02) APRESENTAÇÕES DE" que pode ter vindo grudado no nome!
   artistaRaw = artistaRaw.replace(/^(?:UM|UMA|DOIS|DUAS|TR[EÊ]S|QUATRO)?\s*(?:\(\d{1,2}\))?\s*(?:APRESENTA[ÇC][OÕ]ES|APRESENTA[ÇC][ÃA]O|SHOWS?|ART[IÍ]STIC[A-Z\.]*)*\s*(?:DE|DA|DO|DAS|DOS)?\s*/i, "").trim();
-
-  // Limpeza de lixo de quantidades numéricas no início ("02 ", "1 ")
   artistaRaw = artistaRaw.replace(/^\d{1,2}\s+/, "").trim();
 
-  // Limpeza de palavras administrativas
   const palavrasSujas = [
     "APRESENTAÇÕES", "APRESENTACOES", "APRESENTAÇÃO", "APRESENTACAO", "PRESENTAÇÃO", "PRESENTACAO", "APRESEN",
     "PRESE", "ARTÍSTICAS", "ARTISTICAS", "ARTÍSTICA", "ARTISTICA", "CONTRATAÇÃO", "VALOR", "REFERENTE", "PROCESSO", "PAGAMENTO"
@@ -92,16 +107,9 @@ export const extrairArtista = (obsOriginal) => {
     }
   });
 
-  // Limpeza de preposições que sobram no início
   artistaRaw = artistaRaw.replace(/^(DE|DA|DO|DAS|DOS)\s+/, "").trim();
-
-  // Limpeza de "CANTOR", "CANTORA", "O CANTOR", "A CANTORA", "ARTISTA" ou "BANDA"
   artistaRaw = artistaRaw.replace(/^(?:O\s+|A\s+)?(?:CANTORA?|ARTISTA|BANDA)\s+/i, "").trim();
-
-  // Limpa traços que sobram no final
   artistaRaw = artistaRaw.replace(/\s*-\s*$/, "").trim();
-
-  // Corta nomes de festivais/polos que grudaram
   artistaRaw = artistaRaw.replace(/\s*(?:FESTIVAL|PERNAMBUCO MEU PA[IÍ]S|EDI[CÇ][AÃ]O|POLO|NA CIDADE).*$/i, "").trim();
 
   // 2. DICIONÁRIO DE UNIFICAÇÃO
@@ -136,7 +144,7 @@ export const extrairMunicipio = (obsOriginal) => {
   if (!obsOriginal) return "NÃO IDENTIFICADO";
   let obs = obsOriginal.toUpperCase();
 
-  // 1. LIMPEZA PRÉVIA (Remove ruídos e formatações estranhas)
+  // 1. LIMPEZA PRÉVIA
   obs = obs
     .replace(/\bCUMBUCA\b/g, "CUMBUCÁ")
     .replace(/\bCAMBUCÁ\b/g, "CUMBUCÁ")
@@ -189,7 +197,7 @@ export const extrairMunicipio = (obsOriginal) => {
     resultado = resultado.split("CIDADE DE ")[1].trim();
   }
 
-  // 4. CORREÇÕES FINAIS (Dicionário de acentuações e grafias brutas)
+  // 4. CORREÇÕES FINAIS
   const mapaCorrecoes = {
     "BELEM DE SAO FRANCISCO": "BELÉM DE SÃO FRANCISCO",
     "GLORIA DO GOITA": "GLÓRIA DO GOITÁ",
@@ -198,10 +206,11 @@ export const extrairMunicipio = (obsOriginal) => {
     "NAZARÉ DA MATA": "NAZARÉ DA MATA",
     "ILHA DE ITAMARACÁ": "ILHA DE ITAMARACÁ",
     "RECFE": "RECIFE",
-    "INAJA": "INAJÁ" // 🔴 Inajá sem acento corrigido!
+    "INAJA": "INAJÁ",
+    "LAGOA DE ITAENGA": "LAGOA DO ITAENGA",
+    "LAGOA DO ITAENGA": "LAGOA DO ITAENGA"
   };
 
-  // 🔴 MÁGICA DO JABOATÃO: Pega qualquer bizarrice (JABOATAO, JABOATÃO, JABAOTAO, JABAOTÃO)
   if (/JAB[AO]AT[AÃ]O/i.test(resultado) || resultado.includes("GUARARAPES")) {
     return "JABOATÃO DOS GUARARAPES";
   }
@@ -210,7 +219,7 @@ export const extrairMunicipio = (obsOriginal) => {
 };
 
 /* ======================
-   NOME DO EVENTO (MÁGICA PARA APOIO A EVENTOS CULTURAIS)
+   NOME DO EVENTO (🔴 ATUALIZADA PARA 2025: IGNORA "PARA PARTICIPAÇÃO NA")
 ====================== */
 export const extrairNomeEvento = (obsOriginal, artista) => {
   if (!obsOriginal || !artista || artista === "NÃO IDENTIFICADO") return null;
@@ -223,28 +232,24 @@ export const extrairNomeEvento = (obsOriginal, artista) => {
   // Isola o trecho que vem exatamente depois do nome do artista
   const trecho = obs.substring(indexArtista + artista.length);
 
-  // Regex Ninja: Pega o que está entre o artista e a cidade/dia/processo
-  const regex = /^(?:\s*[:,]?\s*)(?:NO EVENTO|NO|NA|O|A|EM)?\s+(.*?)\s*(?:,|NA CIDADE|NO MUNIC[IÍ]PIO|EM\s+[A-ZÀ-Ú]|NO DIA|DIA\s+\d|PROCESSO|SEI|$)/i;
+  // 🔴 REGEX NINJA 2.0: Agora ela pula textos intrometidos como "PARA PARTICIPAÇÃO NA" ou "PARA APRESENTAÇÃO NO"
+  const regex = /^(?:\s*[:,]?\s*)(?:PARA\s+)?(?:PARTICIPA[ÇC][ÃA]O\s+|APRESENTA[ÇC][ÃA]O\s+|SHOW\s+)?(?:NO EVENTO\s+|NO\s+|NA\s+|O\s+|A\s+|EM\s+)?(.*?)\s*(?:,|NA CIDADE|NO MUNIC[IÍ]PIO|EM\s+[A-ZÀ-Ú]|NO DIA\s+\d|DIA\s+\d|PROCESSO|SEI|$)/i;
   const match = trecho.match(regex);
 
   if (match && match[1]) {
     let evento = match[1].trim();
 
-    // Remove palavras de introdução que sobraram
     evento = evento.replace(/^(?:EVENTO|FESTIVIDADE|CELEBRAÇÃO|FESTA DE|COMEMORAÇÃO DE)\s+/i, "");
 
-    // 🔴 TRAVA DE SEGURANÇA: Se não tinha evento escrito e a regex pegou a cidade direto
     const lixo = ["CIDADE", "MUNIC", "DIA", "PROCESSO", "SEI", "ESTADO", "APRESENTA", "CARNAVAL", "SÃO JOÃO"];
     if (lixo.some(l => evento.startsWith(l)) || evento.length <= 3) {
       return null;
     }
 
-    // Transformar em Title Case para ficar elegante no gráfico (ex: "Culto do Monte")
     let eventoFormatado = evento.split(' ')
       .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
       .join(' ');
 
-    // Arruma as preposições que ficaram maiúsculas no Title Case
     eventoFormatado = eventoFormatado.replace(/\s(De|Da|Do|Das|Dos|E|Em|Na|No|Para)\s/ig, match => match.toLowerCase());
 
     return eventoFormatado;
