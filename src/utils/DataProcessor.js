@@ -1,266 +1,11 @@
 import Papa from "papaparse";
+import * as Utils from "./stringUtils";
+import * as Extractors from "./extractors";
+import { normalizarMunicipio } from "./pernambucoUtils";
 
-export const normalizarMunicipio = (txt = "") =>
-  txt
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // remove acentos
-    .toUpperCase()
-    .trim();
+const TERMOS_PROIBIDOS = ["TRANSPORTE", "LOCAÇÃO", "HOSPEDAGEM", "PASSAGEM", "DIÁRIA", "LIMPEZA", "COMBUSTÍVEL"];
+const TERMOS_OBRIGATORIOS = ["APRES", "ARTÍSTIC", "SHOW", "CACHÊ", "BANDA", "CANTOR"];
 
-/* ======================
-   UTILITÁRIOS
-====================== */
-const extrairAno = (texto) => {
-  if (!texto) return "---";
-  const match = texto.match(/(19|20)\d{2}/);
-  return match ? match[0] : "---";
-};
-
-const normalizarEspacos = (txt) =>
-  txt.replace(/\s+/g, " ").trim();
-
-const extrairValor = (valorString) => {
-  if (!valorString) return 0;
-  const limpo = valorString.replace(/[^\d,]/g, '').replace(',', '.');
-  return parseFloat(limpo) || 0;
-};
-
-/* ======================
-   DATA DO EVENTO (🔴 ATUALIZADA PARA 2025: LÊ DATAS POR EXTENSO)
-====================== */
-export const extrairDataEvento = (obsOriginal) => {
-  if (!obsOriginal) return "---";
-  const obs = obsOriginal.toUpperCase();
-
-  // 1. Tenta o padrão clássico com números (ex: 01/05/2025 ou 01-05-25)
-  const matchNum = obs.match(/([0-9]{1,2})[ \/-]([0-9]{1,2})[ \/-]([0-9]{2,4})/);
-
-  if (matchNum) {
-    let dia = matchNum[1].padStart(2, '0');
-    let mes = matchNum[2].padStart(2, '0');
-    let ano = matchNum[3];
-
-    if (ano.length === 2) {
-      ano = `20${ano}`;
-    }
-    return `${dia}/${mes}/${ano}`;
-  }
-
-  // 🔴 2. NOVO PLANO B: Tenta padrão por extenso (ex: 01 DE MAIO DE 2025)
-  const meses = {
-    "JANEIRO": "01", "FEVEREIRO": "02", "MARÇO": "03", "MARCO": "03",
-    "ABRIL": "04", "MAIO": "05", "JUNHO": "06", "JULHO": "07",
-    "AGOSTO": "08", "SETEMBRO": "09", "OUTUBRO": "10",
-    "NOVEMBRO": "11", "DEZEMBRO": "12"
-  };
-  
-  // Cria uma Regex dinâmica com todos os meses
-  const regexExtenso = new RegExp(`([0-9]{1,2})\\s+DE\\s+(${Object.keys(meses).join('|')})\\s+DE\\s+([0-9]{4})`);
-  const matchExtenso = obs.match(regexExtenso);
-
-  if (matchExtenso) {
-    let dia = matchExtenso[1].padStart(2, '0');
-    let mes = meses[matchExtenso[2]];
-    let ano = matchExtenso[3];
-    return `${dia}/${mes}/${ano}`;
-  }
-
-  return "---";
-};
-
-/* ======================
-   ARTISTA (RIGOROSO E SEM PREFIXOS E NÚMEROS)
-====================== */
-export const extrairArtista = (obsOriginal) => {
-  if (!obsOriginal) return "NÃO IDENTIFICADO";
-  let obs = normalizarEspacos(obsOriginal.toUpperCase());
-
-  // 1. REGEX MUTANTE BLINDADA CONTRA NÚMEROS E PLURAIS
-  const regexArtista = /(?:(?:\d{1,2}\s+)?(?:A?PRE[A-ZÇÃ\.]*|PRESENT[A-ZÇÃ\.]*)(?:\s*ART[IÍ]STIC[A-Z\.]*)?|ART[IÍ]STIC[A-Z\.]*|SHOW|CONTRATA[ÇC][ÃA]O|CACH[EÊ])(?:.*?)\s+(?:DE|DA|DO|DAS|DOS)\s+(.+?)(?:,|\s+NO\s+|\s+NA\s+|\s+EM\s+|\s+PARA\s+|\s+DURANTE\s+|\s+NO\s+DIA|\s*EVENTO|\s*-\s*|$)/;
-
-  const match = obs.match(regexArtista);
-  let artistaRaw = "NÃO IDENTIFICADO";
-
-  if (match?.[1]) {
-    artistaRaw = match[1].replace(/\(.*?\)/g, "").trim();
-  } else {
-    // PLANO B EXTREMAMENTE RESTRITO
-    if (/FESTIVAL|PERNAMBUCO MEU PA[IÍ]S|CARNAVAL|S[AÃ]O JO[AÃ]O|FESTA/i.test(obs)) {
-      const regexFallback = /^(.+?)(?:,|\s+NO\s+|\s+NA\s+|\s+EM\s+)/;
-      const fallbackMatch = obs.match(regexFallback);
-      if (fallbackMatch?.[1]) {
-        artistaRaw = fallbackMatch[1].replace(/\(.*?\)/g, "").trim();
-      }
-    }
-  }
-
-  artistaRaw = artistaRaw.replace(/^(?:UM|UMA|DOIS|DUAS|TR[EÊ]S|QUATRO)?\s*(?:\(\d{1,2}\))?\s*(?:APRESENTA[ÇC][OÕ]ES|APRESENTA[ÇC][ÃA]O|SHOWS?|ART[IÍ]STIC[A-Z\.]*)*\s*(?:DE|DA|DO|DAS|DOS)?\s*/i, "").trim();
-  artistaRaw = artistaRaw.replace(/^\d{1,2}\s+/, "").trim();
-
-  const palavrasSujas = [
-    "APRESENTAÇÕES", "APRESENTACOES", "APRESENTAÇÃO", "APRESENTACAO", "PRESENTAÇÃO", "PRESENTACAO", "APRESEN",
-    "PRESE", "ARTÍSTICAS", "ARTISTICAS", "ARTÍSTICA", "ARTISTICA", "CONTRATAÇÃO", "VALOR", "REFERENTE", "PROCESSO", "PAGAMENTO"
-  ];
-  palavrasSujas.forEach(ps => {
-    if (artistaRaw.startsWith(ps)) {
-      artistaRaw = artistaRaw.replace(ps, "").trim();
-    }
-  });
-
-  artistaRaw = artistaRaw.replace(/^(DE|DA|DO|DAS|DOS)\s+/, "").trim();
-  artistaRaw = artistaRaw.replace(/^(?:O\s+|A\s+)?(?:CANTORA?|ARTISTA|BANDA)\s+/i, "").trim();
-  artistaRaw = artistaRaw.replace(/\s*-\s*$/, "").trim();
-  artistaRaw = artistaRaw.replace(/\s*(?:FESTIVAL|PERNAMBUCO MEU PA[IÍ]S|EDI[CÇ][AÃ]O|POLO|NA CIDADE).*$/i, "").trim();
-
-  // 2. DICIONÁRIO DE UNIFICAÇÃO
-  const mapaArtistas = {
-    "BANDA D ROMANCE": "BANDA D' ROMANCE",
-    "BANDA D' ROMANCE": "BANDA D' ROMANCE",
-    "D' ROMANCE": "BANDA D' ROMANCE",
-    "D ROMANCE": "BANDA D' ROMANCE",
-    "BANDA KEBRANÇAS": "BANDA KEBRANÇA",
-    "BANDA KEBRANÇA": "BANDA KEBRANÇA",
-    "BANDA SWINGNOVO": "BANDA SWING NOVO",
-    "BANDA SWING NOVO": "BANDA SWING NOVO",
-    "SWING NOVO": "BANDA SWING NOVO",
-    "MARILIA MARQUES": "MARÍLIA MARQUES",
-    "MARÍLIA MARQUES": "MARÍLIA MARQUES",
-    "MATHEUS VINNI": "MATHEUS VINI",
-    "MATHEUS VINI": "MATHEUS VINI",
-    "ORQUESTRA DE FREVO MEXE COM TUDO -": "ORQUESTRA DE FREVO MEXE COM TUDO",
-    "ORQUESTRA DE FREVO MEXE COM TUDO": "ORQUESTRA DE FREVO MEXE COM TUDO",
-    "ORQ DE FREVO MEXE COM TUDO": "ORQUESTRA DE FREVO MEXE COM TUDO",
-    "BFULÔ DE MANDACARÚ": "FULÔ DE MANDACARÚ",
-    "BFULO DE MANDACARU": "FULÔ DE MANDACARÚ"
-  };
-
-  return mapaArtistas[artistaRaw] || artistaRaw;
-};
-
-/* ======================
-   MUNICÍPIO (PREPARADO PARA PERNAMBUCO MEU PAÍS E ERROS DE DIGITAÇÃO)
-====================== */
-export const extrairMunicipio = (obsOriginal) => {
-  if (!obsOriginal) return "NÃO IDENTIFICADO";
-  let obs = obsOriginal.toUpperCase();
-
-  // 1. LIMPEZA PRÉVIA
-  obs = obs
-    .replace(/\bCUMBUCA\b/g, "CUMBUCÁ")
-    .replace(/\bCAMBUCÁ\b/g, "CUMBUCÁ")
-    .replace(/\bCAMBUCA\b/g, "CUMBUCÁ")
-    .replace(/\bNAZARE\s+DE\s+MATA\b/g, "NAZARÉ DA MATA")
-    .replace(/\bJOAQUIMNABUCO\b/g, "JOAQUIM NABUCO")
-    .replace(/\bDEILHA DE ITAMARACÁ\b/g, "ILHA DE ITAMARACÁ")
-    .replace(/\bDECATENDE\b/g, "CATENDE")
-    .replace(/\bDETUPARETAMA\b/g, "TUPARETAMA")
-    .replace(/\bCIDAD\s+DE\b/g, "CIDADE DE")
-    .replace(/\bCIDADED\s+E\b/g, "CIDADE DE")
-    .replace(/\bCDADE\s+DE\b/g, "CIDADE DE")
-    .replace(/\bB\.\s+DE\s+SÃO\s+FRANCISCO\b/g, "BELEM DE SAO FRANCISCO")
-    .replace(/\bB\s+DE\s+SÃO\s+FRANCISCO\b/g, "BELEM DE SAO FRANCISCO")
-    .replace(/\bBEL[EÉ]M DE S[AÃ]O FCO\.?\b/g, "CIDADE DE BELÉM DE SÃO FRANCISCO")
-    .replace(/CARNAUBEIRA\s+DAPENHA/g, "CARNAUBEIRA DA PENHA")
-    .replace(/DA DIVERSIDADE (NA|EM) /g, "")
-    .replace(/POLO DA DIVERSIDADE\s*-?\s*/g, "")
-    .replace(/\s+/g, " ");
-
-  let resultado = "NÃO IDENTIFICADO";
-
-  // 2. EXTRAÇÃO
-  const matchPMP = obs.match(/(?:MEU PA[IÍ]S EM|POLO|ETAPA)\s+([A-ZÀ-Ú\s\.]{3,40}?)(?:\/|PE\b|-|,|\.|\s+NO\s+DIA|$)/);
-
-  if (matchPMP?.[1] && !matchPMP[1].includes("PERNAMBUCO")) {
-    resultado = matchPMP[1].trim();
-  } else {
-    const matchCidade = obs.match(/CIDADE\s*(?:DE|DO|DA)?\s+([A-ZÀ-Ú\s\.]{3,40}?)(?:\/|PE\b|-|,|\.|\s+NO\s+DIA|$)/);
-    if (matchCidade?.[1]) {
-      resultado = matchCidade[1].trim();
-    } else {
-      const matchEm = obs.match(/\b(?:EM|NO|NA|DE)\s+([A-ZÀ-Ú\s\.]{3,40}?)\s*(?:\/|-)\s*PE\b/);
-      if (matchEm?.[1]) {
-        resultado = matchEm[1].trim();
-      } else {
-        const matchVirgula = obs.match(/,\s*([A-ZÀ-Ú\s\.]{3,40}?)\s*\/\s*PE\b/);
-        if (matchVirgula?.[1]) {
-          resultado = matchVirgula[1].trim();
-        }
-      }
-    }
-  }
-
-  // 3. LIMPEZA PÓS-EXTRAÇÃO
-  resultado = resultado.replace(/\/.*$/, "").replace(/\bPE\b$/, "").trim();
-
-  // TRAVA EXTRA DE SEGURANÇA
-  if (resultado.includes("CIDADE DE ")) {
-    resultado = resultado.split("CIDADE DE ")[1].trim();
-  }
-
-  // 4. CORREÇÕES FINAIS
-  const mapaCorrecoes = {
-    "BELEM DE SAO FRANCISCO": "BELÉM DE SÃO FRANCISCO",
-    "GLORIA DO GOITA": "GLÓRIA DO GOITÁ",
-    "CARNAUBEIRA DA PENHA": "CARNAUBEIRA DA PENHA",
-    "JOAQUIM NABUCO": "JOAQUIM NABUCO",
-    "NAZARÉ DA MATA": "NAZARÉ DA MATA",
-    "ILHA DE ITAMARACÁ": "ILHA DE ITAMARACÁ",
-    "RECFE": "RECIFE",
-    "INAJA": "INAJÁ",
-    "LAGOA DE ITAENGA": "LAGOA DO ITAENGA",
-    "LAGOA DO ITAENGA": "LAGOA DO ITAENGA"
-  };
-
-  if (/JAB[AO]AT[AÃ]O/i.test(resultado) || resultado.includes("GUARARAPES")) {
-    return "JABOATÃO DOS GUARARAPES";
-  }
-
-  return mapaCorrecoes[resultado] || resultado;
-};
-
-/* ======================
-   NOME DO EVENTO (🔴 ATUALIZADA PARA 2025: IGNORA "PARA PARTICIPAÇÃO NA")
-====================== */
-export const extrairNomeEvento = (obsOriginal, artista) => {
-  if (!obsOriginal || !artista || artista === "NÃO IDENTIFICADO") return null;
-
-  const obs = normalizarEspacos(obsOriginal.toUpperCase());
-  const indexArtista = obs.indexOf(artista);
-
-  if (indexArtista === -1) return null;
-
-  // Isola o trecho que vem exatamente depois do nome do artista
-  const trecho = obs.substring(indexArtista + artista.length);
-
-  // 🔴 REGEX NINJA 2.0: Agora ela pula textos intrometidos como "PARA PARTICIPAÇÃO NA" ou "PARA APRESENTAÇÃO NO"
-  const regex = /^(?:\s*[:,]?\s*)(?:PARA\s+)?(?:PARTICIPA[ÇC][ÃA]O\s+|APRESENTA[ÇC][ÃA]O\s+|SHOW\s+)?(?:NO EVENTO\s+|NO\s+|NA\s+|O\s+|A\s+|EM\s+)?(.*?)\s*(?:,|NA CIDADE|NO MUNIC[IÍ]PIO|EM\s+[A-ZÀ-Ú]|NO DIA\s+\d|DIA\s+\d|PROCESSO|SEI|$)/i;
-  const match = trecho.match(regex);
-
-  if (match && match[1]) {
-    let evento = match[1].trim();
-
-    evento = evento.replace(/^(?:EVENTO|FESTIVIDADE|CELEBRAÇÃO|FESTA DE|COMEMORAÇÃO DE)\s+/i, "");
-
-    const lixo = ["CIDADE", "MUNIC", "DIA", "PROCESSO", "SEI", "ESTADO", "APRESENTA", "CARNAVAL", "SÃO JOÃO"];
-    if (lixo.some(l => evento.startsWith(l)) || evento.length <= 3) {
-      return null;
-    }
-
-    let eventoFormatado = evento.split(' ')
-      .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-      .join(' ');
-
-    eventoFormatado = eventoFormatado.replace(/\s(De|Da|Do|Das|Dos|E|Em|Na|No|Para)\s/ig, match => match.toLowerCase());
-
-    return eventoFormatado;
-  }
-
-  return null;
-};
-
-/* ======================
-   PROCESSADOR PRINCIPAL E TRAVAS DE SEGURANÇA
-====================== */
 export const fetchAndProcessData = async (url) => {
   const response = await fetch(url);
   const csv = await response.text();
@@ -273,79 +18,36 @@ export const fetchAndProcessData = async (url) => {
         const setUnico = new Set();
 
         const processed = data.reduce((acc, linha, index) => {
-
-          // 0ª TRAVA: TIPO DE DESPESA (Só aceita "NORMAL")
           const tipoDespesa = (linha["Tipo de Despesa"] || "").trim().toUpperCase();
-          if (tipoDespesa !== "NORMAL") {
-            return acc;
-          }
-
-          const valorBruto = linha["Total Liquidado"] || "0";
-          const valor = extrairValor(valorBruto);
-
-          if (valor === 0) return acc;
-
+          const valor = Utils.extrairValor(linha["Total Liquidado"]);
           const obs = linha["Observação do Empenho"] || "";
           const obsLimpa = obs.trim().toUpperCase();
 
-          // 1ª TRAVA (O CÃO DE GUARDA): BLACKLIST ADMINISTRATIVA
-          const termosProibidos = [
-            "TRANSPORTE", "LOCAÇÃO", "LOCACAO", "HOSPEDAGEM", "PASSAGEM", "PASSAGENS",
-            "DIÁRIA", "DIARIA", "DIÁRIAS", "DIARIAS", "DIÁRIAS CIVIL", "DIARIAS CIVIL",
-            "CIVIL", "INFORMATICA", "INFORMÁTICA", "AQUISIÇÃO", "AQUISICAO",
-            "MANUTENÇÃO", "MANUTENCAO", "VIGILÂNCIA", "LIMPEZA", "COMBUSTÍVEL", "COMBUSTIVEL",
-            "MATERIAL", "TELEFONIA", "ÁGUA", "LUZ", "SERVIÇO DE", "SERVICO DE", "SONORIZAÇÃO",
-            "ILUMINAÇÃO", "GERADOR", "ESTRUTURA", "PALCO", "TENDAS", "TRIO ELÉTRICO",
-            "BANHEIRO", "CONSERVAÇÃO", "SEGURANÇA"
-          ];
+          if (tipoDespesa !== "NORMAL" || valor === 0) return acc;
+          if (TERMOS_PROIBIDOS.some((t) => obsLimpa.includes(t))) return acc;
+          if (!TERMOS_OBRIGATORIOS.some((t) => obsLimpa.includes(t))) return acc;
 
-          const ehLixoAdministrativo = termosProibidos.some(termo => obsLimpa.includes(termo));
-          if (ehLixoAdministrativo) return acc;
+          const artista = Extractors.extrairArtista(obs);
+          const municipio = Extractors.extrairMunicipio(obs);
+          const dataEvento = Extractors.extrairDataEvento(obs);
 
-          // 2ª TRAVA: WHITELIST ARTÍSTICA
-          const termosObrigatorios = [
-            "APRES", "APRE.", "PRESE", "PRESENTA", "AP.", "AP ", "ARTÍSTIC", "ARTISTIC",
-            "SHOW", "CACHÊ", "CACHE", "BANDA", "CANTOR", "ORQUESTRA", "GRUPO MUSICAL"
-          ];
+          if (!Extractors.municipioEhDePernambuco(municipio)) return acc;
+          if (artista === "NÃO IDENTIFICADO" && dataEvento === "---") return acc;
 
-          const ehShow = termosObrigatorios.some(termo => obsLimpa.includes(termo));
-          if (!ehShow) return acc;
-
-          const dataEmpenho = linha["Data do Empenho"] || "";
-          const artista = extrairArtista(obs);
-          const municipio = extrairMunicipio(obs);
-          const dataEvento = extrairDataEvento(obs);
-
-          if (artista === "NÃO IDENTIFICADO" && dataEvento === "---") {
-            return acc;
-          }
-
-          // CICLO INTELIGENTE E EVENTOS ESPECÍFICOS
           let ciclo = linha["Detalhamento da Despesa Gerencial"] || "Outros";
-          let cicloMacro = ciclo; 
+          let cicloMacro = ciclo;
 
-          if (obsLimpa.includes("PERNAMBUCO MEU PAÍS") || obsLimpa.includes("PERNAMBUCO MEU PAIS")) {
+          if (obsLimpa.includes("PERNAMBUCO MEU PAÍS")) {
             ciclo = "Festival Pernambuco Meu País";
             cicloMacro = "Festival Pernambuco Meu País";
-          }
-          else if (ciclo.toUpperCase().includes("APOIO A EVENTOS CULTURAIS") || ciclo === "Outros") {
-            const extraido = extrairNomeEvento(obs, artista);
-
-            cicloMacro = "Apoio a Eventos Culturais"; 
-
-            if (extraido) {
-              ciclo = extraido; 
-            } else {
-              ciclo = "Apoio a Eventos Culturais";
-            }
+          } else if (ciclo.toUpperCase().includes("APOIO A EVENTOS CULTURAIS") || ciclo === "Outros") {
+            const extraido = Extractors.extrairNomeEvento(obs, artista);
+            cicloMacro = "Apoio a Eventos Culturais";
+            ciclo = extraido || "Apoio a Eventos Culturais";
           }
 
           const chaveUnica = `${artista}-${municipio}-${dataEvento}-${valor}`;
-
-          if (setUnico.has(chaveUnica)) {
-            return acc;
-          }
-
+          if (setUnico.has(chaveUnica)) return acc;
           setUnico.add(chaveUnica);
 
           acc.push({
@@ -353,11 +55,11 @@ export const fetchAndProcessData = async (url) => {
             numeroEmpenho: linha["Número do Empenho"] || "N/A",
             artista,
             municipio,
-            ciclo, 
+            ciclo,
             cicloMacro,
             dataEvento,
-            dataEmpenho: dataEmpenho || "---",
-            ano: extrairAno(dataEmpenho),
+            dataEmpenho: linha["Data do Empenho"] || "---",
+            ano: Utils.extrairAno(linha["Data do Empenho"]),
             valor,
             documentoCredor: linha["CPF, CNPJ, IG ou UG/Gestão do Credor"] || "N/A",
             nomeCredor: linha["Nome ou Razão Social do Credor"] || "NÃO IDENTIFICADO",

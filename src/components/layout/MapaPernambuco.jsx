@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from "react";
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simple-maps";
 import { geoCentroid } from "d3-geo";
 import { Card } from "@tremor/react";
-import { normalizarMunicipio } from "../../utils/DataProcessor";
+import { normalizarMunicipio } from "../../utils/stringUtils";
 
 const GEO_URL = "/maps/pernambuco-municipios.json";
 const DEFAULT_CENTER = [-38.0, -8.4];
