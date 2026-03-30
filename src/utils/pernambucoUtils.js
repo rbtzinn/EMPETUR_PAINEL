@@ -1,5 +1,3 @@
-import { normalizarMunicipio } from "./stringUtils";
-
 export const MUNICIPIOS_PERNAMBUCO = new Set([
   "ABREU E LIMA", "AFOGADOS DA INGAZEIRA", "AFRÂNIO", "AGRESTINA", "ÁGUA PRETA",
   "ÁGUAS BELAS", "ALAGOINHA", "ALIANÇA", "ALTINHO", "AMARAJI", "ANGELIM",
@@ -16,7 +14,7 @@ export const MUNICIPIOS_PERNAMBUCO = new Set([
   "FLORESTA", "FREI MIGUELINHO", "GAMELEIRA", "GARANHUNS", "GLÓRIA DO GOITÁ",
   "GOIANA", "GRANITO", "GRAVATÁ", "IATI", "IBIMIRIM", "IBIRAJUBA", "IGARASSU",
   "IGUARACI", "INAJÁ", "INGAZEIRA", "IPOJUCA", "IPUBI", "ITACURUBA", "ITAÍBA",
-  "ITAMARACÁ", "ITAMBÉ", "ITAPETIM", "ITAPISSUMA", "ITAQUITINGA",
+  "ILHA DE ITAMARACÁ", "ITAMBÉ", "ITAPETIM", "ITAPISSUMA", "ITAQUITINGA",
   "JABOATÃO DOS GUARARAPES", "JAQUEIRA", "JATAÚBA", "JATOBÁ", "JOÃO ALFREDO",
   "JOAQUIM NABUCO", "JUCATI", "JUPI", "JUREMA", "LAGOA DO CARRO",
   "LAGOA DO ITAENGA", "LAGOA DO OURO", "LAGOA DOS GATOS", "LAGOA GRANDE",
@@ -39,11 +37,25 @@ export const MUNICIPIOS_PERNAMBUCO = new Set([
   "VERTENTE DO LÉRIO", "VERTENTES", "VICÊNCIA", "VITÓRIA DE SANTO ANTÃO", "XEXÉU",
 ]);
 
-const MUNICIPIOS_NORMALIZADOS = new Set(
-  [...MUNICIPIOS_PERNAMBUCO].map(m => normalizarMunicipio(m))
+export const normalizarMunicipio = (texto = "") =>
+  texto
+    .toString()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toUpperCase()
+    .replace(/\s+/g, " ")
+    .trim();
+
+const MUNICIPIOS_PERNAMBUCO_NORMALIZADOS = new Set(
+  [...MUNICIPIOS_PERNAMBUCO].map(normalizarMunicipio)
 );
 
 export const municipioEhDePernambuco = (municipio) => {
   const valor = normalizarMunicipio(municipio);
-  return MUNICIPIOS_NORMALIZADOS.has(valor);
+  return !!valor && valor !== "NAO IDENTIFICADO" && MUNICIPIOS_PERNAMBUCO_NORMALIZADOS.has(valor);
 };
+
+export const filtrarRegistrosDePernambuco = (registros = []) =>
+  registros.filter((item) =>
+    municipioEhDePernambuco(item?.municipioNormalizado || item?.municipio)
+  );
