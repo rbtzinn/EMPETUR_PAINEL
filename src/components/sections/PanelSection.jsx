@@ -173,7 +173,7 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) {
                       </th>
                     ))}
                     <th className="py-5 px-6 text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap text-right hc-tabela-header">
-                      <div className="flex items-center justify-end gap-2"><DollarSign size={14} /> Valor Líquido</div>
+                      <div className="flex items-center justify-end gap-2"><DollarSign size={14} /> Valor Pago</div>
                     </th>
                   </tr>
                 </thead>
