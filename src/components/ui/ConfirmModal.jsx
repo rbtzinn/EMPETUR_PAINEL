@@ -1,37 +1,48 @@
 import React from 'react';
+import { ExternalLink } from 'lucide-react';
+import FadeIn from './FadeIn';
 
 export default function ConfirmModal({ isOpen, onClose, onConfirm }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-[#0B2341]/60 backdrop-blur-sm transition-opacity" onClick={onClose} />
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+      <style>{`
+        body.contraste-negativo .hc-icon-wrapper { background-color: #000 !important; border: 1px solid #ffea00 !important; }
+        body.contraste-negativo .hc-icon-wrapper .lucide { color: #ffea00 !important; }
+      `}</style>
+      
+      <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-md transition-opacity" onClick={onClose} />
 
-      <div className="relative bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl transform transition-all flex flex-col items-center text-center animate-in fade-in zoom-in duration-200 hc-card">
-        
-        {/* 🔴 ADICIONADO: hc-icon-wrapper */}
-        <div className="hc-icon-wrapper w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-6 text-[#00AEEF]">
-          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-          </svg>
-        </div>
-
-        <h3 className="text-xl font-black text-[#0B2341] mb-2">Visitar Site Oficial?</h3>
-        <p className="text-sm text-slate-500 mb-8">
-          Você será redirecionado para o portal da <strong>EMPETUR</strong> na mesma aba. Deseja continuar?
-        </p>
-
-        <div className="flex gap-3 w-full">
-          <button onClick={onClose} className="flex-1 px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm font-bold uppercase tracking-wider rounded-xl transition-colors">
-            Cancelar
-          </button>
+      <FadeIn className="relative w-full max-w-sm">
+        <div className="hc-card bg-white rounded-[2rem] p-8 md:p-10 shadow-2xl flex flex-col items-center text-center border border-white/20">
           
-          {/* 🔴 ADICIONADO: hc-botao-destaque */}
-          <button onClick={onConfirm} className="hc-botao-destaque flex-1 px-4 py-3 bg-[#00AEEF] hover:bg-[#089bd3] text-white text-sm font-black uppercase tracking-wider rounded-xl transition-colors shadow-lg shadow-blue-500/30">
-            Continuar
-          </button>
+          <div className="hc-icon-wrapper w-20 h-20 bg-blue-50/80 border border-blue-100 rounded-2xl flex items-center justify-center mb-6 text-[#00AEEF] shadow-inner">
+            <ExternalLink strokeWidth={2} className="w-10 h-10 lucide" />
+          </div>
+
+          <h3 className="text-2xl font-black text-[#0B2341] mb-3 tracking-tight hc-text-destaque">Visitar Site Oficial?</h3>
+          <p className="text-sm text-slate-500 mb-8 leading-relaxed hc-text-desc">
+            Você será redirecionado para o portal institucional da <strong className="text-[#0B2341] hc-text-destaque">EMPETUR</strong> na mesma aba. Deseja continuar?
+          </p>
+
+          <div className="flex gap-3 w-full">
+            <button 
+              onClick={onClose} 
+              className="flex-1 px-4 py-3.5 bg-slate-50 hover:bg-slate-100 text-slate-500 text-sm font-bold rounded-2xl transition-all active:scale-95 focus:outline-none hc-botao-borda"
+            >
+              Cancelar
+            </button>
+            
+            <button 
+              onClick={onConfirm} 
+              className="hc-botao-destaque flex-[1.2] px-4 py-3.5 bg-[#0B2341] hover:bg-[#00AEEF] text-white text-sm font-black uppercase tracking-wider rounded-2xl transition-all duration-300 shadow-[0_8px_20px_-6px_rgba(11,35,65,0.4)] hover:shadow-[0_8px_20px_-6px_rgba(0,174,239,0.4)] active:scale-95"
+            >
+              Continuar
+            </button>
+          </div>
         </div>
-      </div>
+      </FadeIn>
     </div>
   );
 }

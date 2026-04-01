@@ -1,58 +1,52 @@
 import React from "react";
-import { Card, Title, Text } from "@tremor/react";
 import { BookOpen, DownloadCloud } from "lucide-react";
-import FadeIn from "./FadeIn"; // Ajuste o caminho do FadeIn se necessário
+import FadeIn from "./FadeIn";
 
 export default function DownloadDictionaryModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      {/* BACKGROUND BLUR */}
-      <div 
-        className="absolute inset-0 bg-[#0B2341]/60 backdrop-blur-sm transition-opacity" 
-        onClick={onClose} 
-      />
+      <style>{`
+        body.contraste-negativo .hc-icon-wrapper { background-color: #000 !important; border: 1px solid #ffea00 !important; }
+        body.contraste-negativo .hc-icon-wrapper .lucide { color: #ffea00 !important; }
+        body.contraste-negativo .hc-icon-wrapper .bg-white { background-color: #000 !important; }
+      `}</style>
+      
+      <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-md transition-opacity" onClick={onClose} />
 
       <FadeIn className="relative w-full max-w-md">
-        <Card className="hc-card rounded-[2.5rem] border-none shadow-2xl bg-white p-8 md:p-10 flex flex-col items-center text-center">
+        <div className="hc-card rounded-[2.5rem] bg-white border border-white/20 shadow-2xl p-8 md:p-10 flex flex-col items-center text-center">
           
-          {/* ÍCONE DO TOPO */}
-          <div className="hc-icon-wrapper w-24 h-24 rounded-full bg-blue-50 flex items-center justify-center mb-6 shadow-inner relative">
-            <BookOpen className="w-10 h-10 text-[#00AEEF] absolute -ml-4" />
-            <DownloadCloud className="w-8 h-8 text-[#0B2341] absolute -mr-6 mt-4" />
+          <div className="hc-icon-wrapper w-24 h-24 rounded-[1.5rem] bg-indigo-50/80 border border-indigo-100 flex items-center justify-center mb-6 shadow-inner relative">
+            <BookOpen strokeWidth={1.5} className="w-10 h-10 text-indigo-500 absolute -ml-4 lucide" />
+            <DownloadCloud strokeWidth={2.5} className="w-8 h-8 text-[#0B2341] absolute -mr-6 mt-4 bg-white rounded-full p-1 lucide" />
           </div>
 
-          <Title className="text-2xl font-black text-[#0B2341] mb-2 tracking-tight">
-            Dicionário de Dados
-          </Title>
+          <h2 className="text-2xl font-black text-[#0B2341] mb-3 tracking-tight hc-text-destaque">Dicionário de Dados</h2>
           
-          <Text className="text-slate-500 leading-relaxed mb-8">
-            Você está prestes a baixar o documento oficial da EMPETUR contendo os <strong>metadados técnicos</strong> do painel em formato PDF. Deseja continuar?
-          </Text>
+          <p className="text-slate-500 leading-relaxed mb-8 text-sm hc-text-desc">
+            Baixe o documento oficial da EMPETUR contendo os <strong className="text-slate-700 hc-text-destaque">metadados técnicos</strong> do painel em formato PDF.
+          </p>
 
-          {/* ÁREA DOS BOTÕES */}
-          <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
-            
+          <div className="flex flex-col sm:flex-row gap-3 w-full justify-center">
             <button 
               onClick={onClose} 
-              className="flex-1 px-4 py-3.5 rounded-xl bg-slate-100 text-slate-500 font-bold hover:bg-slate-200 transition-all active:scale-95 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-slate-300"
+              className="flex-1 px-4 py-3.5 rounded-2xl bg-slate-50 text-slate-500 font-bold hover:bg-slate-100 transition-all active:scale-95 focus:outline-none hc-botao-borda"
             >
               Cancelar
             </button>
             
-            {/* BOTÃO DE DOWNLOAD (Tag A estilisada como botão) */}
             <a 
               href="/docs/dicionario_dados_empetur.pdf" 
               download="Dicionario_Dados_EMPETUR.pdf" 
               onClick={onClose} 
-              className="hc-botao-destaque flex-[1.2] px-4 py-3.5 rounded-xl bg-[#00AEEF] text-white font-black uppercase tracking-wider shadow-lg shadow-blue-900/20 hover:bg-[#0B2341] transition-all active:scale-95 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-[#0B2341]"
+              className="hc-botao-destaque flex-[1.2] px-4 py-3.5 rounded-2xl bg-indigo-600 text-white font-black uppercase tracking-wider shadow-[0_8px_20px_-6px_rgba(79,70,229,0.4)] hover:bg-[#0B2341] hover:shadow-[0_8px_20px_-6px_rgba(11,35,65,0.4)] transition-all duration-300 active:scale-95 flex items-center justify-center gap-2"
             >
-              Sim, Descarregar
+              Baixar PDF
             </a>
-
           </div>
-        </Card>
+        </div>
       </FadeIn>
     </div>
   );

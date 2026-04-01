@@ -1,37 +1,48 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
+import { motion } from 'framer-motion';
 
-export default function FadeIn({ children, delay = 0, direction = "up", className = "" }) {
-  const [isVisible, setIsVisible] = useState(false);
-  const domRef = useRef();
+export default function FadeIn({ 
+  children, 
+  delay = 0, 
+  direction = "up", 
+  className = "",
+  duration = 0.6,
+  staggerChildren = false
+}) {
+  const directions = {
+    up: { y: 40, x: 0 },
+    down: { y: -40, x: 0 },
+    left: { x: 40, y: 0 },
+    right: { x: -40, y: 0 },
+    none: { x: 0, y: 0 }
+  };
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) setIsVisible(true);
-      });
-    }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+  const hiddenState = {
+    opacity: 0,
+    ...directions[direction]
+  };
 
-    if (domRef.current) observer.observe(domRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  const getTransform = () => {
-    if (isVisible) return 'translateY(0)';
-    return direction === 'up' ? 'translateY(40px)' : 'translateY(0)';
+  const visibleState = {
+    opacity: 1,
+    x: 0,
+    y: 0,
+    transition: {
+      duration: duration,
+      delay: delay,
+      ease: [0.16, 1, 0.3, 1], // Cubic bezier sofisticado
+      when: staggerChildren ? "beforeChildren" : false,
+      staggerChildren: staggerChildren ? 0.1 : 0
+    }
   };
 
   return (
-    <div
-      ref={domRef}
+    <motion.div
+      initial={hiddenState}
+      whileInView={visibleState}
+      viewport={{ once: true, margin: "-50px" }}
       className={className}
-      style={{
-        opacity: isVisible ? 1 : 0,
-        transform: getTransform(),
-        transition: `all 0.6s cubic-bezier(0.16, 1, 0.3, 1)`,
-        transitionDelay: `${delay}s`
-      }}
     >
       {children}
-    </div>
+    </motion.div>
   );
 }

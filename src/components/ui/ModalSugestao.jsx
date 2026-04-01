@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { Card, Title, Text, Button, TextInput, Textarea } from "@tremor/react";
 import { Lightbulb, SendHorizontal, X, Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
-import FadeIn from "../ui/FadeIn";
+import FadeIn from "./FadeIn";
 
 const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwM2iYw61mWk6G1K4fc06XD4GZuyMo6ahIHRnGN9pazyR_GBoZRR-jcFVgrCett-JFLEw/exec";
 
@@ -24,16 +23,13 @@ export default function ModalSugestao({ isOpen, onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!sugestao) return;
-
     setStatus("loading");
-    const dadosFormulario = { nome, email, sugestao };
-
     try {
       await fetch(GOOGLE_SHEETS_URL, {
         method: "POST",
         mode: "no-cors", 
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(dadosFormulario),
+        body: JSON.stringify({ nome, email, sugestao }),
       });
       setStatus("success");
     } catch (error) {
@@ -47,105 +43,95 @@ export default function ModalSugestao({ isOpen, onClose }) {
   return (
     <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
       <style>{`
-        .hc-input input, 
-        .hc-input textarea {
-          padding-left: 1.25rem !important;
-          padding-right: 1.25rem !important;
-        }
-        .hc-input textarea {
-          padding-top: 0.85rem !important;
-        }
-
-        .hc-btn-cancel { background-color: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
-        .hc-btn-cancel:hover { background-color: #f1f5f9; color: #0f172a; }
-        .hc-btn-submit.hc-active { background-color: #0ea5e9; color: #fff; }
-        .hc-btn-submit.hc-active:hover { background-color: #0284c7; }
-        .hc-btn-submit.hc-disabled { background-color: #cbd5e1; color: #fff; cursor: not-allowed; }
-
         body.contraste-negativo .hc-modal-card { background-color: #000 !important; border: 2px solid #ffea00 !important; }
         body.contraste-negativo .hc-text-destaque { color: #ffea00 !important; }
         body.contraste-negativo .hc-text-desc { color: #fff !important; }
-        body.contraste-negativo .hc-close-btn { color: #ffea00 !important; }
-        body.contraste-negativo .hc-input { background-color: #000 !important; border: 2px solid #ffea00 !important; color: #ffea00 !important; }
-        body.contraste-negativo .hc-input input::placeholder,
-        body.contraste-negativo .hc-input textarea::placeholder { color: rgba(255, 234, 0, 0.6) !important; }
-        body.contraste-negativo .hc-btn-submit { background-color: #ffea00 !important; color: #000 !important; font-weight: bold !important; }
+        body.contraste-negativo .hc-input { background-color: #000 !important; border: 1px solid #ffea00 !important; color: #ffea00 !important; }
+        body.contraste-negativo .hc-input::placeholder { color: rgba(255, 234, 0, 0.5) !important; }
+        
+        body.contraste-negativo .hc-icon-wrapper { background-color: #000 !important; border: 1px solid #ffea00 !important; }
+        body.contraste-negativo .hc-icon-wrapper svg { color: #ffea00 !important; }
+        
+        body.contraste-negativo .hc-btn-cancel { background-color: transparent !important; color: #ffea00 !important; border: 1px solid #ffea00 !important; }
+        body.contraste-negativo .hc-btn-cancel:hover { background-color: #ffea00 !important; color: #000 !important; }
+        
+        body.contraste-negativo .hc-btn-submit { background-color: #ffea00 !important; color: #000 !important; border: none !important; box-shadow: none !important; }
+        body.contraste-negativo .hc-btn-submit:disabled { background-color: transparent !important; color: rgba(255,234,0,0.5) !important; border: 1px dashed rgba(255,234,0,0.5) !important; }
       `}</style>
 
       <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-md transition-opacity" onClick={handleClose} />
 
       <FadeIn className="relative w-full max-w-lg">
-        <Card className="hc-modal-card rounded-[2.5rem] border-none shadow-2xl bg-white p-6 md:p-10 flex flex-col relative overflow-hidden">
+        <div className="hc-modal-card rounded-[2.5rem] bg-white shadow-2xl p-8 md:p-10 flex flex-col relative overflow-hidden">
           
-          <button onClick={handleClose} className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 transition-all rounded-full p-2 hover:bg-slate-100 hc-close-btn">
-            <X size={22} />
+          {/* 🔴 CORREÇÃO DO BOTÃO: z-[60], w-10, h-10 e pointer-events-none no ícone */}
+          <button 
+            onClick={handleClose} 
+            className="absolute top-4 right-4 sm:top-6 sm:right-6 z-[60] w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-800 transition-colors bg-slate-50 hover:bg-slate-100 rounded-full hc-text-destaque focus:outline-none focus:ring-4 focus:ring-[#00AEEF]/30"
+          >
+            <X size={20} strokeWidth={2.5} className="pointer-events-none" />
           </button>
 
           {status === "success" && (
-            <div className="text-center py-6 flex flex-col items-center animate-in fade-in zoom-in duration-300">
-              <div className="hc-icon-wrapper hc-success-icon mb-6 w-20 h-20 rounded-full bg-green-50 flex items-center justify-center">
-                <CheckCircle2 className="w-10 h-10 text-green-500" />
+            <FadeIn direction="up" className="text-center py-6 flex flex-col items-center">
+              <div className="hc-icon-wrapper w-24 h-24 rounded-full bg-green-50 flex items-center justify-center mb-6">
+                <CheckCircle2 strokeWidth={1.5} className="w-12 h-12 text-green-500" />
               </div>
-              <Title className="text-2xl font-bold text-slate-900 mb-2 hc-text-destaque">Sugestão enviada!</Title>
-              <Text className="text-slate-500 mb-8 hc-text-desc px-4">Obrigado por colaborar. Analisaremos sua ideia com carinho.</Text>
-              <Button onClick={handleClose} className="w-full sm:w-auto px-12 py-3 rounded-xl shadow-lg hc-btn-submit hc-active border-none">Entendido</Button>
-            </div>
+              <h2 className="text-3xl font-black text-slate-900 mb-3 hc-text-destaque tracking-tight">Enviado!</h2>
+              <p className="text-slate-500 mb-8 hc-text-desc leading-relaxed">Obrigado por colaborar. Analisaremos sua ideia para melhorar o painel.</p>
+              <button onClick={handleClose} className="hc-btn-submit w-full px-8 py-4 rounded-2xl bg-green-500 hover:bg-green-600 text-white font-black uppercase tracking-wider transition-all shadow-[0_8px_20px_-6px_rgba(34,197,94,0.4)]">Concluir</button>
+            </FadeIn>
           )}
 
           {status === "error" && (
-            <div className="text-center py-6 flex flex-col items-center animate-in fade-in zoom-in duration-300">
-              <div className="hc-icon-wrapper hc-error-icon mb-6 w-20 h-20 rounded-full bg-red-50 flex items-center justify-center">
-                <AlertTriangle className="w-10 h-10 text-red-500" />
+            <FadeIn direction="up" className="text-center py-6 flex flex-col items-center">
+              <div className="hc-icon-wrapper w-24 h-24 rounded-full bg-red-50 flex items-center justify-center mb-6">
+                <AlertTriangle strokeWidth={1.5} className="w-12 h-12 text-red-500" />
               </div>
-              <Title className="text-2xl font-bold text-slate-900 mb-2 hc-text-destaque">Algo deu errado</Title>
-              <Text className="text-slate-500 mb-8 hc-text-desc px-4">Não conseguimos salvar sua sugestão agora. Tente novamente.</Text>
-              <Button onClick={() => setStatus("idle")} className="w-full sm:w-auto px-10 py-3 rounded-xl hc-btn-submit hc-active border-none">Tentar Novamente</Button>
-            </div>
+              <h2 className="text-3xl font-black text-slate-900 mb-3 hc-text-destaque tracking-tight">Ops, falhou.</h2>
+              <p className="text-slate-500 mb-8 hc-text-desc leading-relaxed">Não conseguimos conectar ao servidor. Tente novamente em instantes.</p>
+              <button onClick={() => setStatus("idle")} className="hc-btn-submit w-full px-8 py-4 rounded-2xl bg-slate-900 hover:bg-black text-white font-black uppercase tracking-wider transition-all">Tentar Novamente</button>
+            </FadeIn>
           )}
 
           {(status === "idle" || status === "loading") && (
-            <form onSubmit={handleSubmit} className="relative z-10">
-              <div className="flex flex-col items-center text-center mb-8">
-                <div className="hc-icon-wrapper w-16 h-16 rounded-2xl bg-sky-50 flex items-center justify-center mb-4 shadow-sm">
-                  <Lightbulb className="w-8 h-8 text-sky-500" />
+            <form onSubmit={handleSubmit} className="relative z-10 flex flex-col h-full">
+              <div className="flex flex-col items-center text-center mb-8 mt-2">
+                <div className="hc-icon-wrapper w-16 h-16 rounded-2xl bg-sky-50 flex items-center justify-center mb-5 shadow-inner border border-sky-100">
+                  <Lightbulb strokeWidth={2} className="w-8 h-8 text-[#00AEEF]" />
                 </div>
-                <Title className="text-2xl font-bold text-slate-900 tracking-tight hc-text-destaque">Sugerir Melhoria</Title>
-                <Text className="text-slate-500 text-sm hc-text-desc">Ajude-nos a evoluir este painel.</Text>
+                <h2 className="text-2xl font-black text-[#0B2341] tracking-tight hc-text-destaque">Sugerir Melhoria</h2>
+                <p className="text-slate-500 text-sm mt-2 hc-text-desc">Sua opinião ajuda a evoluir a transparência.</p>
               </div>
 
-              <div className="space-y-4 mb-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-[11px] font-bold text-slate-400 uppercase px-1 hc-text-desc">Nome (Opcional)</label>
-                    <TextInput placeholder="Seu nome" value={nome} onChange={(e) => setNome(e.target.value)} className="rounded-xl border-slate-200 hc-input" disabled={status === "loading"} />
+              <div className="space-y-5 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1 hc-text-desc">Nome (Opcional)</label>
+                    <input type="text" placeholder="Como devemos te chamar?" value={nome} onChange={(e) => setNome(e.target.value)} disabled={status === "loading"} className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-[#00AEEF] focus:bg-white transition-all hc-input text-[#0B2341] placeholder:text-slate-400" />
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="text-[11px] font-bold text-slate-400 uppercase px-1 hc-text-desc">E-mail (Opcional - Para retorno)</label>
-                    <TextInput type="email" placeholder="seu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} className="rounded-xl border-slate-200 hc-input" disabled={status === "loading"} />
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1 hc-text-desc">E-mail (Opcional)</label>
+                    <input type="email" placeholder="Para darmos retorno" value={email} onChange={(e) => setEmail(e.target.value)} disabled={status === "loading"} className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-[#00AEEF] focus:bg-white transition-all hc-input text-[#0B2341] placeholder:text-slate-400" />
                   </div>
                 </div>
-                <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold text-slate-400 uppercase px-1 hc-text-desc">Sua Ideia (Obrigatório)</label>
-                  <Textarea placeholder="No que podemos melhorar?" value={sugestao} onChange={(e) => setSugestao(e.target.value)} required rows={4} className="rounded-xl border-slate-200 hc-input resize-none shadow-sm" disabled={status === "loading"} />
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1 hc-text-desc">Sua Ideia</label>
+                  <textarea placeholder="O que podemos construir ou melhorar?" value={sugestao} onChange={(e) => setSugestao(e.target.value)} required rows={4} disabled={status === "loading"} className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-[#00AEEF] focus:bg-white transition-all resize-none hc-input text-[#0B2341] placeholder:text-slate-400" />
                 </div>
               </div>
 
-              <div className="flex flex-col-reverse sm:flex-row justify-end gap-3">
-                <Button type="button" variant="light" onClick={handleClose} className="rounded-xl px-6 py-2.5 hc-btn-cancel border-none font-medium" disabled={status === "loading"}>
+              <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 mt-auto">
+                <button type="button" onClick={handleClose} disabled={status === "loading"} className="hc-btn-cancel px-6 py-4 rounded-2xl bg-slate-50 hover:bg-slate-100 text-slate-500 font-bold transition-all focus:outline-none">
                   Cancelar
-                </Button>
-                
-                <Button type="submit" className={`rounded-xl px-8 py-3 flex items-center justify-center gap-2 transition-all shadow-md hc-btn-submit border-none font-bold ${sugestao ? 'hc-active' : 'hc-disabled'}`} disabled={!sugestao || status === "loading"}>
-                  {status === "loading" ? (
-                    <><Loader2 className="w-5 h-5 animate-spin" /> Enviando</>
-                  ) : (
-                    <><SendHorizontal className="w-5 h-5" /> Enviar</>
-                  )}
-                </Button>
+                </button>
+                <button type="submit" disabled={!sugestao || status === "loading"} className={`hc-btn-submit px-8 py-4 rounded-2xl flex items-center justify-center gap-2 font-black uppercase tracking-wider transition-all duration-300 ${sugestao ? 'bg-[#00AEEF] hover:bg-[#0B2341] text-white shadow-[0_8px_20px_-6px_rgba(0,174,239,0.4)] hover:shadow-[0_8px_20px_-6px_rgba(11,35,65,0.4)] cursor-pointer' : 'bg-slate-100 text-slate-400 cursor-not-allowed'}`}>
+                  {status === "loading" ? <><Loader2 className="w-5 h-5 animate-spin pointer-events-none" /> Enviando</> : <><SendHorizontal strokeWidth={2.5} className="w-5 h-5 pointer-events-none" /> Enviar</>}
+                </button>
               </div>
             </form>
           )}
-        </Card>
+        </div>
       </FadeIn>
     </div>
   );

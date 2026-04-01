@@ -55,19 +55,25 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
   return (
     <section
       id="inicio"
-      className="hero-section relative bg-[#0B2341] pt-14 sm:pt-28 md:pt-32 pb-14 sm:pb-20 md:pb-24 overflow-hidden"
+      // 🔴 O SEGREDO ESTÁ AQUI: pt-[160px] empurra o conteúdo para baixo da Navbar + Breadcrumb
+      className="hero-section relative bg-[#0B2341] pt-[160px] sm:pt-[180px] md:pt-[200px] pb-14 sm:pb-20 md:pb-24 overflow-hidden"
     >
+      <style>{`
+        body.contraste-negativo .hero-title-gradient { background: none !important; -webkit-text-fill-color: #ffea00 !important; color: #ffea00 !important; }
+        body.contraste-negativo .hero-glow, body.contraste-negativo .hero-overlay { display: none !important; }
+        body.contraste-negativo .hero-stats { background: #000 !important; border: 2px solid #ffea00 !important; }
+        body.contraste-negativo .hero-button { background: transparent !important; color: #ffea00 !important; border: 2px solid #ffea00 !important; box-shadow: none !important; }
+        body.contraste-negativo .hero-button:hover { background: #ffea00 !important; color: #000 !important; }
+      `}</style>
+
       <div className="absolute inset-0 z-0">
         <img
           src={heroImage}
           alt="Imagem institucional do painel"
-          className="hero-bg-image w-full h-full object-cover object-center"
+          className="hero-bg-image w-full h-full object-cover object-center opacity-80"
         />
-
-        <div className="hero-overlay absolute inset-0 bg-[#07182F]/48" />
-        <div className="hero-glow absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(0,174,239,0.08),transparent_48%)]" />
-
-        <div className="hero-fade absolute inset-x-0 bottom-0 h-[45%] sm:h-[55%] md:h-[60%] bg-gradient-to-t from-[#f8fafc] via-[#f8fafc]/60 to-transparent" />
+        <div className="hero-overlay absolute inset-0 bg-[#07182F]/70" />
+        <div className="hero-glow absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(0,174,239,0.15),transparent_60%)]" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 text-center flex flex-col items-center">
@@ -107,7 +113,7 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
               Transparência sobre pagamentos e apoios a eventos
             </p>
 
-            <p className="text-slate-100 text-[13px] sm:text-lg md:text-xl leading-relaxed mb-8 sm:mb-12 font-light px-1 sm:px-0">
+            <p className="text-slate-100 text-[13px] sm:text-lg md:text-xl leading-relaxed mb-8 sm:mb-12 font-light px-1 sm:px-0 hc-text-desc">
               Consulte, de forma clara e acessível, a execução financeira dos apoios da EMPETUR
               a eventos voltados ao desenvolvimento, à promoção e à comercialização do turismo em Pernambuco.
             </p>
@@ -116,7 +122,7 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
 
         <FadeIn delay={0.3}>
           <div className="hero-stats w-full max-w-[320px] sm:max-w-3xl mx-auto mb-8 sm:mb-12 bg-white/95 backdrop-blur-lg rounded-3xl shadow-2xl shadow-blue-950/20 p-3 sm:p-6 md:p-8 grid grid-cols-1 md:grid-cols-3 divide-y-2 md:divide-y-0 md:divide-x-2 divide-slate-100 border border-white/70">
-            <AnimatedCounter end={apresentacoes} label="Apresentações" />
+            <AnimatedCounter end={apresentacoes} label="Apresentações Lidas" />
             <AnimatedCounter end={municipios} label="Municípios Atendidos" />
             <AnimatedCounter end={artistas} suffix="+" label="Artistas Diferentes" />
           </div>
@@ -126,7 +132,7 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
           <a
             href="#painel"
             onClick={handleScroll}
-            className="hero-button group inline-flex items-center justify-center gap-3 px-5 sm:px-10 py-3.5 sm:py-5 bg-[#00AEEF] text-white text-[13px] sm:text-base font-bold rounded-2xl hover:bg-[#0095d1] transition-all shadow-xl shadow-cyan-900/30"
+            className="hero-button group inline-flex items-center justify-center gap-3 px-5 sm:px-10 py-3.5 sm:py-5 bg-[#00AEEF] text-white text-[13px] sm:text-base font-black uppercase tracking-widest rounded-2xl hover:bg-[#0095d1] transition-all shadow-xl shadow-cyan-900/30 active:scale-95"
           >
             Explorar o Painel
             <svg
@@ -138,7 +144,7 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
+                strokeWidth={2.5}
                 d="M19 14l-7 7m0 0l-7-7m7 7V3"
               />
             </svg>

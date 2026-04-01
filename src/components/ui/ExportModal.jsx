@@ -1,8 +1,6 @@
 import React from "react";
-import { Card, Title, Text } from "@tremor/react";
 import { FileSpreadsheet, FileText, DownloadCloud } from "lucide-react";
 import FadeIn from "./FadeIn";
-// 🔴 Import das duas funções lá do seu arquivo de Utils
 import { exportarParaCSV, exportarParaExcelPersonalizado } from "../../utils/ExportUtils"; 
 
 export default function ExportModal({ isOpen, onClose, dados }) {
@@ -10,60 +8,60 @@ export default function ExportModal({ isOpen, onClose, dados }) {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      {/* BACKGROUND BLUR */}
+      <style>{`
+        body.contraste-negativo .hc-icon-wrapper { background-color: #000 !important; border: 1px solid #ffea00 !important; }
+        body.contraste-negativo .hc-icon-wrapper .lucide { color: #ffea00 !important; }
+        body.contraste-negativo .hc-icon-wrapper .bg-\\[\\#00AEEF\\]\\/5 { display: none !important; }
+      `}</style>
+      
       <div 
-        className="absolute inset-0 bg-[#0B2341]/60 backdrop-blur-sm transition-opacity" 
+        className="absolute inset-0 bg-slate-900/40 backdrop-blur-md transition-opacity" 
         onClick={onClose} 
       />
 
       <FadeIn className="relative w-full max-w-2xl">
-        <Card className="hc-card rounded-[2.5rem] border-none shadow-2xl bg-white p-8 md:p-10 flex flex-col items-center text-center">
+        <div className="hc-card rounded-[2.5rem] border border-white/20 shadow-2xl bg-white p-8 md:p-10 flex flex-col items-center text-center">
           
-          {/* ÍCONE DO TOPO */}
-          <div className="hc-icon-wrapper w-24 h-24 rounded-full bg-blue-50 flex items-center justify-center mb-6 shadow-inner">
-            <DownloadCloud className="w-12 h-12 text-[#00AEEF]" />
+          <div className="hc-icon-wrapper w-24 h-24 rounded-full bg-blue-50/80 border border-blue-100 flex items-center justify-center mb-8 shadow-inner relative">
+            <div className="absolute inset-0 rounded-full bg-[#00AEEF]/5 animate-ping opacity-75"></div>
+            <DownloadCloud strokeWidth={1.5} className="w-12 h-12 text-[#00AEEF] relative z-10 lucide" />
           </div>
 
-          <Title className="text-2xl md:text-3xl font-black text-[#0B2341] mb-2 tracking-tight">
+          <h2 className="text-3xl md:text-4xl font-black text-[#0B2341] mb-3 tracking-tight hc-text-destaque">
             Exportar Painel
-          </Title>
-          <Text className="text-slate-500 leading-relaxed mb-8 max-w-sm">
-            Estão visíveis <strong className="text-[#0B2341] font-black">{dados?.length || 0} registros</strong>. Escolha o formato de download desejado para a sua análise.
-          </Text>
+          </h2>
+          <p className="text-slate-500 leading-relaxed mb-10 max-w-md text-base hc-text-desc">
+            Estão visíveis <strong className="text-[#0B2341] font-black hc-text-destaque">{dados?.length || 0} registros</strong>. Escolha o formato de download desejado para a sua análise.
+          </p>
 
-          {/* ÁREA DOS BOTÕES */}
           <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
-            
             <button 
               onClick={onClose} 
-              className="flex-1 px-4 py-3.5 rounded-xl bg-slate-100 text-slate-500 font-bold hover:bg-slate-200 transition-all active:scale-95 flex items-center justify-center"
+              className="flex-1 px-4 py-4 rounded-2xl bg-slate-50 text-slate-500 font-bold hover:bg-slate-100 transition-all active:scale-95 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-slate-300 hc-botao-borda"
             >
               Cancelar
             </button>
             
-            {/* BOTÃO CSV - DADOS ABERTOS */}
             <button 
               onClick={() => { exportarParaCSV(dados); onClose(); }} 
-              className="hc-botao-borda flex-[1.2] px-4 py-3.5 rounded-xl border-2 border-[#00AEEF] text-[#00AEEF] font-black uppercase tracking-wider hover:bg-[#00AEEF] hover:text-white transition-all active:scale-95 flex items-center justify-center gap-2 group"
+              className="hc-botao-borda flex-[1.2] px-4 py-4 rounded-2xl border-2 border-[#00AEEF] text-[#00AEEF] font-black uppercase tracking-wider hover:bg-[#00AEEF] hover:text-white transition-all active:scale-95 flex items-center justify-center gap-2 group"
             >
-              <FileText size={18} className="group-hover:scale-110 transition-transform" />
+              <FileText strokeWidth={2.5} size={18} className="group-hover:-translate-y-1 transition-transform lucide" />
               CSV (Dados Abertos)
             </button>
 
-            {/* BOTÃO EXCEL - O VERDÃO BONITÃO */}
             <button 
               onClick={async () => { 
                 await exportarParaExcelPersonalizado(dados); 
                 onClose(); 
               }} 
-              className="hc-botao-destaque flex-[1.2] px-4 py-3.5 rounded-xl bg-emerald-600 text-white font-black uppercase tracking-wider shadow-lg shadow-emerald-900/20 hover:bg-emerald-500 transition-all active:scale-95 flex items-center justify-center gap-2 group"
+              className="hc-botao-destaque flex-[1.2] px-4 py-4 rounded-2xl bg-emerald-600 text-white font-black uppercase tracking-wider shadow-[0_8px_20px_-6px_rgba(5,150,105,0.4)] hover:bg-emerald-700 hover:shadow-[0_8px_20px_-6px_rgba(4,120,87,0.4)] transition-all duration-300 active:scale-95 flex items-center justify-center gap-2 group"
             >
-              <FileSpreadsheet size={18} className="group-hover:scale-110 transition-transform" />
+              <FileSpreadsheet strokeWidth={2.5} size={18} className="group-hover:-translate-y-1 transition-transform lucide" />
               Excel (.XLSX)
             </button>
-
           </div>
-        </Card>
+        </div>
       </FadeIn>
     </div>
   );

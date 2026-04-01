@@ -17,17 +17,17 @@ function Crumb({
   external = false,
 }) {
   const baseClass =
-    "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-bold uppercase tracking-[0.04em] sm:tracking-[0.08em] whitespace-nowrap transition-all";
+    "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 sm:px-4 sm:py-2 text-[10px] sm:text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all shadow-sm";
 
   const activeClass =
-    "bg-[#00AEEF]/10 text-[#00AEEF] border border-[#00AEEF]/20";
+    "bg-[#0B2341] text-white border border-[#0B2341]";
 
   const defaultClass =
-    "bg-white text-slate-500 border border-slate-200 hover:border-[#00AEEF]/30 hover:text-[#00AEEF]";
+    "bg-white text-slate-500 border border-slate-200 hover:border-[#00AEEF] hover:text-[#00AEEF]";
 
   const content = (
     <>
-      <Icon className="w-3.5 h-3.5 shrink-0" />
+      <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" strokeWidth={2.5} />
       <span>{label}</span>
     </>
   );
@@ -55,10 +55,11 @@ function Crumb({
   );
 }
 
-function Separator() {
+function Separator({ isPainel }) {
   return (
-    <span className="text-slate-300 shrink-0">
-      <ChevronRight className="w-3.5 h-3.5" />
+    // Removi o mt-3 mb-4 e adicionei flex items-center para a seta ficar perfeitamente alinhada ao meio
+    <span className={`flex items-center shrink-0 ${isPainel ? "text-slate-300" : "text-white/50 mt-4 mb-3"}`}>
+      <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" strokeWidth={3} />
     </span>
   );
 }
@@ -66,44 +67,44 @@ function Separator() {
 export default function Breadcrumb({ isPainel = false }) {
   return (
     <div
-      className={`w-full relative z-10 ${
+      className={`w-full z-[90] pointer-events-none ${
         isPainel
-          ? "mb-3 sm:mb-4"
-          : "bg-white pt-[4.2rem] sm:pt-[5.5rem] pb-2.5 sm:pb-3 border-b border-slate-200 shadow-sm"
+          ? "relative mb-3 sm:mb-4"
+          : "absolute top-[80px] sm:top-[90px] left-0 right-0 pt-5 pb-2"
       }`}
     >
-      <div className={`${isPainel ? "w-full" : "max-w-7xl mx-auto px-4 sm:px-6 mt-5 sm:mt-0"}`}>
+      <div className={`${isPainel ? "w-full" : "max-w-7xl mx-auto px-4 sm:px-6"}`}>
         <nav
           aria-label="Breadcrumb"
-          className="overflow-x-auto whitespace-nowrap [scrollbar-width:none] [-ms-overflow-style:none]"
+          className="overflow-x-auto whitespace-nowrap [scrollbar-width:none] [-ms-overflow-style:none] pointer-events-auto"
         >
           <div className="inline-flex items-center gap-1.5 sm:gap-2 min-w-max">
             <Crumb
               href="https://www.empetur.pe.gov.br/"
               external
               icon={House}
-              label="Início"
+              label="Portal"
             />
 
-            <Separator />
+            <Separator isPainel={isPainel} />
 
             <Crumb
               icon={Shield}
               label="Transparência"
             />
 
-            <Separator />
+            <Separator isPainel={isPainel} />
 
             <Crumb
               to="/"
               icon={FileBarChart2}
-              label="Portal de Contratações Artísticas"
+              label="Contratações"
               active={!isPainel}
             />
 
             {isPainel && (
               <>
-                <Separator />
+                <Separator isPainel={isPainel} />
                 <Crumb
                   icon={LayoutDashboard}
                   label="Dashboard"

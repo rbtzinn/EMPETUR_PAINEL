@@ -1,23 +1,20 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Card, Text, Badge } from "@tremor/react";
 import { Link } from "react-router-dom";
-import { User, MapPin, Layers, Calendar, DollarSign, FileDigit, RefreshCw, ExternalLink, ShieldAlert } from "lucide-react";
+import { User, MapPin, Layers, Calendar, DollarSign, RefreshCw, ExternalLink, ShieldAlert, SearchX } from "lucide-react";
 import FadeIn from "../ui/FadeIn";
-import { fetchAndProcessData } from "../../utils/DataProcessor";
 import DropdownPesquisavel from "../ui/DropdownPesquisavel";
+import { fetchAndProcessData } from "../../utils/DataProcessor"; 
 
 export default function PanelSection({ id, csvUrls, lookerShareUrl }) {
   const [dados, setDados] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔴 NOVO ESTADO: nomeCredor adicionado aos filtros locais
   const [filtros, setFiltros] = useState({
     municipio: "", ciclo: "", ano: "", artista: "", dataEvento: "", nomeCredor: ""
   });
 
   useEffect(() => {
     const urls = Array.isArray(csvUrls) ? csvUrls : [csvUrls];
-
     Promise.all(urls.map(url => fetchAndProcessData(url)))
       .then(resultados => {
         setDados(resultados.flat());
@@ -34,35 +31,23 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) {
       const data = new Date(partes[2], partes[1] - 1, partes[0]);
       if (!isNaN(data.getTime())) {
         data.setDate(data.getDate() + 30);
-        const dia = String(data.getDate()).padStart(2, '0');
-        const mes = String(data.getMonth() + 1).padStart(2, '0');
-        const ano = data.getFullYear();
-        return `${dia}/${mes}/${ano}`;
+        return `${String(data.getDate()).padStart(2, '0')}/${String(data.getMonth() + 1).padStart(2, '0')}/${data.getFullYear()}`;
       }
     }
     return "Consulte o Empenho";
   };
 
-  // 🔴 MÁGICA DA LGPD E TRANSPARÊNCIA: Mascara apenas CPF. CNPJ fica público.
   const mascararDocumento = (doc) => {
     if (!doc || doc === "N/A" || doc === "NÃO IDENTIFICADO") return "---";
-
-    // Remove tudo que não for número para contar os dígitos certinho
     const limpo = doc.replace(/[^\w\d]/g, '');
-
     if (limpo.length === 11) {
-      // É CPF (Pessoa Física): Mascara por causa da LGPD
       return `***.${limpo.substring(3, 6)}.${limpo.substring(6, 9)}-**`;
     } else if (limpo.length === 14) {
-      // É CNPJ (Pessoa Jurídica): Dado Público, mostra formatação completa
       return `${limpo.substring(0, 2)}.${limpo.substring(2, 5)}.${limpo.substring(5, 8)}/${limpo.substring(8, 12)}-${limpo.substring(12, 14)}`;
-    } else {
-      // UG, IG ou outra matrícula do estado: mostra como veio do e-Fisco
-      return doc;
     }
+    return doc;
   };
 
-  // 🔴 Lógica de filtros atualizada para checar o nomeCredor
   const filtrados = useMemo(() => {
     return dados.filter((d) => {
       return (
@@ -76,7 +61,6 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) {
     });
   }, [dados, filtros]);
 
-  // 🔴 Cascata atualizada para checar o nomeCredor
   const getOpcoesCascata = (campoCorrente) => {
     const dadosPossiveis = dados.filter((d) => {
       return (
@@ -93,8 +77,9 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) {
 
   if (loading) {
     return (
-      <div className="py-32 flex justify-center bg-[#F8FAFC]">
-        <Text className="font-bold text-[#0B2341] animate-pulse text-xl">Sincronizando base eFisco...</Text>
+      <div className="py-32 flex flex-col items-center justify-center bg-[#F8FAFC]">
+        <div className="w-16 h-16 border-4 border-[#00AEEF]/20 border-t-[#00AEEF] rounded-full animate-spin mb-6"></div>
+        <p className="font-bold text-[#0B2341] tracking-widest uppercase text-sm animate-pulse hc-text-destaque">Sincronizando base e-Fisco...</p>
       </div>
     );
   }
@@ -102,97 +87,93 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) {
   return (
     <section id={id} className="py-24 bg-[#F8FAFC]">
       <style>{`
+        /* GARANTIA DE ALTO CONTRASTE NA TABELA */
         body.contraste-negativo .hc-tabela-card { background-color: #000 !important; border: 1px solid #ffea00 !important; }
         body.contraste-negativo .hc-tabela-header th { background-color: #111 !important; color: #ffea00 !important; border-bottom: 2px solid #ffea00 !important; }
         body.contraste-negativo .hc-tabela-linha:hover { background-color: #111 !important; }
         body.contraste-negativo .hc-text-destaque { color: #ffea00 !important; }
         body.contraste-negativo .hc-pilula { background-color: transparent !important; color: #ffea00 !important; border: 1px solid #ffea00 !important; }
         body.contraste-negativo .hc-valor { color: #00ff00 !important; }
+        
+        /* 🔴 NOVO: Ícones amarelos no contraste negativo */
+        body.contraste-negativo .hc-tabela-header th .lucide,
+        body.contraste-negativo .hc-tabela-linha .lucide {
+          color: #ffea00 !important;
+        }
       `}</style>
 
       <div className="w-full max-w-7xl mx-auto px-4 md:px-10">
-
-        {/* CABEÇALHO DA SEÇÃO */}
-        <FadeIn className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+        
+        <FadeIn className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
           <div>
-            <h2 className="text-3xl md:text-5xl font-black text-[#0B2341] tracking-tight mb-2 hc-text-destaque">
+            <h2 className="text-3xl md:text-5xl font-black text-[#0B2341] tracking-tight mb-3 hc-text-destaque">
               Consulta Rápida
             </h2>
-            <Text className="text-slate-500 font-medium text-lg hc-text-destaque">
-              Clique nos itens da tabela para filtrar rapidamente.
-            </Text>
+            <p className="text-slate-500 font-medium text-base md:text-lg hc-text-destaque">
+              Filtre ou clique diretamente nos itens da tabela para refinar a busca.
+            </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto shrink-0">
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto shrink-0">
             <button
               onClick={() => setFiltros({ municipio: "", ciclo: "", ano: "", artista: "", dataEvento: "", nomeCredor: "" })}
-              className="flex items-center justify-center gap-2 w-full sm:w-auto text-[#00AEEF] font-bold text-sm uppercase tracking-wider hover:text-[#0B2341] hover:bg-blue-100 bg-blue-50 px-5 py-3 rounded-xl transition-colors hc-text-destaque"
+              className="flex items-center justify-center gap-2 w-full sm:w-auto text-[#00AEEF] font-bold text-sm uppercase tracking-wider hover:text-[#0B2341] hover:bg-slate-200 bg-slate-100 px-6 py-4 rounded-2xl transition-all hc-text-destaque active:scale-95"
             >
-              <RefreshCw size={16} /> Limpar Filtros
+              <RefreshCw strokeWidth={2.5} size={16} /> Limpar
             </button>
 
             <Link
               to={lookerShareUrl}
-              className="hc-botao-destaque cursor-pointer w-full sm:w-auto px-6 py-3 bg-[#00AEEF] hover:bg-[#0B2341] text-[#0B2341] hover:text-white text-sm font-black uppercase tracking-widest rounded-xl transition-all duration-300 shadow-lg shadow-sky-900/20 flex items-center justify-center gap-2 group"
+              className="hc-botao-destaque cursor-pointer w-full sm:w-auto px-8 py-4 bg-[#0B2341] hover:bg-[#00AEEF] text-white text-sm font-black uppercase tracking-widest rounded-2xl transition-all duration-300 shadow-[0_8px_20px_-6px_rgba(11,35,65,0.4)] flex items-center justify-center gap-3 group active:scale-95"
             >
-              Acessar Painel Completo
-              <ExternalLink size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+              Painel Avançado
+              <ExternalLink strokeWidth={2.5} size={18} />
             </Link>
           </div>
         </FadeIn>
 
-        {/* ÁREA DOS FILTROS (DROPDOWNS) - 🔴 Ajustado para grid-cols-3 para caber 6 filtros perfeitamente */}
-        <FadeIn delay={0.1} className="relative z-30">
-          <Card className="rounded-[2rem] border-none shadow-xl shadow-blue-900/5 bg-white p-6 mb-8 overflow-visible hc-tabela-card">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <DropdownPesquisavel label="Todos os Municípios" value={filtros.municipio} onChange={(v) => setFiltros({ ...filtros, municipio: v })} options={getOpcoesCascata("municipio")} />
-              <DropdownPesquisavel label="Todos os Ciclos" value={filtros.ciclo} onChange={(v) => setFiltros({ ...filtros, ciclo: v })} options={getOpcoesCascata("ciclo")} />
-              <DropdownPesquisavel label="Todos os Anos" value={filtros.ano} onChange={(v) => setFiltros({ ...filtros, ano: v })} options={getOpcoesCascata("ano")} />
-              <DropdownPesquisavel label="Todas as Datas" value={filtros.dataEvento} onChange={(v) => setFiltros({ ...filtros, dataEvento: v })} options={getOpcoesCascata("dataEvento")} />
-              <DropdownPesquisavel label="Todos os Artistas" value={filtros.artista} onChange={(v) => setFiltros({ ...filtros, artista: v })} options={getOpcoesCascata("artista")} />
+        <FadeIn delay={0.1} className="relative z-30 mb-8">
+          <div className="rounded-[2.5rem] bg-white p-6 shadow-xl shadow-slate-200/50 border border-slate-100 hc-tabela-card">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              <DropdownPesquisavel label="Municípios" value={filtros.municipio} onChange={(v) => setFiltros({ ...filtros, municipio: v })} options={getOpcoesCascata("municipio")} />
+              <DropdownPesquisavel label="Ciclos" value={filtros.ciclo} onChange={(v) => setFiltros({ ...filtros, ciclo: v })} options={getOpcoesCascata("ciclo")} />
+              <DropdownPesquisavel label="Anos" value={filtros.ano} onChange={(v) => setFiltros({ ...filtros, ano: v })} options={getOpcoesCascata("ano")} />
+              <DropdownPesquisavel label="Datas" value={filtros.dataEvento} onChange={(v) => setFiltros({ ...filtros, dataEvento: v })} options={getOpcoesCascata("dataEvento")} />
+              <DropdownPesquisavel label="Artistas" value={filtros.artista} onChange={(v) => setFiltros({ ...filtros, artista: v })} options={getOpcoesCascata("artista")} />
               <DropdownPesquisavel label="Razão Social (Credor)" value={filtros.nomeCredor} onChange={(v) => setFiltros({ ...filtros, nomeCredor: v })} options={getOpcoesCascata("nomeCredor")} />
             </div>
-          </Card>
+          </div>
         </FadeIn>
 
-        {/* ÁREA DA TABELA */}
         <FadeIn delay={0.2}>
-          <Card className="rounded-[2rem] border-none shadow-2xl shadow-blue-900/5 bg-white p-0 flex flex-col hc-tabela-card">
-
-            <div className="p-6 md:px-8 md:pt-8 md:pb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100">
+          <div className="rounded-[2.5rem] bg-white shadow-2xl shadow-slate-200/60 border border-slate-100 overflow-hidden flex flex-col hc-tabela-card">
+            <div className="p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100/80">
               <div>
-                <h3 className="font-black text-[#0B2341] text-xl hc-text-destaque">Detalhamento dos Fomentos</h3>
-                <Text className="text-slate-400 text-sm hc-text-destaque">Lista oficial de contratações baseada no e-Fisco</Text>
+                <h3 className="font-black text-[#0B2341] text-2xl tracking-tight hc-text-destaque mb-1">Extrato de Empenhos</h3>
+                <p className="text-slate-400 text-sm font-medium hc-text-destaque">Lista oficial de contratações baseada nos registros do e-Fisco</p>
               </div>
-              <Badge className="font-black bg-blue-50 text-[#00AEEF] px-4 py-1.5 rounded-lg border border-blue-100 uppercase tracking-widest text-[10px] hc-text-destaque hc-tabela-card">
-                {filtrados.length} Registros
-              </Badge>
+              <div className="bg-blue-50/80 text-[#00AEEF] px-5 py-2.5 rounded-xl border border-blue-100 flex items-center gap-3 hc-tabela-card">
+                <span className="font-black uppercase tracking-widest text-xs hc-text-destaque">{filtrados.length} Registros</span>
+              </div>
             </div>
 
-            {/* TABELA EM SI */}
-            <div className="h-[600px] overflow-y-auto scrollbar-moderna rounded-b-[2rem]">
-              <table className="w-full text-left border-collapse min-w-[1000px]">
-
-                <thead className="bg-slate-50/95 backdrop-blur-md sticky top-0 z-10 shadow-sm hc-tabela-header">
+            <div className="h-[650px] overflow-y-auto scrollbar-moderna bg-slate-50/30">
+              <table className="w-full text-left border-collapse min-w-[1050px]">
+                <thead className="bg-white/95 backdrop-blur-md sticky top-0 z-10 shadow-sm shadow-slate-100 hc-tabela-header">
                   <tr>
-                    {/* 🔴 CABEÇALHOS ATUALIZADOS PARA O NOVO PADRÃO */}
-                    <th className="py-5 px-6 text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap bg-slate-50 hc-tabela-header">
-                      <div className="flex items-center gap-2"><User size={14} /> Artista / Empenho</div>
-                    </th>
-                    <th className="py-5 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap bg-slate-50 hc-tabela-header">
-                      <div className="flex items-center gap-2" title="Nome e documento parcialmente anonimizado (LGPD)"><ShieldAlert size={14} /> PJ / PF - Contratado</div>
-                    </th>
-                    <th className="py-5 px-6 text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap bg-slate-50 hc-tabela-header">
-                      <div className="flex items-center gap-2"><MapPin size={14} /> Município</div>
-                    </th>
-                    <th className="py-5 px-6 text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap bg-slate-50 hc-tabela-header">
-                      <div className="flex items-center gap-2"><Layers size={14} /> Ciclo</div>
-                    </th>
-                    <th className="py-5 px-6 text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap bg-slate-50 hc-tabela-header">
-                      <div className="flex items-center gap-2"><Calendar size={14} /> Apresentação / Data Limite</div>
-                    </th>
-                    <th className="py-5 px-6 text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap text-right bg-slate-50 hc-tabela-header">
-                      <div className="flex items-center justify-end gap-2"><DollarSign size={14} /> Valor Pago</div>
+                    {[
+                      { icon: <User size={14} />, label: "Artista / Empenho" },
+                      { icon: <ShieldAlert size={14} />, label: "PJ / PF - Contratado", title: "Documento anonimizado (LGPD)" },
+                      { icon: <MapPin size={14} />, label: "Município" },
+                      { icon: <Layers size={14} />, label: "Ciclo" },
+                      { icon: <Calendar size={14} />, label: "Data / Prazo" },
+                    ].map((th, i) => (
+                      <th key={i} className="py-5 px-6 text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap hc-tabela-header" title={th.title}>
+                        <div className="flex items-center gap-2">{th.icon} {th.label}</div>
+                      </th>
+                    ))}
+                    <th className="py-5 px-6 text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap text-right hc-tabela-header">
+                      <div className="flex items-center justify-end gap-2"><DollarSign size={14} /> Valor Líquido</div>
                     </th>
                   </tr>
                 </thead>
@@ -200,92 +181,67 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) {
                 <tbody>
                   {filtrados.length > 0 ? (
                     filtrados.map((d) => (
-                      <tr key={d.id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-50 last:border-0 group hc-tabela-linha">
-
-                        {/* 🔴 CÉLULA DO ARTISTA / EMPENHO */}
-                        <td
-                          className="py-4 px-6 max-w-[200px] cursor-pointer group"
-                          onClick={() => setFiltros(prev => ({ ...prev, artista: prev.artista === d.artista ? "" : d.artista }))}
-                        >
-                          <div className="flex flex-col gap-1">
-                            <span
-                              className="font-bold text-[#0B2341] truncate text-sm transition-colors group-hover:text-[#00AEEF] hc-text-destaque"
-                              title={`Filtrar por ${d.artista}`}
-                            >
-                              {d.artista}
-                            </span>
+                      <tr key={d.id} className="hover:bg-blue-50/40 transition-colors border-b border-slate-100/60 last:border-0 group hc-tabela-linha bg-white">
+                        <td className="py-5 px-6 max-w-[200px] cursor-pointer" onClick={() => setFiltros(prev => ({ ...prev, artista: prev.artista === d.artista ? "" : d.artista }))}>
+                          <div className="flex flex-col gap-1.5">
+                            <span className="font-bold text-[#0B2341] truncate text-sm transition-colors group-hover:text-[#00AEEF] hc-text-destaque">{d.artista}</span>
                             <div className="flex items-center gap-2">
-                              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 hc-text-destaque">Empenho:</span>
-                              <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md hc-tabela-card">{d.numeroEmpenho}</span>
+                              <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 hc-text-destaque">NE:</span>
+                              <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded text-mono tracking-wide hc-tabela-card">{d.numeroEmpenho}</span>
                             </div>
                           </div>
                         </td>
 
-                        {/* 🔴 NOVA CÉLULA DO CREDOR / MÁSCARA LGPD */}
-                        <td
-                          className="py-4 px-4 max-w-[220px] cursor-pointer group"
-                          onClick={() => setFiltros(prev => ({ ...prev, nomeCredor: prev.nomeCredor === d.nomeCredor ? "" : d.nomeCredor }))}
-                        >
+                        <td className="py-5 px-6 max-w-[220px] cursor-pointer" onClick={() => setFiltros(prev => ({ ...prev, nomeCredor: prev.nomeCredor === d.nomeCredor ? "" : d.nomeCredor }))}>
                           <div className="flex flex-col gap-1.5 items-start">
-                            <span
-                              className="font-bold text-slate-700 truncate w-full text-xs transition-colors group-hover:text-[#00AEEF] hc-text-destaque"
-                              title={`Filtrar por ${d.nomeCredor}`}
-                            >
-                              {d.nomeCredor}
-                            </span>
-                            <span className="font-mono text-[10px] font-bold text-slate-500 hc-text-destaque bg-slate-100/80 px-2 py-0.5 rounded-md border border-slate-200/50">
+                            <span className="font-bold text-slate-600 truncate w-full text-xs transition-colors group-hover:text-[#00AEEF] hc-text-destaque">{d.nomeCredor}</span>
+                            <span className="font-mono text-[10px] font-bold text-slate-500 bg-slate-50 border border-slate-200/60 px-2 py-0.5 rounded tracking-wider hc-tabela-card hc-text-destaque">
                               {mascararDocumento(d.documentoCredor)}
                             </span>
                           </div>
                         </td>
 
-                        <td
-                          className="py-4 px-6 cursor-pointer"
-                          onClick={() => setFiltros(prev => ({ ...prev, municipio: prev.municipio === d.municipio ? "" : d.municipio }))}
-                        >
-                          <div className="flex items-center gap-2 group/mun">
-                            <MapPin size={16} className="text-slate-300 group-hover/mun:text-[#00AEEF] transition-colors" />
-                            <span className="text-sm font-bold text-slate-600 group-hover/mun:text-[#00AEEF] transition-colors hc-text-destaque">
-                              {d.municipio}
-                            </span>
+                        <td className="py-5 px-6 cursor-pointer" onClick={() => setFiltros(prev => ({ ...prev, municipio: prev.municipio === d.municipio ? "" : d.municipio }))}>
+                          <div className="flex items-center gap-2.5">
+                            <span className="text-sm font-bold text-slate-600 group-hover:text-[#0B2341] transition-colors hc-text-destaque">{d.municipio}</span>
                           </div>
                         </td>
 
-                       <td
-                          className="py-6 px-6 cursor-pointer align-top"
-                          onClick={() => setFiltros(prev => ({ ...prev, ciclo: prev.ciclo === d.ciclo ? "" : d.ciclo }))}
-                        >
-                          <span className="inline-block bg-[#0B2341] text-white px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-tight hover:bg-[#00AEEF] hc-pilula transition-colors max-w-[180px] break-words whitespace-normal text-left leading-snug">
+                        <td className="py-5 px-6 cursor-pointer align-middle" onClick={() => setFiltros(prev => ({ ...prev, ciclo: prev.ciclo === d.ciclo ? "" : d.ciclo }))}>
+                          <span className="hc-pilula inline-flex items-center justify-center bg-slate-100 text-[#0B2341] px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all max-w-[160px] truncate">
                             {d.ciclo}
                           </span>
                         </td>
 
-                        <td className="py-4 px-6">
+                        <td className="py-5 px-6">
                           <div className="flex flex-col gap-1">
-                            <span className="text-sm font-bold text-slate-700 hc-text-destaque">{d.dataEvento}</span>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 hc-text-destaque" title="Data máxima legal estipulada para o pagamento (30 dias após o serviço)">
-                              Data limite: <span className="text-amber-500 hc-text-destaque">{calcularPrazoPagamento(d.dataEvento)}</span>
+                            <span className="text-sm font-bold text-[#0B2341] hc-text-destaque">{d.dataEvento}</span>
+                            <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 hc-text-destaque">
+                              Limite: <span className="text-amber-600 ml-1 hc-text-destaque">{calcularPrazoPagamento(d.dataEvento)}</span>
                             </span>
                           </div>
                         </td>
 
-                        <td className="py-4 px-6 text-sm font-mono font-black text-[#00AEEF] text-right hc-valor">
-                          {Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(d.valor) || 0)}
+                        <td className="py-5 px-6 text-right">
+                          <span className="text-[15px] font-mono font-black text-[#00AEEF] hc-valor">
+                            {Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(d.valor) || 0)}
+                          </span>
                         </td>
-
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="6" className="py-20 text-center">
-                        <Text className="text-slate-400 font-bold hc-text-destaque">Nenhum registro encontrado para estes filtros.</Text>
+                      <td colSpan="6" className="py-32">
+                        <div className="flex flex-col items-center justify-center text-center px-4">
+                          <h4 className="text-lg font-bold text-[#0B2341] mb-2 hc-text-destaque">Nenhum resultado</h4>
+                        </div>
                       </td>
                     </tr>
                   )}
                 </tbody>
               </table>
             </div>
-          </Card>
+          </div>
         </FadeIn>
       </div>
     </section>

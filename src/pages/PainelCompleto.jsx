@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Card, Title, Text } from "@tremor/react";
-import { Filter, X, Trash2 } from "lucide-react";
+import { Filter } from "lucide-react";
 import { normalizarMunicipio } from "../utils/stringUtils";
 import { useDashboardData } from "../hooks/useDashboardData";
 
-// Componentes
-import Sidebar from "../components/layout/Sidebar";
+// 🔴 NOVO: Usando apenas o TopbarPainel!
+import TopbarPainel from "../components/layout/TopbarPainel";
 import DashboardHeader from "../components/layout/DashboardHeader";
 import Breadcrumb from "../components/layout/Breadcrumb";
 import MapaPernambuco from "../components/layout/MapaPernambuco";
@@ -15,7 +15,6 @@ import IndicadoresKPI from "../components/charts/IndicadoresKPI";
 import GraficoBarrasNativo from "../components/charts/GraficoBarrasNativo";
 import TopMunicipiosChart from "../components/charts/TopMunicipiosChart";
 import TopArtistasCard from "../components/charts/TopArtistasCard";
-import DropdownPesquisavel from "../components/ui/DropdownPesquisavel";
 
 export default function PainelCompleto({ csvUrls }) {
   const dataUltimaAtualizacao = "25/03/2026";
@@ -33,69 +32,38 @@ export default function PainelCompleto({ csvUrls }) {
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center bg-[#F8FAFC]">
-        <Text className="text-2xl font-black text-[#0B2341] animate-pulse">Carregando Dashboard Oficial...</Text>
+        <Text className="text-2xl font-black text-[#0B2341] animate-pulse hc-text-destaque">Carregando Dashboard Oficial...</Text>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-screen bg-[#F8FAFC] overflow-hidden">
+    <div className="flex flex-col h-screen bg-[#F8FAFC] overflow-hidden hc-bg-painel">
       <style>{`
         .scrollbar-moderna::-webkit-scrollbar { width: 6px; height: 6px; }
         .scrollbar-moderna::-webkit-scrollbar-track { background: transparent; }
         .scrollbar-moderna::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .scrollbar-moderna::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* ALTO CONTRASTE GERAL DO PAINEL */
+        body.contraste-negativo .hc-bg-painel { background-color: #000 !important; }
       `}</style>
 
-      {/* 1. SIDEBAR (MOBILE ONLY) */}
-      <Sidebar 
-        isMobileMenuOpen={isMobileMenuOpen} 
-        setIsMobileMenuOpen={setIsMobileMenuOpen} 
-        filtros={filtros} 
-        setFiltros={setFiltros} 
-        getOpcoes={getOpcoes} 
+      {/* ============================================== */}
+      {/* 🔴 TOPBAR UNIFICADA (Desktop horizontal / Mobile Dropdown) */}
+      {/* ============================================== */}
+      <TopbarPainel 
+        filtros={filtros}
+        setFiltros={setFiltros}
+        getOpcoes={getOpcoes}
+        limparFiltros={limparFiltros}
+        temFiltroAtivo={temFiltroAtivo}
+        isMobileMenuOpen={isMobileMenuOpen}
+        setIsMobileMenuOpen={setIsMobileMenuOpen}
       />
 
-      {/* 2. NAVBAR FLUTUANTE (DESKTOP) */}
-      <div className="hidden lg:block sticky top-0 z-50 w-full pt-6 px-6">
-        <div className="max-w-[1600px] mx-auto">
-          <div className="bg-white/90 backdrop-blur-md border border-slate-200 shadow-xl rounded-[2.5rem] p-3 pl-8 flex items-center gap-4 transition-all hover:shadow-2xl hover:bg-white/100">
-
-            {/* Grade de Filtros Compacta */}
-            <div className="grid grid-cols-6 gap-3 flex-1">
-              <DropdownPesquisavel label="Município" value={filtros.municipio} onChange={(v) => setFiltros({ ...filtros, municipio: v })} options={getOpcoes('municipio')} />
-              <DropdownPesquisavel label="Ciclo Cultural" value={filtros.ciclo} onChange={(v) => setFiltros({ ...filtros, ciclo: v })} options={getOpcoes('ciclo')} />
-              <DropdownPesquisavel label="Ano" value={filtros.ano} onChange={(v) => setFiltros({ ...filtros, ano: v })} options={getOpcoes('ano')} />
-              <DropdownPesquisavel label="Razão Social" value={filtros.nomeCredor} onChange={(v) => setFiltros({ ...filtros, nomeCredor: v })} options={getOpcoes('nomeCredor')} />
-              <DropdownPesquisavel label="Artista" value={filtros.artista} onChange={(v) => setFiltros({ ...filtros, artista: v })} options={getOpcoes('artista')} />
-              <DropdownPesquisavel label="Data do Evento" value={filtros.dataEvento} onChange={(v) => setFiltros({ ...filtros, dataEvento: v })} options={getOpcoes('dataEvento')} />
-            </div>
-
-            {/* Divisor Vertical */}
-            <div className="h-8 w-[1px] bg-slate-200 mx-2"></div>
-
-            {/* Botão de Limpar Estilizado */}
-            <div className="pr-2">
-              <button
-                onClick={limparFiltros}
-                disabled={!temFiltroAtivo}
-                className={`
-                  group flex items-center justify-center gap-2 h-11 px-6 rounded-3xl font-black text-[10px] uppercase tracking-widest transition-all
-                  ${temFiltroAtivo
-                    ? "bg-red-50 text-red-500 hover:bg-red-500 hover:text-white shadow-sm ring-1 ring-red-100 active:scale-95"
-                    : "bg-slate-50 text-slate-300 cursor-not-allowed opacity-60"}
-                `}
-              >
-                <Trash2 size={14} className={temFiltroAtivo ? "group-hover:scale-110 transition-transform" : ""} />
-                Limpar
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* 3. ÁREA PRINCIPAL (CONTAINER CENTRALIZADO) */}
-      <main className="flex-1 overflow-y-auto scrollbar-moderna bg-[#F8FAFC]">
+      <main className="hc-bg-painel flex-1 overflow-y-auto scrollbar-moderna bg-[#F8FAFC]">
         <div className="max-w-[1600px] mx-auto p-4 md:p-8 lg:p-10 w-full">
 
           {/* Botão de Filtros (Mobile) */}

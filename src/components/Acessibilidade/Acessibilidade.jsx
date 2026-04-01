@@ -35,18 +35,21 @@ export default function Acessibilidade() {
         </div>
       )}
 
-      <AccessibilityButton
-        botaoPos={botaoPos}
-        menuAberto={menuAberto}
-        onPointerDown={iniciarArraste}
-        onPointerMove={moverArraste}
-        onPointerUp={finalizarArraste}
-        onPointerCancel={finalizarArraste}
-        onClick={() => {
-          if (ignorarCliqueRef.current) return;
-          setMenuAberto((prev) => !prev);
-        }}
-      />
+      {/* 🔴 AQUI ESTÁ A MÁGICA: O botão só renderiza se o menu estiver FECHADO */}
+      {!menuAberto && (
+        <AccessibilityButton
+          botaoPos={botaoPos}
+          menuAberto={menuAberto}
+          onPointerDown={iniciarArraste}
+          onPointerMove={moverArraste}
+          onPointerUp={finalizarArraste}
+          onPointerCancel={finalizarArraste}
+          onClick={() => {
+            if (ignorarCliqueRef.current) return;
+            setMenuAberto((prev) => !prev);
+          }}
+        />
+      )}
 
       <AccessibilityPanel
         menuAberto={menuAberto}
