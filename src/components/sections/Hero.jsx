@@ -94,14 +94,14 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
                 Pagamentos
               </span>
               <span className="hero-title-gradient block text-[clamp(1.9rem,10vw,2.55rem)] text-transparent bg-clip-text bg-gradient-to-r from-[#7DD3FC] via-[#00AEEF] to-white [overflow-wrap:anywhere]">
-                de Shows e Eventos
+                de Eventos e Apresentações Artísticas
               </span>
             </h1>
 
             <h1 className="hidden sm:block w-full min-w-0 text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[0.95] mb-5">
               Painel de Pagamentos
               <span className="hero-title-gradient block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-[#7DD3FC] via-[#00AEEF] to-white">
-                de Shows e Eventos
+                de Eventos e Apresentações Artísticas
               </span>
             </h1>
           </div>

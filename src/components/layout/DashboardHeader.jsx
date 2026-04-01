@@ -7,10 +7,10 @@ export default function DashboardHeader({ dataUltimaAtualizacao }) {
       <div className="flex-auto min-w-0 max-w-5xl">
         {/* Título com ajuste de tamanho e tracking para evitar quebras */}
         <h1 className="text-2xl md:text-3xl lg:text-4xl font-black text-[#0B2341] tracking-tight leading-tight mb-3 whitespace-nowrap overflow-hidden text-ellipsis">
-          PAINEL DE PAGAMENTOS DE SHOWS E EVENTOS
+          Painel de Pagamentos de Eventos e Apresentações Artísticas
         </h1>
         <p className="text-sm md:text-base text-slate-500 font-medium leading-relaxed max-w-3xl">
-          Transparência sobre os pagamentos realizados para shows e eventos apoiados pela EMPETUR, 
+          Transparência sobre os pagamentos realizados para Eventos e Apresentações Artísticas apoiados pela EMPETUR, 
           em atendimento à <span className="text-slate-700 font-semibold leading-relaxed">Lei Estadual nº 16.790/2019</span>.
         </p>
       </div>
