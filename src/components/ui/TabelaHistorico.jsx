@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Card, Title, Text, Table, TableHead, TableRow, TableHeaderCell, TableBody, TableCell } from "@tremor/react";
+import { Card, Title, Text } from "@tremor/react"; // 🔴 Removemos os componentes de tabela do Tremor daqui
 import { Search, Download, Layers, User, MapPin, Calendar, DollarSign, ShieldAlert } from "lucide-react";
 
 import ExportModal from "./ExportModal";
@@ -61,7 +61,7 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
     <div className="w-full mb-8">
       <style>{`
         body.contraste-negativo .hc-tabela-card { background-color: #000 !important; border: 1px solid #ffea00 !important; }
-        body.contraste-negativo .hc-tabela-header th { background-color: #111 !important; color: #ffea00 !important; border-bottom: 2px solid #ffea00 !important; }
+        body.contraste-negativo .hc-tabela-header { background-color: #111 !important; color: #ffea00 !important; box-shadow: inset 0 -2px 0 0 #ffea00 !important; }
         body.contraste-negativo .hc-tabela-linha:hover { background-color: #111 !important; }
         body.contraste-negativo .hc-text-destaque { color: #ffea00 !important; }
         body.contraste-negativo .hc-pilula { background-color: transparent !important; color: #ffea00 !important; border: 1px solid #ffea00 !important; }
@@ -114,39 +114,38 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
           </div>
         </div>
 
-        <div className="max-h-[600px] overflow-auto scrollbar-moderna bg-white">
-          <Table className="w-full relative min-w-[1200px]">
-            
-            <TableHead className="bg-slate-50 border-b border-slate-100 hc-tabela-header sticky top-0 z-10 shadow-sm">
-              <TableRow>
-                <TableHeaderCell className="py-6 px-6 text-slate-400 font-bold uppercase tracking-wider text-[10px] bg-slate-50 hc-tabela-header">
+        <div className="max-h-[600px] overflow-auto scrollbar-moderna bg-white relative">
+          {/* 🔴 MUDANÇA: Usando <table> e <thead> nativos do HTML. Isso garante o funcionamento do sticky! */}
+          <table className="w-full min-w-[1200px] text-left border-collapse">
+            <thead className="sticky top-0 z-30 bg-slate-50 shadow-[inset_0_-1px_0_0_#e2e8f0] hc-tabela-header">
+              <tr>
+                <th className="py-6 px-6 text-slate-400 font-bold uppercase tracking-wider text-[10px] hc-text-destaque">
                   <div className="flex items-center gap-2"><User size={14} /> Artista / Empenho</div>
-                </TableHeaderCell>
-                <TableHeaderCell className="py-6 px-6 text-slate-400 font-bold uppercase tracking-wider text-[10px] bg-slate-50 hc-tabela-header">
+                </th>
+                <th className="py-6 px-6 text-slate-400 font-bold uppercase tracking-wider text-[10px] hc-text-destaque">
                   <div className="flex items-center gap-2" title="Nome e documento parcialmente anonimizado (LGPD)"><ShieldAlert size={14} /> Credor / Documento</div>
-                </TableHeaderCell>
-                <TableHeaderCell className="py-6 px-6 text-slate-400 font-bold uppercase tracking-wider text-[10px] bg-slate-50 hc-tabela-header">
+                </th>
+                <th className="py-6 px-6 text-slate-400 font-bold uppercase tracking-wider text-[10px] hc-text-destaque">
                   <div className="flex items-center gap-2"><MapPin size={14} /> Município</div>
-                </TableHeaderCell>
-                <TableHeaderCell className="py-6 px-6 text-slate-400 font-bold uppercase tracking-wider text-[10px] bg-slate-50 hc-tabela-header">
+                </th>
+                <th className="py-6 px-6 text-slate-400 font-bold uppercase tracking-wider text-[10px] hc-text-destaque">
                   <div className="flex items-center gap-2"><Layers size={14} /> Ciclo Cultural</div>
-                </TableHeaderCell>
-                <TableHeaderCell className="py-6 px-6 text-slate-400 font-bold uppercase tracking-wider text-[10px] bg-slate-50 hc-tabela-header">
-                  <div className="flex items-center gap-2"><Calendar size={14} /> Evento / Data limite para Pagamento</div>
-                </TableHeaderCell>
-                <TableHeaderCell className="py-6 px-6 text-slate-400 font-bold uppercase tracking-wider text-[10px] text-right bg-slate-50 hc-tabela-header">
+                </th>
+                <th className="py-6 px-6 text-slate-400 font-bold uppercase tracking-wider text-[10px] hc-text-destaque">
+                  <div className="flex items-center gap-2"><Calendar size={14} /> Evento / Prazo Pagamento</div>
+                </th>
+                <th className="py-6 px-6 text-slate-400 font-bold uppercase tracking-wider text-[10px] text-right hc-text-destaque">
                   <div className="flex items-center justify-end gap-2"><DollarSign size={14} /> Valor Pago (R$)</div>
-                </TableHeaderCell>
-              </TableRow>
-            </TableHead>
+                </th>
+              </tr>
+            </thead>
 
-            <TableBody>
+            <tbody>
               {dadosExibidos.length > 0 ? (
                 dadosExibidos.map((item, index) => (
-                  // 🔴 MÁGICA AQUI: O 'even:bg-blue-50/30' cria o efeito zebrado sutil nas linhas pares
-                  <TableRow key={index} className="bg-white even:bg-blue-50/30 hover:bg-slate-100 transition-colors border-b border-slate-50 hc-tabela-linha">
+                  <tr key={index} className="bg-white even:bg-blue-50/30 hover:bg-slate-100 transition-colors border-b border-slate-50 hc-tabela-linha">
                     
-                    <TableCell 
+                    <td 
                       className="py-6 px-6 max-w-[220px] cursor-pointer group align-top"
                       onClick={() => setFiltros(prev => ({ ...prev, artista: prev.artista === item.artista ? "" : item.artista }))}
                     >
@@ -159,9 +158,9 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
                           <span className="text-[10px] font-bold text-slate-500 bg-white/50 border border-slate-200 px-2 py-0.5 rounded-md hc-tabela-card">{item.numeroEmpenho}</span>
                         </div>
                       </div>
-                    </TableCell>
+                    </td>
 
-                    <TableCell 
+                    <td 
                       className="py-6 px-6 max-w-[240px] cursor-pointer group align-top"
                       onClick={() => setFiltros(prev => ({ ...prev, nomeCredor: prev.nomeCredor === item.nomeCredor ? "" : item.nomeCredor }))}
                     >
@@ -173,49 +172,49 @@ export default function TabelaHistorico({ filtrados, setFiltros }) {
                           {mascararDocumento(item.documentoCredor)}
                         </span>
                       </div>
-                    </TableCell>
+                    </td>
 
-                    <TableCell className="py-6 px-6 cursor-pointer align-top" onClick={() => setFiltros(prev => ({ ...prev, municipio: prev.municipio === item.municipioNormalizado ? "" : item.municipioNormalizado }))}>
+                    <td className="py-6 px-6 cursor-pointer align-top" onClick={() => setFiltros(prev => ({ ...prev, municipio: prev.municipio === item.municipioNormalizado ? "" : item.municipioNormalizado }))}>
                       <div className="flex items-center gap-2 group/mun mt-1">
                         <MapPin size={16} className="text-slate-300 group-hover:text-[#00AEEF] transition-colors" />
                         <span className="text-sm font-bold text-slate-600 group-hover:text-[#00AEEF] transition-colors hc-text-destaque">{item.municipio}</span>
                       </div>
-                    </TableCell>
+                    </td>
 
-                    <TableCell className="py-6 px-6 cursor-pointer align-top" onClick={() => setFiltros(prev => ({ ...prev, ciclo: prev.ciclo === item.ciclo ? "" : item.ciclo }))}>
+                    <td className="py-6 px-6 cursor-pointer align-top" onClick={() => setFiltros(prev => ({ ...prev, ciclo: prev.ciclo === item.ciclo ? "" : item.ciclo }))}>
                       <span className="inline-block bg-[#0B2341] text-white px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-tight hover:bg-[#00AEEF] hc-pilula transition-colors max-w-[180px] break-words whitespace-normal text-left leading-snug mt-1">
                         {item.ciclo}
                       </span>
-                    </TableCell>
+                    </td>
 
-                    <TableCell className="py-6 px-6 align-top">
+                    <td className="py-6 px-6 align-top">
                       <div className="flex flex-col gap-2 mt-1">
                         <span className="text-sm font-bold text-slate-700 hc-text-destaque">{item.dataEvento}</span>
                         <span className="text-[10px] uppercase tracking-wider font-black text-slate-400 hc-text-destaque">
                           Data limite: <span className="text-amber-500 hc-text-destaque">{calcularDataLimite(item.dataEvento)}</span>
                         </span>
                       </div>
-                    </TableCell>
+                    </td>
 
-                    <TableCell className="text-right py-6 px-6 align-top">
+                    <td className="text-right py-6 px-6 align-top">
                       <div className="mt-1">
                         <span className="font-mono font-black text-[#00AEEF] text-sm hc-valor">
                           {Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(item.valor) || 0)}
                         </span>
                       </div>
-                    </TableCell>
+                    </td>
 
-                  </TableRow>
+                  </tr>
                 ))
               ) : (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center py-20">
+                <tr>
+                  <td colSpan={6} className="text-center py-20">
                     <Text className="text-slate-400 font-bold hc-text-destaque">Nenhum registro encontrado para esta busca.</Text>
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               )}
-            </TableBody>
-          </Table>
+            </tbody>
+          </table>
         </div>
       </Card>
     </div>
