@@ -76,11 +76,21 @@ export const extrairDataEvento = (obsOriginal) => {
   if (!obsOriginal) return "---";
   const obs = obsOriginal.toUpperCase();
 
-  const matchNum = obs.match(/([0-9]{1,2})[ \/-]([0-9]{1,2})[ \/-]([0-9]{2,4})/);
+  // 1) Datas numéricas: agora aceita ".", "/", "-", espaço
+  const matchNum = obs.match(/([0-9]{1,2})[ \\/.-]([0-9]{1,2})[ \\/.-]([0-9]{2,4})/);
   if (matchNum) {
     const dia = matchNum[1].padStart(2, "0");
     const mes = matchNum[2].padStart(2, "0");
     const ano = matchNum[3].length === 2 ? `20${matchNum[3]}` : matchNum[3];
+    return `${dia}/${mes}/${ano}`;
+  }
+
+  // 2) Formato ISO (opcional, mas ajuda)
+  const matchIso = obs.match(/\b([0-9]{4})[ \\/.-]([0-9]{1,2})[ \\/.-]([0-9]{1,2})\b/);
+  if (matchIso) {
+    const ano = matchIso[1];
+    const mes = matchIso[2].padStart(2, "0");
+    const dia = matchIso[3].padStart(2, "0");
     return `${dia}/${mes}/${ano}`;
   }
 
@@ -100,11 +110,12 @@ export const extrairDataEvento = (obsOriginal) => {
     DEZEMBRO: "12",
   };
 
+  // 3) Por extenso: "DIA 01 DE MAIO 2025" e "01 DE MAIO DE 2025"
   const regexExtenso = new RegExp(
-    `([0-9]{1,2})\\s+DE\\s+(${Object.keys(meses).join("|")})\\s+DE\\s+([0-9]{4})`
+    `(?:DIA\\s+)?([0-9]{1,2})\\s+DE\\s+(${Object.keys(meses).join("|")})\\s+(?:DE\\s+)?([0-9]{4})`
   );
-  const matchExtenso = obs.match(regexExtenso);
 
+  const matchExtenso = obs.match(regexExtenso);
   if (matchExtenso) {
     return `${matchExtenso[1].padStart(2, "0")}/${meses[matchExtenso[2]]}/${matchExtenso[3]}`;
   }
