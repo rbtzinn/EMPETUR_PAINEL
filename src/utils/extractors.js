@@ -386,6 +386,63 @@ export const deveIncluirNoPainelPernambuco = (obsOriginal) => {
 export const filtrarRegistrosDePernambuco = (registros = []) =>
   registros.filter((item) => MUNICIPIOS_PERNAMBUCO.has(item?.municipio));
 
+const normalizarChaveEvento = (texto = "") =>
+  texto
+    .toString()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toUpperCase()
+    .replace(/[^A-Z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const ALIASES_EVENTOS = {
+  "FESTA DE SAO SEBASTIAO DE URUCU MIRIM": "Festa de São Sebastião de Uruçu Mirim",
+  "FESTA DE SAO SEBASTIAO RUA DO LIVRAMENTO": "Festa de São Sebastião Rua do Livramento",
+};
+
+const normalizarNomeEvento = (eventoOriginal, obsOriginal = "") => {
+  if (!eventoOriginal) return null;
+
+  let evento = normalizarEspacos(eventoOriginal.toUpperCase());
+  const obs = normalizarEspacos((obsOriginal || "").toUpperCase());
+
+  evento = evento
+    .replace(/^[,:;\-\s]+/, "")
+    .replace(/^(?:NO|NA|EM)\s+/, "")
+    .replace(/^EVENTO\s+/, "")
+    .replace(/^FESTIVIDADES?\s+/, "FESTA ")
+    .replace(/^CELEBRA[CÇ][AÃ]O\s+/, "CELEBRAÇÃO ")
+    .replace(/^COMEMORA[CÇ][AÃ]O\s+/, "COMEMORAÇÃO ")
+    .replace(/REV[ÉE]ILLON/g, "RÉVEILLON")
+    .replace(/CONG\.?\s*PERNAMB\.?\s*DE/g, "CONG. PERNAMB. DE")
+    .replace(/\s*&\s*/g, " & ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  // Quando o extrator "come" a palavra FESTA e sobra "DE SÃO JOSÉ", "DOS PESCADORES" etc.
+  if (
+    /^(DE|DO|DA|DOS|DAS)\s+/.test(evento) &&
+    /\b(FESTA|FESTIVIDADE|FESTIVIDADES)\b/.test(obs)
+  ) {
+    evento = `FESTA ${evento}`;
+  }
+
+  // Padroniza ordinal
+  evento = evento
+    .replace(/(\d+)[°º]/g, "$1º")
+    .replace(/(\d+)ª/g, "$1ª")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const chave = normalizarChaveEvento(evento);
+  if (ALIASES_EVENTOS[chave]) {
+    return ALIASES_EVENTOS[chave];
+  }
+
+  return formatarTitulo(evento);
+};
+
 export const extrairNomeEvento = (obsOriginal, artista) => {
   if (!obsOriginal || !artista || artista === "NÃO IDENTIFICADO") return null;
 
@@ -399,10 +456,16 @@ export const extrairNomeEvento = (obsOriginal, artista) => {
     trecho = obs.substring(indexArtista + artistaUpper.length);
   }
 
+  const stop =
+    "(?=,|NA\\s+CIDADE(?:\\s+DE)?|NO\\s+MUNIC[IÍ]PIO(?:\\s+DE)?|EM\\s+[A-ZÀ-Ú\\s]{3,120}\\/[A-Z]{2}\\b|NO\\s+DIA\\s+\\d|DIA\\s+\\d|PROCESSO|SEI|VALOR|$)";
+
   const regexes = [
-    /(?:PARA\s+PARTICIPA[ÇC][ÃA]O\s+NO\s+EVENTO|PARA\s+PARTICIPAR\s+DO\s+EVENTO|NO\s+EVENTO|NA\s+FESTA|NO\s+FESTIVAL|NA\s+FEIRA|NA\s+MOSTRA|NO\s+ROADSHOW|NO\s+CONGRESSO|NO\s+ENCONTRO|NA\s+RODADA\s+DE\s+NEG[ÓO]CIOS|NA\s+A[ÇC][ÃA]O\s+PROMOCIONAL|NA\s+ABAV|NA\s+WTM|NA\s+FITUR|NO\s+B2MEET)\s+(.*?)(?=,|NA\s+CIDADE|NO\s+MUNIC[IÍ]PIO|EM\s+[A-ZÀ-Ú]|NO\s+DIA\s+\d|DIA\s+\d|PROCESSO|SEI|VALOR|$)/i,
-    /(?:PARA\s+O\s+EVENTO|PARA\s+A\s+FESTA|PARA\s+O\s+FESTIVAL)\s+(.*?)(?=,|NA\s+CIDADE|NO\s+MUNIC[IÍ]PIO|EM\s+[A-ZÀ-Ú]|NO\s+DIA\s+\d|DIA\s+\d|PROCESSO|SEI|VALOR|$)/i,
-    /(?:REFERENTE\s+AO\s+EVENTO|REFERENTE\s+A\s+FESTA|REFERENTE\s+AO\s+FESTIVAL)\s+(.*?)(?=,|NA\s+CIDADE|NO\s+MUNIC[IÍ]PIO|EM\s+[A-ZÀ-Ú]|NO\s+DIA\s+\d|DIA\s+\d|PROCESSO|SEI|VALOR|$)/i,
+    new RegExp(`(?:,\\s*|\\s+)(?:NO|NA|EM)\\s+(.*?)${stop}`, "i"),
+    new RegExp(
+      `(?:PARA\\s+PARTICIPA[ÇC][ÃA]O\\s+NO\\s+EVENTO|PARA\\s+PARTICIPAR\\s+DO\\s+EVENTO|PARA\\s+O\\s+EVENTO|PARA\\s+A\\s+FESTA|PARA\\s+O\\s+FESTIVAL|REFERENTE\\s+AO\\s+EVENTO|REFERENTE\\s+A\\s+FESTA|REFERENTE\\s+AO\\s+FESTIVAL)\\s+(.*?)${stop}`,
+      "i"
+    ),
+    new RegExp(`^(?:\\s*[:,;-]?\\s*)(.*?)${stop}`, "i"),
   ];
 
   let evento = null;
@@ -415,28 +478,14 @@ export const extrairNomeEvento = (obsOriginal, artista) => {
     }
   }
 
-  if (!evento) {
-    const fallback = trecho.match(
-      /^(?:\s*[:,;-]?\s*)(.*?)(?=,|NA\s+CIDADE|NO\s+MUNIC[IÍ]PIO|EM\s+[A-ZÀ-Ú]|NO\s+DIA\s+\d|DIA\s+\d|PROCESSO|SEI|VALOR|$)/i
-    );
-    if (fallback?.[1]) {
-      evento = fallback[1];
-    }
-  }
-
   if (!evento) return null;
 
-  evento = limparPontuacaoFinal(evento)
-    .replace(
-      /^(?:EVENTO|FESTIVIDADE|CELEBRAÇÃO|CELEBRACAO|FESTA DE|COMEMORAÇÃO DE|COMEMORACAO DE)\s+/i,
-      ""
-    )
-    .replace(/\s+/g, " ")
-    .trim();
+  evento = limparPontuacaoFinal(evento);
+  evento = normalizarNomeEvento(evento, obsOriginal);
 
   if (!evento || evento.length < 3) return null;
 
-  return formatarTitulo(evento);
+  return evento;
 };
 
 export { MUNICIPIOS_PERNAMBUCO, municipioEhDePernambuco };
