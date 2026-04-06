@@ -14,17 +14,22 @@ export function useDashboardData(csvUrls) { // 🔴 Recebe Array
   }, [filtros]);
 
   useEffect(() => {
-    // 🔴 FETCH EM PARALELO DE TODAS AS PLANILHAS
     const urls = Array.isArray(csvUrls) ? csvUrls : [csvUrls];
 
-    Promise.all(urls.map(url => fetchAndProcessData(url)))
+    Promise.all(
+      // 🔴 ADICIONADO O .catch() AQUI DENTRO PARA PROTEGER CADA REQUISIÇÃO INDIVIDUALMENTE
+      urls.map(url => fetchAndProcessData(url).catch(e => {
+        console.error("Erro ao carregar uma das planilhas:", e);
+        return [];
+      }))
+    )
       .then(resultados => {
-        const todosOsDados = resultados.flat(); // Esmaga tudo num array só
+        const todosOsDados = resultados.flat().filter(Boolean);
         setDados(todosOsDados);
         setLoading(false);
       })
       .catch(erro => {
-        console.error("Erro ao baixar dados das planilhas:", erro);
+        console.error("Erro geral do painel:", erro);
         setLoading(false);
       });
   }, [csvUrls]);
@@ -59,8 +64,15 @@ export function useDashboardData(csvUrls) { // 🔴 Recebe Array
 
   const registrosPorMunicipio = useMemo(() => {
     const mapa = {};
-    filtrados.forEach((d) => { mapa[d.municipio] = (mapa[d.municipio] || 0) + 1; });
-    return Object.entries(mapa).map(([nome, total]) => ({ nome, total })).sort((a, b) => b.total - a.total).slice(0, 8);
+    filtrados.forEach((d) => {
+      // 🔴 AGORA AGRUPA PELO NOME NORMALIZADO PARA NÃO DUPLICAR CIDADES
+      const chave = d.municipioNormalizado || "NÃO IDENTIFICADA";
+      mapa[chave] = (mapa[chave] || 0) + 1;
+    });
+    return Object.entries(mapa)
+      .map(([nome, total]) => ({ nome, total }))
+      .sort((a, b) => b.total - a.total)
+      .slice(0, 8);
   }, [filtrados]);
 
   const registrosPorAno = useMemo(() => {

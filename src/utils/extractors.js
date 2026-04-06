@@ -1,6 +1,9 @@
 import { normalizarEspacos } from "./stringUtils";
-import { MUNICIPIOS_PERNAMBUCO, municipioEhDePernambuco } from "./pernambucoUtils";
-
+import {
+  MUNICIPIOS_PERNAMBUCO,
+  municipioEhDePernambuco,
+  canonizarMunicipio,
+} from "./pernambucoUtils";
 
 const normalizarChaveMunicipio = (texto = "") =>
   texto
@@ -72,26 +75,77 @@ const formatarTitulo = (texto = "") => {
     .trim();
 };
 
-export const extrairDataEvento = (obsOriginal) => {
-  if (!obsOriginal) return "---";
-  const obs = obsOriginal.toUpperCase();
+const formatarDataPartes = (dia, mes, ano) => {
+  const d = String(dia).padStart(2, "0");
+  const m = String(mes).padStart(2, "0");
+  let a = String(ano);
 
-  // 1) Datas numéricas: agora aceita ".", "/", "-", espaço
-  const matchNum = obs.match(/([0-9]{1,2})[ \\/.-]([0-9]{1,2})[ \\/.-]([0-9]{2,4})/);
-  if (matchNum) {
-    const dia = matchNum[1].padStart(2, "0");
-    const mes = matchNum[2].padStart(2, "0");
-    const ano = matchNum[3].length === 2 ? `20${matchNum[3]}` : matchNum[3];
-    return `${dia}/${mes}/${ano}`;
+  if (a.length === 2) a = `20${a}`;
+  if (a.length > 4) a = a.slice(0, 4);
+
+  const diaNum = Number(d);
+  const mesNum = Number(m);
+  const anoNum = Number(a);
+
+  if (
+    Number.isNaN(diaNum) ||
+    Number.isNaN(mesNum) ||
+    Number.isNaN(anoNum) ||
+    diaNum < 1 ||
+    diaNum > 31 ||
+    mesNum < 1 ||
+    mesNum > 12
+  ) {
+    return "---";
   }
 
-  // 2) Formato ISO (opcional, mas ajuda)
-  const matchIso = obs.match(/\b([0-9]{4})[ \\/.-]([0-9]{1,2})[ \\/.-]([0-9]{1,2})\b/);
-  if (matchIso) {
-    const ano = matchIso[1];
-    const mes = matchIso[2].padStart(2, "0");
-    const dia = matchIso[3].padStart(2, "0");
-    return `${dia}/${mes}/${ano}`;
+  return `${d}/${m}/${a}`;
+};
+
+const extrairDataFallbackEmpenho = (dataEmpenho = "") => {
+  const match = String(dataEmpenho || "").match(
+    /\b(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})\b/
+  );
+
+  if (!match) return "---";
+  return formatarDataPartes(match[1], match[2], match[3]);
+};
+
+export const extrairDataEvento = (obsOriginal, dataEmpenho = "") => {
+  const fallback = extrairDataFallbackEmpenho(dataEmpenho);
+
+  if (!obsOriginal) return fallback;
+
+  let obs = String(obsOriginal)
+    .toUpperCase()
+    .replace(/\u00A0/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  // Normalizações para datas quebradas/sujas
+  obs = obs
+    // "04 03 2025" -> "04/03/2025"
+    .replace(/\b(\d{1,2})\s+(\d{1,2})\s+(\d{4})\b/g, "$1/$2/$3")
+
+    // "22/092023" -> "22/09/2023"
+    .replace(/\b(\d{1,2})\/(\d{2})(\d{4})\b/g, "$1/$2/$3")
+
+    // "12/10 /2024" -> "12/10/2024"
+    .replace(/\b(\d{1,2})\s*\/\s*(\d{1,2})\s*\/\s*(\d{4})\b/g, "$1/$2/$3")
+
+    // "16/03/20255", "16/02/2025360", "17/03/20240625" -> corta lixo após o ano
+    .replace(/\b(\d{1,2}\/\d{1,2}\/\d{4})\d+\b/g, "$1")
+
+    // "10.11.2025" -> continua válido
+    .replace(/\b(\d{1,2})\s*\.\s*(\d{1,2})\s*\.\s*(\d{2,4})\b/g, "$1.$2.$3");
+
+  const matchNum = obs.match(
+    /\b(\d{1,2})\s*[\/.-]\s*(\d{1,2})\s*[\/.-]\s*(\d{2,4})(?:\d+)?\b/
+  );
+
+  if (matchNum) {
+    const data = formatarDataPartes(matchNum[1], matchNum[2], matchNum[3]);
+    if (data !== "---") return data;
   }
 
   const meses = {
@@ -110,17 +164,20 @@ export const extrairDataEvento = (obsOriginal) => {
     DEZEMBRO: "12",
   };
 
-  // 3) Por extenso: "DIA 01 DE MAIO 2025" e "01 DE MAIO DE 2025"
   const regexExtenso = new RegExp(
     `(?:DIA\\s+)?([0-9]{1,2})\\s+DE\\s+(${Object.keys(meses).join("|")})\\s+(?:DE\\s+)?([0-9]{4})`
   );
 
   const matchExtenso = obs.match(regexExtenso);
   if (matchExtenso) {
-    return `${matchExtenso[1].padStart(2, "0")}/${meses[matchExtenso[2]]}/${matchExtenso[3]}`;
+    return formatarDataPartes(
+      matchExtenso[1],
+      meses[matchExtenso[2]],
+      matchExtenso[3]
+    );
   }
 
-  return "---";
+  return fallback;
 };
 
 export const extrairArtista = (obsOriginal) => {
@@ -216,7 +273,7 @@ const MUNICIPIOS_INDEXADOS = new Map(
   [...MUNICIPIOS_VALIDOS_EXTRACAO].map((m) => [normalizarChaveMunicipio(m), m])
 );
 
-const ALIASES_MUNICIPIOS = {
+const ALIASES_MUNICIPIOS_BRUTOS = {
   "ITAMARACÁ": "ILHA DE ITAMARACÁ",
   ITAMARACA: "ILHA DE ITAMARACÁ",
   RIBEIRAO: "RIBEIRÃO",
@@ -251,8 +308,8 @@ for (const [chaveNormalizada, nomeOficial] of MUNICIPIOS_INDEXADOS.entries()) {
   MAPA_BUSCA_MUNICIPIOS.set(chaveNormalizada, nomeOficial);
 }
 
-for (const [alias, nomeOficial] of Object.entries(ALIASES_MUNICIPIOS)) {
-  MAPA_BUSCA_MUNICIPIOS.set(alias, nomeOficial);
+for (const [alias, nomeOficial] of Object.entries(ALIASES_MUNICIPIOS_BRUTOS)) {
+  MAPA_BUSCA_MUNICIPIOS.set(normalizarChaveMunicipio(alias), nomeOficial);
 }
 
 const CHAVES_BUSCA_MUNICIPIOS = [...MAPA_BUSCA_MUNICIPIOS.keys()].sort(
@@ -370,21 +427,25 @@ export const extrairMunicipio = (obsOriginal) => {
     municipioEncontrado = "JABOATÃO DOS GUARARAPES";
   }
 
-  if (municipioEncontrado && MUNICIPIOS_VALIDOS_EXTRACAO.has(municipioEncontrado)) {
-    return municipioEncontrado;
+  if (municipioEncontrado) {
+    const canonico = canonizarMunicipio(municipioEncontrado);
+    if (canonico !== "NÃO IDENTIFICADO") {
+      return canonico;
+    }
   }
 
   return "NÃO IDENTIFICADO";
 };
 
-
 export const deveIncluirNoPainelPernambuco = (obsOriginal) => {
   const municipio = extrairMunicipio(obsOriginal);
-  return MUNICIPIOS_PERNAMBUCO.has(municipio);
+  return municipioEhDePernambuco(municipio);
 };
 
 export const filtrarRegistrosDePernambuco = (registros = []) =>
-  registros.filter((item) => MUNICIPIOS_PERNAMBUCO.has(item?.municipio));
+  registros.filter((item) =>
+    municipioEhDePernambuco(item?.municipioNormalizado || item?.municipio)
+  );
 
 const normalizarChaveEvento = (texto = "") =>
   texto
@@ -420,7 +481,6 @@ const normalizarNomeEvento = (eventoOriginal, obsOriginal = "") => {
     .replace(/\s+/g, " ")
     .trim();
 
-  // Quando o extrator "come" a palavra FESTA e sobra "DE SÃO JOSÉ", "DOS PESCADORES" etc.
   if (
     /^(DE|DO|DA|DOS|DAS)\s+/.test(evento) &&
     /\b(FESTA|FESTIVIDADE|FESTIVIDADES)\b/.test(obs)
@@ -428,7 +488,6 @@ const normalizarNomeEvento = (eventoOriginal, obsOriginal = "") => {
     evento = `FESTA ${evento}`;
   }
 
-  // Padroniza ordinal
   evento = evento
     .replace(/(\d+)[°º]/g, "$1º")
     .replace(/(\d+)ª/g, "$1ª")
@@ -460,11 +519,8 @@ export const extrairNomeEvento = (obsOriginal, artista) => {
     "(?=,|NA\\s+CIDADE(?:\\s+DE)?|NO\\s+MUNIC[IÍ]PIO(?:\\s+DE)?|EM\\s+[A-ZÀ-Ú\\s]{3,120}\\/[A-Z]{2}\\b|NO\\s+DIA\\s+\\d|DIA\\s+\\d|PROCESSO|SEI|VALOR|$)";
 
   const regexes = [
+    new RegExp(`(?:PARA\\s+PARTICIPA[ÇC][ÃA]O\\s+NO\\s+EVENTO|PARA\\s+PARTICIPAR\\s+DO\\s+EVENTO|PARA\\s+O\\s+EVENTO|PARA\\s+A\\s+FESTA|PARA\\s+O\\s+FESTIVAL|REFERENTE\\s+AO\\s+EVENTO|REFERENTE\\s+A\\s+FESTA|REFERENTE\\s+AO\\s+FESTIVAL)\\s+(.*?)${stop}`, "i"),
     new RegExp(`(?:,\\s*|\\s+)(?:NO|NA|EM)\\s+(.*?)${stop}`, "i"),
-    new RegExp(
-      `(?:PARA\\s+PARTICIPA[ÇC][ÃA]O\\s+NO\\s+EVENTO|PARA\\s+PARTICIPAR\\s+DO\\s+EVENTO|PARA\\s+O\\s+EVENTO|PARA\\s+A\\s+FESTA|PARA\\s+O\\s+FESTIVAL|REFERENTE\\s+AO\\s+EVENTO|REFERENTE\\s+A\\s+FESTA|REFERENTE\\s+AO\\s+FESTIVAL)\\s+(.*?)${stop}`,
-      "i"
-    ),
     new RegExp(`^(?:\\s*[:,;-]?\\s*)(.*?)${stop}`, "i"),
   ];
 

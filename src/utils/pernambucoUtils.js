@@ -43,16 +43,56 @@ export const normalizarMunicipio = (texto = "") =>
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toUpperCase()
+    .replace(/[^A-Z0-9\s]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 
-const MUNICIPIOS_PERNAMBUCO_NORMALIZADOS = new Set(
-  [...MUNICIPIOS_PERNAMBUCO].map(normalizarMunicipio)
+const MUNICIPIOS_CANONICOS = new Map(
+  [...MUNICIPIOS_PERNAMBUCO].map((nomeOficial) => [
+    normalizarMunicipio(nomeOficial),
+    nomeOficial,
+  ])
 );
 
+const ALIASES_MUNICIPIOS = {
+  "LAGOA DE ITAENGA": "LAGOA DO ITAENGA",
+  "ITAMARACA": "ILHA DE ITAMARACÁ",
+  "ITAMARACÁ": "ILHA DE ITAMARACÁ",
+  "BELEM DE SAO FRANCISCO": "BELÉM DE SÃO FRANCISCO",
+  "BELEM DO SAO FRANCISCO": "BELÉM DE SÃO FRANCISCO",
+  "BELEM SAO FRANCISCO": "BELÉM DE SÃO FRANCISCO",
+  "NAZARE DE MATA": "NAZARÉ DA MATA",
+  "RIBEIRAO": "RIBEIRÃO",
+  "IGUARACY": "IGUARACI",
+  "INAJA": "INAJÁ",
+  "SAO CAETANO": "SÃO CAITANO",
+  "JABOATAO DOS GUARAPES": "JABOATÃO DOS GUARARAPES",
+  "JABOATAO DOS GUARARAPES": "JABOATÃO DOS GUARARAPES",
+  "JABAOTAO DOS GUARARAPES": "JABOATÃO DOS GUARARAPES",
+  "VITORIA DE SANTO ANTAO": "VITÓRIA DE SANTO ANTÃO",
+  "VITORA DE SANTO ANTAO": "VITÓRIA DE SANTO ANTÃO",
+  "BREJO DA MADRE DEUS": "BREJO DA MADRE DE DEUS",
+  "CARNAUBEIRA DAPENHA": "CARNAUBEIRA DA PENHA",
+  "JOAQUIMNABUCO": "JOAQUIM NABUCO",
+  "BARRADE GUABIRABA": "BARRA DE GUABIRABA",
+  "GLORIADO GOITA": "GLÓRIA DO GOITÁ",
+  "SANTA MARIA DO CUMBUCA": "SANTA MARIA DO CAMBUCÁ",
+  "AFOGADOS DA INGAZEIRAS": "AFOGADOS DA INGAZEIRA",
+};
+
+export const canonizarMunicipio = (texto = "") => {
+  const chave = normalizarMunicipio(texto);
+
+  if (!chave || chave === "NAO IDENTIFICADO") return "NÃO IDENTIFICADO";
+
+  const aliasResolvido = ALIASES_MUNICIPIOS[chave];
+  if (aliasResolvido) return aliasResolvido;
+
+  return MUNICIPIOS_CANONICOS.get(chave) || "NÃO IDENTIFICADO";
+};
+
 export const municipioEhDePernambuco = (municipio) => {
-  const valor = normalizarMunicipio(municipio);
-  return !!valor && valor !== "NAO IDENTIFICADO" && MUNICIPIOS_PERNAMBUCO_NORMALIZADOS.has(valor);
+  return canonizarMunicipio(municipio) !== "NÃO IDENTIFICADO";
 };
 
 export const filtrarRegistrosDePernambuco = (registros = []) =>
