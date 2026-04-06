@@ -6,22 +6,23 @@ export default function Footer() {
   const [isPrivacidadeOpen, setIsPrivacidadeOpen] = useState(false);
 
   const equipe = [
-    { nome: "Karla Taciana Sabino", cargo: "Titular AECI" },
-    { nome: "Monique Torres", cargo: "Adjunta AECI" },
-    { nome: "Renan Ádson", cargo: "Membro AECI" },
-    { nome: "Roberto Gabriel", cargo: "Membro AECI" }
+    { nome: "Karla Sabino", cargo: "Titular AECI" },
+    { nome: "Monique Ferraz", cargo: "Adjunta AECI" },
+    { nome: "Renan Santos", cargo: "Membro AECI" },
+    { nome: "Roberto Gabriel", cargo: "Membro AECI" },
+    { nome: "Renata Borba", cargo: "Membro AECI" },
   ];
 
   return (
     <>
       <PrivacidadeModal isOpen={isPrivacidadeOpen} onClose={() => setIsPrivacidadeOpen(false)} />
-      
+
       <footer className="bg-[#0B2341] pt-24 pb-8 px-6 relative overflow-hidden">
         {/* Glows Decorativos */}
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#00AEEF] rounded-full blur-[150px] opacity-20 pointer-events-none" />
-        
+
         <div className="max-w-7xl mx-auto grid md:grid-cols-12 gap-12 lg:gap-16 mb-20 relative z-10">
-          
+
           {/* Coluna 1: Marca */}
           <div className="md:col-span-12 lg:col-span-5">
             <img src="/images/empeturlogobranca.png" alt="EMPETUR" className="h-16 w-auto mb-6 opacity-90" />
@@ -41,7 +42,7 @@ export default function Footer() {
               </a>
             </div>
           </div>
-          
+
           {/* Colunas de Contato */}
           <div className="md:col-span-6 lg:col-span-3">
             <h4 className="text-white font-black text-sm mb-6 tracking-widest uppercase">Atendimento</h4>
@@ -69,8 +70,8 @@ export default function Footer() {
             <div className="flex items-start gap-3 text-slate-400">
               <MapPin size={16} className="mt-1 shrink-0 text-[#00AEEF]" />
               <p className="text-sm leading-relaxed">
-                Centro de Convenções de PE<br/>
-                Av. Professor Andrade Bezerra, s/n<br/>
+                Centro de Convenções de PE<br />
+                Av. Professor Andrade Bezerra, s/n<br />
                 <strong className="text-white font-medium mt-1 block">Salgadinho, Olinda - PE</strong>
               </p>
             </div>
@@ -83,7 +84,7 @@ export default function Footer() {
             <div className="w-2 h-2 rounded-full bg-[#00AEEF]"></div>
             <h5 className="text-white font-black text-xs uppercase tracking-widest">Equipe de Desenvolvimento e Controle</h5>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
             {equipe.map((membro, index) => (
               <div key={index} className="flex flex-col border-l-2 border-white/10 pl-4">
                 <span className="text-white font-bold text-sm mb-1">{membro.nome}</span>
