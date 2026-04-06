@@ -67,7 +67,7 @@ function Separator({ isPainel }) {
 export default function Breadcrumb({ isPainel = false }) {
   return (
     <div
-      className={`w-full z-[90] pointer-events-none ${
+      className={`w-full z-40 pointer-events-none ${
         isPainel
           ? "relative mb-3 sm:mb-4"
           : "absolute top-[80px] sm:top-[90px] left-0 right-0 pt-5 pb-2"
