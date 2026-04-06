@@ -109,9 +109,6 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
 
         <FadeIn delay={0.2}>
           <div className="w-full max-w-[310px] sm:max-w-3xl mx-auto">
-            <p className="text-white/80 text-[10px] sm:text-sm md:text-base font-semibold uppercase tracking-[0.12em] sm:tracking-[0.18em] mb-3 sm:mb-4">
-              Transparência sobre pagamentos e apoios a eventos
-            </p>
 
             <p className="text-slate-100 text-[13px] sm:text-lg md:text-xl leading-relaxed mb-8 sm:mb-12 font-light px-1 sm:px-0 hc-text-desc">
               Consulte, de forma clara e acessível, a execução financeira dos apoios da EMPETUR
