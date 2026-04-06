@@ -3,11 +3,11 @@ import { Trash2, X, Filter } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import DropdownPesquisavel from "../ui/DropdownPesquisavel";
 
-export default function TopbarPainel({ 
-  filtros, 
-  setFiltros, 
-  getOpcoes, 
-  limparFiltros, 
+export default function TopbarPainel({
+  filtros,
+  setFiltros,
+  getOpcoes,
+  limparFiltros,
   temFiltroAtivo,
   isMobileMenuOpen,
   setIsMobileMenuOpen
@@ -57,12 +57,14 @@ export default function TopbarPainel({
       {/* ======================================================== */}
       <div className="hidden lg:block sticky top-0 z-50 w-full pt-6 px-6">
         <div className="max-w-[1600px] mx-auto">
-          
+
           {/* 🔴 CONTAINER COM SOMBRA AZUL ESCURA E BORDA DE PERNAMBUCO */}
           <div className="hc-topbar-painel relative bg-white/95 backdrop-blur-xl shadow-[0_20px_50px_-15px_rgba(11,35,65,0.4)] rounded-[2.5rem] p-3 pl-8 flex items-center gap-4 transition-all duration-500 group hover:shadow-[0_20px_50px_-15px_rgba(0,174,239,0.4)]">
-            
+
             {/* ✨ DETALHE INSTITUCIONAL: Cores EMPETUR + Bandeira PE no topo da barra */}
-            <div className="hc-pe-colors absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#0B2341] via-[#00AEEF] via-yellow-400 via-red-500 to-green-500 opacity-90 transition-all duration-300"></div>
+            <div className="absolute inset-0 rounded-[2.5rem] overflow-hidden pointer-events-none">
+              <div className="hc-pe-colors absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#0B2341] via-[#00AEEF] via-yellow-400 via-red-500 to-green-500 opacity-90 transition-all duration-300"></div>
+            </div>
 
             <div className="grid grid-cols-6 gap-3 flex-1 mt-1">
               <DropdownPesquisavel label="Município" value={filtros.municipio} onChange={(v) => setFiltros({ ...filtros, municipio: v })} options={getOpcoes('municipio')} />
@@ -103,7 +105,7 @@ export default function TopbarPainel({
               onClick={() => setIsMobileMenuOpen(false)}
             />
 
-            <motion.div 
+            <motion.div
               initial={{ y: "-100%" }}
               animate={{ y: 0 }}
               exit={{ y: "-100%" }}
