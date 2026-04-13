@@ -1,4 +1,5 @@
 import React from "react";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 export default function GraficoBarrasNativo({
   data = [],
@@ -7,29 +8,32 @@ export default function GraficoBarrasNativo({
   onClick = () => {},
   filtroAtivo = "",
 }) {
-  if (!data || data.length === 0) {
+  const { t } = useLanguage();
+
+  if (!data?.length) {
     return (
-      <div className="h-full w-full flex items-center justify-center text-slate-400">
-        Sem dados
+      <div className="flex h-full w-full items-center justify-center text-slate-400">
+        {t.common.noData}
       </div>
     );
   }
 
-  const maximo = Math.max(...data.map((d) => Number(d.total || 0)), 0);
+  const maximo = Math.max(...data.map((item) => Number(item.total || 0)), 0);
 
   return (
-    <div 
-      className="h-full w-full overflow-x-auto overflow-y-hidden scrollbar-moderna pb-2"
+    <div
+      className="scrollbar-moderna h-full w-full overflow-x-auto overflow-y-hidden pb-2"
       role="region"
-      aria-label={`Gráfico de barras exibindo volume de shows por ${indice}`}
+      aria-label={`Gráfico de barras com volume por ${indice}`}
     >
-      
       <div className="sr-only">
-        {data.map((d) => `A categoria ${d[indice]} possui ${formatador(d.total || 0)}. `).join('')}
+        {data
+          .map((item) => `A categoria ${item[indice]} possui ${formatador(item.total || 0)}.`)
+          .join(" ")}
       </div>
 
-      <div className="flex items-end justify-start md:justify-center gap-4 md:gap-8 h-full min-w-max pt-10 px-4" aria-hidden="true">
-        {data.map((item, idx) => {
+      <div className="flex h-full min-w-max items-end justify-start gap-4 px-4 pt-10 md:justify-center md:gap-8" aria-hidden="true">
+        {data.map((item, index) => {
           const total = Number(item.total || 0);
           const chave = item?.[indice] ?? "";
           const altura = maximo === 0 ? 0 : (total / maximo) * 100;
@@ -38,27 +42,27 @@ export default function GraficoBarrasNativo({
 
           return (
             <button
-              key={`${String(chave)}-${idx}`}
+              key={`${String(chave)}-${index}`}
               type="button"
               onClick={() => onClick(chave)}
-              tabIndex={0}
-              // 🔴 CORREÇÃO AQUI: focus-visible
-              className="relative flex flex-col items-center justify-end h-full w-20 md:w-28 shrink-0 group cursor-pointer rounded-t-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00AEEF] focus-visible:ring-offset-2 focus-visible:bg-slate-50"
+              className="group relative flex h-full w-20 shrink-0 flex-col items-center justify-end rounded-t-md focus:outline-none focus-visible:bg-slate-50 focus-visible:ring-2 focus-visible:ring-[#00AEEF] focus-visible:ring-offset-2 md:w-28"
             >
-              <div className="opacity-0 group-hover:opacity-100 absolute -top-12 left-1/2 -translate-x-1/2 bg-[#0B2341] text-white px-3 py-2 rounded-lg text-xs font-bold whitespace-nowrap z-50 pointer-events-none transition-opacity shadow-xl">
+              <div className="pointer-events-none absolute -top-12 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-[#0B2341] px-3 py-2 text-xs font-bold text-white opacity-0 shadow-xl transition-opacity group-hover:opacity-100">
                 {String(chave)}
-                <span className="block text-[#00AEEF] text-center mt-1">
+                <span className="mt-1 block text-center text-[#00AEEF]">
                   {formatador(total)}
                 </span>
               </div>
 
               <div
                 style={{ height: `${altura}%`, minHeight: total > 0 ? "8px" : "0" }}
-                className={`w-full rounded-t-md transition-all duration-500 shadow-sm ${apagado ? "bg-slate-200" : "bg-[#00AEEF]"}`}
+                className={`w-full rounded-t-md shadow-sm transition-all duration-500 ${
+                  apagado ? "bg-slate-200" : "bg-[#00AEEF]"
+                }`}
               />
 
-              <div className="mt-3 w-full flex items-start justify-center min-h-[36px]">
-                <span className="text-center text-[10px] md:text-[11px] font-black text-slate-500 leading-tight line-clamp-2">
+              <div className="mt-3 flex min-h-[36px] w-full items-start justify-center">
+                <span className="line-clamp-2 text-center text-[10px] font-black leading-tight text-slate-500 md:text-[11px]">
                   {String(chave)}
                 </span>
               </div>

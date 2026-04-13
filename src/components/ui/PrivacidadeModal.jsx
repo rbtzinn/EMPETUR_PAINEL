@@ -1,90 +1,136 @@
 import React from "react";
 import { ShieldCheck, X } from "lucide-react";
 import FadeIn from "./FadeIn";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 export default function PrivacidadeModal({ isOpen, onClose }) {
+  const { t } = useLanguage();
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 md:p-6">
-      <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-md transition-opacity" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-slate-900/40 backdrop-blur-md transition-opacity"
+        onClick={onClose}
+      />
 
-      <FadeIn className="relative w-full max-w-4xl bg-white rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-        <div className="bg-gradient-to-r from-[#0B2341] to-[#1a4275] p-6 md:p-8 flex items-center justify-between shrink-0">
+      <FadeIn className="relative flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-[2.5rem] bg-white shadow-2xl">
+        <div className="flex shrink-0 items-center justify-between bg-gradient-to-r from-[#0B2341] to-[#1a4275] p-6 md:p-8">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm hidden sm:flex">
-              <ShieldCheck className="text-[#00AEEF] w-6 h-6" />
+            <div className="hidden h-12 w-12 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm sm:flex">
+              <ShieldCheck className="h-6 w-6 text-[#00AEEF]" />
             </div>
             <div>
-              <h2 className="text-2xl md:text-3xl font-black text-white mb-1 tracking-tight">Política de Privacidade</h2>
-              <p className="text-[#00AEEF] text-[10px] md:text-xs font-bold uppercase tracking-widest">Empresa de Turismo de Pernambuco S.A.</p>
+              <h2 className="mb-1 text-2xl font-black tracking-tight text-white md:text-3xl">
+                {t.privacyModal.title}
+              </h2>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#00AEEF] md:text-xs">
+                {t.privacyModal.subtitle}
+              </p>
             </div>
           </div>
-          <button onClick={onClose} className="text-white/50 hover:text-white bg-white/5 hover:bg-white/20 p-3 rounded-full transition-all">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full bg-white/5 p-3 text-white/50 transition-all hover:bg-white/20 hover:text-white"
+          >
             <X strokeWidth={2.5} size={20} />
           </button>
         </div>
 
-        <div className="p-6 md:p-10 overflow-y-auto scrollbar-moderna text-slate-600 space-y-10">
-          <div className="bg-blue-50/80 p-6 md:p-8 rounded-3xl border border-blue-100/50 relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-2 h-full bg-[#00AEEF]"></div>
-            <p className="text-sm md:text-base leading-relaxed text-[#0B2341]">
-              A <strong className="font-black">Empresa de Turismo de Pernambuco Governador Eduardo Campos S.A. (EMPETUR)</strong> está comprometida com a segurança dos seus dados pessoais, com o respeito à sua privacidade e com a transparência em nossas operações. Esta Política de Privacidade explica como coletamos, usamos, armazenamos e protegemos suas informações.
+        <div className="space-y-10 overflow-y-auto p-6 text-slate-600 scrollbar-moderna md:p-10">
+          <div className="relative overflow-hidden rounded-3xl border border-blue-100/50 bg-blue-50/80 p-6 md:p-8">
+            <div className="absolute left-0 top-0 h-full w-2 bg-[#00AEEF]" />
+            <p className="text-sm leading-relaxed text-[#0B2341] md:text-base">
+              {t.privacyModal.intro}
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-10">
+          <div className="grid gap-10 md:grid-cols-2">
             <div className="space-y-10">
               <section>
-                <h3 className="font-black text-[#0B2341] text-lg mb-4 flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-lg bg-slate-100 text-slate-400 flex items-center justify-center text-sm">01</span> Quem Somos
+                <h3 className="mb-4 flex items-center gap-3 text-lg font-black text-[#0B2341]">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-sm text-slate-400">
+                    01
+                  </span>
+                  {t.privacyModal.sections.whoWeAre.title}
                 </h3>
                 <p className="text-sm leading-relaxed text-slate-500">
-                  A EMPETUR é uma sociedade de economia mista, vinculada à Secretaria de Turismo, Esportes e Lazer de Pernambuco. Atuamos como controladores dos seus dados pessoais, responsáveis por decidir como eles serão tratados e protegidos. Nossa sede está localizada na <strong>Avenida Professor Andrade Bezerra, S/N, Salgadinho, Olinda/PE</strong>.
+                  {t.privacyModal.sections.whoWeAre.description}
                 </p>
               </section>
 
               <section>
-                <h3 className="font-black text-[#0B2341] text-lg mb-4 flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-lg bg-slate-100 text-slate-400 flex items-center justify-center text-sm">02</span> Legislação
+                <h3 className="mb-4 flex items-center gap-3 text-lg font-black text-[#0B2341]">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-sm text-slate-400">
+                    02
+                  </span>
+                  {t.privacyModal.sections.legislation.title}
                 </h3>
-                <ul className="text-sm leading-relaxed space-y-3 text-slate-500">
-                  <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#00AEEF] mt-1.5 shrink-0"></div><strong>Lei nº 13.709/2018:</strong> LGPD</li>
-                  <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#00AEEF] mt-1.5 shrink-0"></div><strong>Lei nº 12.527/2011:</strong> Lei de Acesso à Informação</li>
-                  <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#00AEEF] mt-1.5 shrink-0"></div><strong>Lei Estadual nº 14.804/2012:</strong> LAI de Pernambuco</li>
-                  <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#00AEEF] mt-1.5 shrink-0"></div><strong>Decreto Est. nº 49.265/2020:</strong> Política de Dados</li>
+                <ul className="space-y-3 text-sm leading-relaxed text-slate-500">
+                  {t.privacyModal.sections.legislation.items.map((item) => (
+                    <li key={item} className="flex gap-2">
+                      <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#00AEEF]" />
+                      {item}
+                    </li>
+                  ))}
                 </ul>
               </section>
             </div>
 
             <div className="space-y-10">
               <section>
-                <h3 className="font-black text-[#0B2341] text-lg mb-4 flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-lg bg-slate-100 text-slate-400 flex items-center justify-center text-sm">03</span> Publicação de Dados
+                <h3 className="mb-4 flex items-center gap-3 text-lg font-black text-[#0B2341]">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-sm text-slate-400">
+                    03
+                  </span>
+                  {t.privacyModal.sections.dataPublication.title}
                 </h3>
                 <p className="text-sm leading-relaxed text-slate-500">
-                  Neste painel específico de transparência, a divulgação de dados financeiros (como nomes de credores e valores pagos) ocorre para o cumprimento de obrigação legal e execução de políticas públicas, conforme o Art. 7º da LGPD combinado com a Lei de Acesso à Informação.
+                  {t.privacyModal.sections.dataPublication.description}
                 </p>
               </section>
 
-              <section className="bg-slate-50 p-6 rounded-3xl border border-slate-100 shadow-sm">
-                <h3 className="font-black text-[#0B2341] text-base mb-4">Contato do Encarregado (DPO)</h3>
+              <section className="rounded-3xl border border-slate-100 bg-slate-50 p-6 shadow-sm">
+                <h3 className="mb-4 text-base font-black text-[#0B2341]">
+                  {t.privacyModal.sections.dpo.title}
+                </h3>
                 <div className="space-y-2">
-                  <p className="text-sm text-slate-500"><strong className="text-slate-700">Nome:</strong> Victor Hugo Feitosa Lima Aragão</p>
-                  <p className="text-sm text-slate-500"><strong className="text-slate-700">Telefone:</strong> (81) 3182-8210</p>
-                  <p className="text-sm text-[#00AEEF] font-medium"><strong className="text-slate-700 font-bold">E-mail:</strong> victor.aragao@empetur.pe.gov.br</p>
+                  <p className="text-sm text-slate-500">
+                    <strong className="text-slate-700">
+                      {t.privacyModal.sections.dpo.name}
+                    </strong>{" "}
+                    Victor Hugo Feitosa Lima Aragão
+                  </p>
+                  <p className="text-sm text-slate-500">
+                    <strong className="text-slate-700">
+                      {t.privacyModal.sections.dpo.phone}
+                    </strong>{" "}
+                    (81) 3182-8210
+                  </p>
+                  <p className="text-sm font-medium text-[#00AEEF]">
+                    <strong className="font-bold text-slate-700">
+                      {t.privacyModal.sections.dpo.email}
+                    </strong>{" "}
+                    victor.aragao@empetur.pe.gov.br
+                  </p>
                 </div>
               </section>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 border-t border-slate-100 shrink-0 flex flex-col md:flex-row items-center justify-between gap-4">
-          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4">
-            Atualizado em: 10 de abril de 2025
+        <div className="flex shrink-0 flex-col items-center justify-between gap-4 border-t border-slate-100 bg-white p-6 md:flex-row">
+          <span className="px-4 text-[10px] font-black uppercase tracking-widest text-slate-400">
+            {t.privacyModal.updated}
           </span>
-          <button onClick={onClose} className="w-full md:w-auto px-10 py-4 rounded-2xl bg-[#00AEEF] hover:bg-[#0B2341] text-white font-black uppercase tracking-widest transition-all duration-300 shadow-[0_8px_20px_-6px_rgba(0,174,239,0.4)] hover:shadow-[0_8px_20px_-6px_rgba(11,35,65,0.4)] active:scale-95">
-            Estou Ciente
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-full rounded-2xl bg-[#00AEEF] px-10 py-4 font-black uppercase tracking-widest text-white shadow-[0_8px_20px_-6px_rgba(0,174,239,0.4)] transition-all duration-300 hover:bg-[#0B2341] hover:shadow-[0_8px_20px_-6px_rgba(11,35,65,0.4)] active:scale-95 md:w-auto"
+          >
+            {t.privacyModal.confirm}
           </button>
         </div>
       </FadeIn>

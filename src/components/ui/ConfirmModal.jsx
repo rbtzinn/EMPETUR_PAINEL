@@ -1,8 +1,11 @@
-import React from 'react';
-import { ExternalLink } from 'lucide-react';
-import FadeIn from './FadeIn';
+import React from "react";
+import { ExternalLink } from "lucide-react";
+import FadeIn from "./FadeIn";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 export default function ConfirmModal({ isOpen, onClose, onConfirm }) {
+  const { t } = useLanguage();
+
   if (!isOpen) return null;
 
   return (
@@ -11,34 +14,40 @@ export default function ConfirmModal({ isOpen, onClose, onConfirm }) {
         body.contraste-negativo .hc-icon-wrapper { background-color: #000 !important; border: 1px solid #ffea00 !important; }
         body.contraste-negativo .hc-icon-wrapper .lucide { color: #ffea00 !important; }
       `}</style>
-      
-      <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-md transition-opacity" onClick={onClose} />
+
+      <div
+        className="absolute inset-0 bg-slate-900/40 backdrop-blur-md transition-opacity"
+        onClick={onClose}
+      />
 
       <FadeIn className="relative w-full max-w-sm">
-        <div className="hc-card bg-white rounded-[2rem] p-8 md:p-10 shadow-2xl flex flex-col items-center text-center border border-white/20">
-          
-          <div className="hc-icon-wrapper w-20 h-20 bg-blue-50/80 border border-blue-100 rounded-2xl flex items-center justify-center mb-6 text-[#00AEEF] shadow-inner">
-            <ExternalLink strokeWidth={2} className="w-10 h-10 lucide" />
+        <div className="hc-card flex flex-col items-center rounded-[2rem] border border-white/20 bg-white p-8 text-center shadow-2xl md:p-10">
+          <div className="hc-icon-wrapper mb-6 flex h-20 w-20 items-center justify-center rounded-2xl border border-blue-100 bg-blue-50/80 text-[#00AEEF] shadow-inner">
+            <ExternalLink strokeWidth={2} className="lucide h-10 w-10" />
           </div>
 
-          <h3 className="text-2xl font-black text-[#0B2341] mb-3 tracking-tight hc-text-destaque">Visitar Site Oficial?</h3>
-          <p className="text-sm text-slate-500 mb-8 leading-relaxed hc-text-desc">
-            Você será redirecionado para o portal institucional da <strong className="text-[#0B2341] hc-text-destaque">EMPETUR</strong> na mesma aba. Deseja continuar?
+          <h3 className="mb-3 text-2xl font-black tracking-tight text-[#0B2341] hc-text-destaque">
+            {t.confirmModal.title}
+          </h3>
+          <p className="mb-8 text-sm leading-relaxed text-slate-500 hc-text-desc">
+            {t.confirmModal.description}
           </p>
 
-          <div className="flex gap-3 w-full">
-            <button 
-              onClick={onClose} 
-              className="flex-1 px-4 py-3.5 bg-slate-50 hover:bg-slate-100 text-slate-500 text-sm font-bold rounded-2xl transition-all active:scale-95 focus:outline-none hc-botao-borda"
+          <div className="flex w-full gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="hc-botao-borda flex-1 rounded-2xl bg-slate-50 px-4 py-3.5 text-sm font-bold text-slate-500 transition-all hover:bg-slate-100 active:scale-95 focus:outline-none"
             >
-              Cancelar
+              {t.confirmModal.cancel}
             </button>
-            
-            <button 
-              onClick={onConfirm} 
-              className="hc-botao-destaque flex-[1.2] px-4 py-3.5 bg-[#0B2341] hover:bg-[#00AEEF] text-white text-sm font-black uppercase tracking-wider rounded-2xl transition-all duration-300 shadow-[0_8px_20px_-6px_rgba(11,35,65,0.4)] hover:shadow-[0_8px_20px_-6px_rgba(0,174,239,0.4)] active:scale-95"
+
+            <button
+              type="button"
+              onClick={onConfirm}
+              className="hc-botao-destaque flex-[1.2] rounded-2xl bg-[#0B2341] px-4 py-3.5 text-sm font-black uppercase tracking-wider text-white shadow-[0_8px_20px_-6px_rgba(11,35,65,0.4)] transition-all duration-300 hover:bg-[#00AEEF] hover:shadow-[0_8px_20px_-6px_rgba(0,174,239,0.4)] active:scale-95"
             >
-              Continuar
+              {t.confirmModal.confirm}
             </button>
           </div>
         </div>

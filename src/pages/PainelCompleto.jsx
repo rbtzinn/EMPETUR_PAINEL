@@ -1,8 +1,14 @@
 import React, { useState } from "react";
-import { Card, Title, Text } from "@tremor/react";
-import { Filter } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Card, Text, Title } from "@tremor/react";
+import { ArrowLeft, Filter } from "lucide-react";
 import { useDashboardData } from "../hooks/useDashboardData";
-import { normalizarMunicipio, canonizarMunicipio } from "../utils/pernambucoUtils";
+import {
+  canonizarMunicipio,
+  normalizarMunicipio,
+} from "../utils/pernambucoUtils";
+import { createDefaultFilters } from "../constants/dashboard";
+import { useLanguage } from "../contexts/LanguageContext";
 
 import TopbarPainel from "../components/layout/TopbarPainel";
 import DashboardHeader from "../components/layout/DashboardHeader";
@@ -16,8 +22,9 @@ import TopMunicipiosChart from "../components/charts/TopMunicipiosChart";
 import TopArtistasCard from "../components/charts/TopArtistasCard";
 
 export default function PainelCompleto({ csvUrls }) {
-  const dataUltimaAtualizacao = "06/04/2026";
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const dataUltimaAtualizacao = "06/04/2026";
+  const { t } = useLanguage();
 
   const {
     loading,
@@ -31,42 +38,40 @@ export default function PainelCompleto({ csvUrls }) {
     getOpcoes,
   } = useDashboardData(csvUrls);
 
-  const limparFiltros = () => {
-    setFiltros({
-      municipio: "",
-      ciclo: "",
-      ano: "",
-      artista: "",
-      dataEvento: "",
-      nomeCredor: "",
-    });
-  };
+  const limparFiltros = () => setFiltros(createDefaultFilters());
 
   const normalizarMunicipioParaFiltro = (nome = "") => {
     if (!nome) return "";
+
     const canonico = canonizarMunicipio(nome);
     if (!canonico || canonico === "NÃO IDENTIFICADO") return "";
+
     return normalizarMunicipio(canonico);
   };
 
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-[#F8FAFC]">
-        <Text className="text-2xl font-black text-[#0B2341] animate-pulse hc-text-destaque">
-          Carregando Dashboard Oficial...
+      <div className="flex h-screen items-center justify-center bg-[#F8FAFC]">
+        <Text className="hc-text-destaque animate-pulse text-2xl font-black text-[#0B2341]">
+          {t.dashboard.loading}
         </Text>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-screen bg-[#F8FAFC] overflow-hidden hc-bg-painel">
+    <div className="hc-bg-painel flex h-screen flex-col overflow-hidden bg-[#F8FAFC]">
       <style>{`
         .scrollbar-moderna::-webkit-scrollbar { width: 6px; height: 6px; }
         .scrollbar-moderna::-webkit-scrollbar-track { background: transparent; }
         .scrollbar-moderna::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .scrollbar-moderna::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         body.contraste-negativo .hc-bg-painel { background-color: #000 !important; }
+        body.contraste-negativo .hc-mobile-filterbar {
+          background-color: transparent !important;
+          border-color: transparent !important;
+          box-shadow: none !important;
+        }
       `}</style>
 
       <TopbarPainel
@@ -79,22 +84,34 @@ export default function PainelCompleto({ csvUrls }) {
         setIsMobileMenuOpen={setIsMobileMenuOpen}
       />
 
-      <main className="hc-bg-painel flex-1 overflow-y-auto scrollbar-moderna bg-[#F8FAFC]">
-        <div className="max-w-[1600px] mx-auto p-4 md:p-8 lg:p-10 w-full">
-          <div className="lg:hidden mb-6 mt-2">
-            <button
-              onClick={() => setIsMobileMenuOpen(true)}
-              className="w-full bg-[#0B2341] text-white p-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-900/20 active:scale-95 transition-transform"
-            >
-              <Filter size={18} />
-              Filtrar Resultados
-              {temFiltroAtivo && (
-                <span className="flex h-2.5 w-2.5 rounded-full bg-red-500 ml-1"></span>
-              )}
-            </button>
-          </div>
+      <div className="hc-mobile-filterbar fixed inset-x-0 top-0 z-[120] px-4 pb-3 pt-4 lg:hidden">
+        <div className="mx-auto flex max-w-[1600px] items-center gap-3">
+          <Link
+            to="/"
+            aria-label={t.common.back}
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white/96 text-[#0B2341] shadow-[0_16px_40px_-26px_rgba(11,35,65,0.28)] backdrop-blur-xl transition-all active:scale-95"
+          >
+            <ArrowLeft size={18} strokeWidth={2.5} />
+          </Link>
 
-          <Breadcrumb isPainel={true} />
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#0B2341] px-4 py-4 text-sm font-bold text-white shadow-[0_16px_40px_-26px_rgba(11,35,65,0.38)] transition-transform active:scale-95"
+          >
+            <Filter size={18} />
+            {t.dashboard.mobileFilterButton}
+            {temFiltroAtivo && (
+              <span className="ml-1 flex h-2.5 w-2.5 rounded-full bg-red-500" />
+            )}
+          </button>
+        </div>
+      </div>
+
+      <main className="hc-bg-painel scrollbar-moderna flex-1 overflow-y-auto bg-[#F8FAFC]">
+        <div className="mx-auto w-full max-w-[1600px] px-4 pb-4 pt-24 md:p-8 lg:p-10">
+
+          <Breadcrumb isPainel />
           <DashboardHeader dataUltimaAtualizacao={dataUltimaAtualizacao} />
 
           <div className="mt-8">
@@ -105,37 +122,37 @@ export default function PainelCompleto({ csvUrls }) {
             />
           </div>
 
-          <div className="w-full mt-8">
+          <div className="mt-8 w-full">
             <MapaPernambuco
               dados={filtrados}
               municipioSelecionado={filtros.municipio || ""}
               onSelectMunicipio={(nomeNormalizado) =>
-                setFiltros((prev) => ({
-                  ...prev,
+                setFiltros((current) => ({
+                  ...current,
                   municipio: nomeNormalizado || "",
                 }))
               }
             />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 mt-8">
+          <div className="mb-8 mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
             <div className="w-full">
-              <Card className="relative rounded-[2rem] border-none shadow-xl shadow-blue-900/5 bg-white p-6 md:p-8 flex flex-col h-full">
-                <Title className="text-[#0B2341] font-black mb-6">
-                  Apresentações por Ciclo
+              <Card className="relative flex h-full flex-col rounded-[2rem] border-none bg-white p-6 shadow-xl shadow-blue-900/5 md:p-8">
+                <Title className="mb-6 font-black text-[#0B2341]">
+                  {t.dashboard.charts.cycleTitle}
                 </Title>
-                <div className="absolute top-6 right-6 md:top-8 md:right-8">
-                  <InfoTooltip text="Clique nas barras para filtrar os dados por ciclo específico." />
+                <div className="absolute right-6 top-6 md:right-8 md:top-8">
+                  <InfoTooltip text={t.dashboard.charts.cycleTooltip} />
                 </div>
-                <div className="flex-1 min-h-[300px]">
+                <div className="min-h-[300px] flex-1">
                   <GraficoBarrasNativo
                     data={registrosPorCiclo}
                     indice="ciclo"
-                    formatador={(num) => `${num} shows`}
-                    onClick={(v) =>
-                      setFiltros((prev) => ({
-                        ...prev,
-                        ciclo: v === filtros.ciclo ? "" : v,
+                    formatador={(num) => `${num} ${t.common.shows}`}
+                    onClick={(value) =>
+                      setFiltros((current) => ({
+                        ...current,
+                        ciclo: value === filtros.ciclo ? "" : value,
                       }))
                     }
                     filtroAtivo={filtros.ciclo}
@@ -148,8 +165,8 @@ export default function PainelCompleto({ csvUrls }) {
               <TopMunicipiosChart
                 data={registrosPorMunicipio}
                 onFilter={(nome) =>
-                  setFiltros((prev) => ({
-                    ...prev,
+                  setFiltros((current) => ({
+                    ...current,
                     municipio: normalizarMunicipioParaFiltro(nome),
                   }))
                 }
@@ -158,27 +175,31 @@ export default function PainelCompleto({ csvUrls }) {
           </div>
 
           <div className="mb-8">
-            <TabelaHistorico filtrados={filtrados} setFiltros={setFiltros} />
+            <TabelaHistorico
+              filtrados={filtrados}
+              setFiltros={setFiltros}
+              temFiltroAtivo={temFiltroAtivo}
+            />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+          <div className="mb-12 grid grid-cols-1 gap-8 lg:grid-cols-2">
             <div className="w-full">
-              <Card className="relative rounded-[2rem] border-none shadow-xl shadow-blue-900/5 bg-white p-6 md:p-8 h-full flex flex-col">
-                <Title className="text-[#0B2341] font-black mb-6">
-                  Apresentações por Ano
+              <Card className="relative flex h-full flex-col rounded-[2rem] border-none bg-white p-6 shadow-xl shadow-blue-900/5 md:p-8">
+                <Title className="mb-6 font-black text-[#0B2341]">
+                  {t.dashboard.charts.yearTitle}
                 </Title>
-                <div className="absolute top-6 right-6 md:top-8 md:right-8">
-                  <InfoTooltip text="Estatísticas baseadas na data do empenho oficial emitida pela EMPETUR." />
+                <div className="absolute right-6 top-6 md:right-8 md:top-8">
+                  <InfoTooltip text={t.dashboard.charts.yearTooltip} />
                 </div>
-                <div className="flex-1 min-h-[300px]">
+                <div className="min-h-[300px] flex-1">
                   <GraficoBarrasNativo
                     data={registrosPorAno}
                     indice="ano"
-                    formatador={(num) => `${num} shows`}
-                    onClick={(v) =>
-                      setFiltros((prev) => ({
-                        ...prev,
-                        ano: v === filtros.ano ? "" : v,
+                    formatador={(num) => `${num} ${t.common.shows}`}
+                    onClick={(value) =>
+                      setFiltros((current) => ({
+                        ...current,
+                        ano: value === filtros.ano ? "" : value,
                       }))
                     }
                     filtroAtivo={filtros.ano}

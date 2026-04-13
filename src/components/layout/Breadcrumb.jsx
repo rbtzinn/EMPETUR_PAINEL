@@ -1,12 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import {
-  House,
-  Shield,
-  FileBarChart2,
-  LayoutDashboard,
   ChevronRight,
+  FileBarChart2,
+  House,
+  LayoutDashboard,
+  Shield,
 } from "lucide-react";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 function Crumb({
   to,
@@ -19,22 +20,20 @@ function Crumb({
   const baseClass =
     "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 sm:px-4 sm:py-2 text-[10px] sm:text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all shadow-sm";
 
-  const activeClass =
-    "bg-[#0B2341] text-white border border-[#0B2341]";
-
-  const defaultClass =
-    "bg-white text-slate-500 border border-slate-200 hover:border-[#00AEEF] hover:text-[#00AEEF]";
+  const stateClass = active
+    ? "bg-[#0B2341] text-white border border-[#0B2341]"
+    : "bg-white text-slate-500 border border-slate-200 hover:border-[#00AEEF] hover:text-[#00AEEF]";
 
   const content = (
     <>
-      <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" strokeWidth={2.5} />
+      <Icon className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" strokeWidth={2.5} />
       <span>{label}</span>
     </>
   );
 
   if (external) {
     return (
-      <a href={href} className={`${baseClass} ${active ? activeClass : defaultClass}`}>
+      <a href={href} className={`${baseClass} ${stateClass}`}>
         {content}
       </a>
     );
@@ -42,63 +41,61 @@ function Crumb({
 
   if (to) {
     return (
-      <Link to={to} className={`${baseClass} ${active ? activeClass : defaultClass}`}>
+      <Link to={to} className={`${baseClass} ${stateClass}`}>
         {content}
       </Link>
     );
   }
 
-  return (
-    <span className={`${baseClass} ${active ? activeClass : defaultClass}`}>
-      {content}
-    </span>
-  );
+  return <span className={`${baseClass} ${stateClass}`}>{content}</span>;
 }
 
 function Separator({ isPainel }) {
   return (
-    // Removi o mt-3 mb-4 e adicionei flex items-center para a seta ficar perfeitamente alinhada ao meio
-    <span className={`flex items-center shrink-0 ${isPainel ? "text-slate-300" : "text-white/50 mt-4 mb-3"}`}>
-      <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" strokeWidth={3} />
+    <span
+      className={`flex shrink-0 items-center ${
+        isPainel ? "text-slate-300" : "mb-3 mt-4 text-white/50"
+      }`}
+    >
+      <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" strokeWidth={3} />
     </span>
   );
 }
 
 export default function Breadcrumb({ isPainel = false }) {
+  const { t } = useLanguage();
+
   return (
     <div
-      className={`w-full z-40 pointer-events-none ${
+      className={`pointer-events-none z-40 w-full ${
         isPainel
           ? "relative mb-3 sm:mb-4"
-          : "absolute top-[80px] sm:top-[90px] left-0 right-0 pt-5 pb-2"
+          : "absolute left-0 right-0 top-[80px] pb-2 pt-5 sm:top-[90px]"
       }`}
     >
-      <div className={`${isPainel ? "w-full" : "max-w-7xl mx-auto px-4 sm:px-6"}`}>
+      <div className={isPainel ? "w-full" : "mx-auto max-w-7xl px-4 sm:px-6"}>
         <nav
-          aria-label="Breadcrumb"
-          className="overflow-x-auto whitespace-nowrap [scrollbar-width:none] [-ms-overflow-style:none] pointer-events-auto"
+          aria-label={t.breadcrumb.aria}
+          className="pointer-events-auto overflow-x-auto whitespace-nowrap [scrollbar-width:none] [-ms-overflow-style:none]"
         >
-          <div className="inline-flex items-center gap-1.5 sm:gap-2 min-w-max">
+          <div className="inline-flex min-w-max items-center gap-1.5 sm:gap-2">
             <Crumb
               href="https://www.empetur.pe.gov.br/"
               external
               icon={House}
-              label="Portal"
+              label={t.breadcrumb.portal}
             />
 
             <Separator isPainel={isPainel} />
 
-            <Crumb
-              icon={Shield}
-              label="Transparência"
-            />
+            <Crumb icon={Shield} label={t.breadcrumb.transparency} />
 
             <Separator isPainel={isPainel} />
 
             <Crumb
               to="/"
               icon={FileBarChart2}
-              label="Contratações"
+              label={t.breadcrumb.contracts}
               active={!isPainel}
             />
 
@@ -107,7 +104,7 @@ export default function Breadcrumb({ isPainel = false }) {
                 <Separator isPainel={isPainel} />
                 <Crumb
                   icon={LayoutDashboard}
-                  label="Dashboard"
+                  label={t.breadcrumb.dashboard}
                   active
                 />
               </>

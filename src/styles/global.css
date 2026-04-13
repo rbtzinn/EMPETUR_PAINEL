@@ -3,14 +3,59 @@
 /* ==========================================================================
    CONFIGURAÇÕES GERAIS
 ========================================================================== */
+html {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  scroll-padding-top: 120px;
+}
+
+:root {
+  --font-display: "IBM Plex Sans", sans-serif;
+  --font-body: "IBM Plex Sans", sans-serif;
+  --color-ink: #0f172a;
+  --color-deep: #071a30;
+  --color-panel: #0b2341;
+  --color-accent: #00aeef;
+  --color-surface: #eef4f8;
+}
+
 body {
-  background-color: #f8fafc;
-  color: #0f172a;
+  font-family: var(--font-body);
+  background: linear-gradient(180deg, #f8fbfd 0%, #f3f7fa 45%, #f8fafc 100%);
+  color: var(--color-ink);
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body::before {
+  content: none;
+}
+
+body,
+#root {
+  position: relative;
 }
 
 html, body, #root { overflow-x: hidden; }
 button { cursor: pointer; }
+
+h1, h2, h3, h4, h5, h6,
+.font-display {
+  font-family: var(--font-display);
+}
+
+section[id] {
+  scroll-margin-top: 120px;
+}
+
+::selection {
+  background: rgba(0, 174, 239, 0.2);
+  color: var(--color-panel);
+}
+
+.immersive-shell { position: relative; }
+.section-overlap { margin-top: 0; }
+.panel-grid { background-image: none; }
+.surface-grid { background-image: none; }
 
 /* ==========================================================================
    SCROLLBAR MODERNA GLOBAL

@@ -27,11 +27,15 @@ const TERMOS_SERVICO_MEIO = [
   "BUFFET",
 ];
 
+const requestCache = new Map();
+
 const temCaraDeShow = (obs = "", detalhamento = "") => {
   const texto = `${obs} ${detalhamento}`.toUpperCase();
 
   return (
-    /APRE(?:S|SE|SENTA|SENTAÇÃO|SENTACAO)|ART[IÍ]STIC|SHOW|CACH[ÊE]|BANDA|CANTOR(?:A)?|ORQUESTRA|TRIO|GRUPO|DJ\b|DANÇA|DANCA|CIA\b|CIA\.|BLOCO/.test(texto) ||
+    /APRE(?:S|SE|SENTA|SENTAÇÃO|SENTACAO)|ART[IÍ]STIC|SHOW|CACH[ÊE]|BANDA|CANTOR(?:A)?|ORQUESTRA|TRIO|GRUPO|DJ\b|DANÇA|DANCA|CIA\b|CIA\.|BLOCO/.test(
+      texto
+    ) ||
     /CARNAVAL|S[ÃA]O JO[ÃA]O|NATAL|RÉVEILLON|REVEILLON|PERNAMBUCO MEU PA[IÍ]S|APOIO A EVENTOS CULTURAIS/.test(
       String(detalhamento || "").toUpperCase()
     )
@@ -40,9 +44,11 @@ const temCaraDeShow = (obs = "", detalhamento = "") => {
 
 const ehServicoMeio = (obs = "") => {
   const texto = String(obs || "").toUpperCase();
-
   const temTermoMeio = TERMOS_SERVICO_MEIO.some((t) => texto.includes(t));
-  const temSinalArtistico = /APRESENTA|ART[IÍ]STIC|SHOW|CACH[ÊE]|BANDA|CANTOR|ORQUESTRA|TRIO|DJ\b/.test(texto);
+  const temSinalArtistico =
+    /APRESENTA|ART[IÍ]STIC|SHOW|CACH[ÊE]|BANDA|CANTOR|ORQUESTRA|TRIO|DJ\b/.test(
+      texto
+    );
 
   return temTermoMeio && !temSinalArtistico;
 };
@@ -63,11 +69,13 @@ const obterValorPrincipal = (linha) => {
   return 0;
 };
 
-export const fetchAndProcessData = async (url) => {
-  const response = await fetch(url);
-  const csv = await response.text();
+export const normalizeCsvUrls = (csvUrls) =>
+  (Array.isArray(csvUrls) ? csvUrls : [csvUrls]).filter(Boolean);
 
-  return new Promise((resolve) => {
+export const getCsvUrlsKey = (csvUrls) => normalizeCsvUrls(csvUrls).join("|");
+
+const processCsvText = (csv) =>
+  new Promise((resolve) => {
     Papa.parse(csv, {
       header: true,
       skipEmptyLines: true,
@@ -75,8 +83,12 @@ export const fetchAndProcessData = async (url) => {
         const setUnico = new Set();
 
         const processed = data.reduce((acc, linha, index) => {
-          const tipoDespesa = String(linha["Tipo de Despesa"] || "").trim().toUpperCase();
-          const detalhamento = String(linha["Detalhamento da Despesa Gerencial"] || "");
+          const tipoDespesa = String(linha["Tipo de Despesa"] || "")
+            .trim()
+            .toUpperCase();
+          const detalhamento = String(
+            linha["Detalhamento da Despesa Gerencial"] || ""
+          );
           const obs = String(linha["Observação do Empenho"] || "");
           const obsLimpa = obs.trim().toUpperCase();
 
@@ -85,20 +97,32 @@ export const fetchAndProcessData = async (url) => {
           if (ehServicoMeio(obsLimpa)) return acc;
 
           const valor = obterValorPrincipal(linha);
-
           const artista = Extractors.extrairArtista(obs);
           const municipioExtraido = Extractors.extrairMunicipio(obs);
           const municipio = canonizarMunicipio(municipioExtraido);
-          const dataEvento = Extractors.extrairDataEvento(obs, linha["Data do Empenho"]);
+          const municipioNormalizado = normalizarMunicipio(municipio);
+          const dataEvento = Extractors.extrairDataEvento(
+            obs,
+            linha["Data do Empenho"]
+          );
           const nomeEvento = Extractors.extrairNomeEvento(obs, artista);
 
           if (!Extractors.municipioEhDePernambuco(municipio)) return acc;
-          if (artista === "NÃO IDENTIFICADO" && !nomeEvento && dataEvento === "---") return acc;
+          if (
+            artista === "NÃO IDENTIFICADO" &&
+            !nomeEvento &&
+            dataEvento === "---"
+          ) {
+            return acc;
+          }
 
           let ciclo = detalhamento || "Outros";
           let cicloMacro = ciclo;
 
-          if (obsLimpa.includes("PERNAMBUCO MEU PAÍS") || obsLimpa.includes("PERNAMBUCO MEU PAIS")) {
+          if (
+            obsLimpa.includes("PERNAMBUCO MEU PAÍS") ||
+            obsLimpa.includes("PERNAMBUCO MEU PAIS")
+          ) {
             ciclo = "Festival Pernambuco Meu País";
             cicloMacro = "Festival Pernambuco Meu País";
           } else if (
@@ -109,7 +133,6 @@ export const fetchAndProcessData = async (url) => {
             ciclo = nomeEvento || "Apoio a Eventos Culturais";
           }
 
-          // deduplicação correta: por número do empenho
           const numeroEmpenho = String(linha["Número do Empenho"] || "").trim();
           const chaveUnica = numeroEmpenho || `sem-empenho-${index}`;
 
@@ -121,7 +144,7 @@ export const fetchAndProcessData = async (url) => {
             numeroEmpenho: numeroEmpenho || "N/A",
             artista,
             municipio,
-            municipioNormalizado: normalizarMunicipio(municipio),
+            municipioNormalizado,
             ciclo,
             cicloMacro,
             dataEvento,
@@ -129,12 +152,15 @@ export const fetchAndProcessData = async (url) => {
             ano: Utils.extrairAno(linha["Data do Empenho"]),
             valor,
             valorLiquidado: Utils.extrairValor(linha["Total Liquidado"]),
-            valorEmpenhadoAtual: Utils.extrairValor(linha["Valor Empenhado Atual"]),
+            valorEmpenhadoAtual: Utils.extrairValor(
+              linha["Valor Empenhado Atual"]
+            ),
             valorPago: Utils.extrairValor(linha["Total Pago"]),
             tipoDespesa,
-            documentoCredor: linha["CPF, CNPJ, IG ou UG/Gestão do Credor"] || "N/A",
-            nomeCredor: linha["Nome ou Razão Social do Credor"] || "NÃO IDENTIFICADO",
-            municipioNormalizado: normalizarMunicipio(municipio),
+            documentoCredor:
+              linha["CPF, CNPJ, IG ou UG/Gestão do Credor"] || "N/A",
+            nomeCredor:
+              linha["Nome ou Razão Social do Credor"] || "NÃO IDENTIFICADO",
           });
 
           return acc;
@@ -144,4 +170,36 @@ export const fetchAndProcessData = async (url) => {
       },
     });
   });
+
+export const fetchAndProcessData = async (url) => {
+  if (!requestCache.has(url)) {
+    const request = fetch(url)
+      .then((response) => response.text())
+      .then(processCsvText)
+      .catch((error) => {
+        requestCache.delete(url);
+        throw error;
+      });
+
+    requestCache.set(url, request);
+  }
+
+  return requestCache.get(url);
+};
+
+export const loadDashboardData = async (csvUrls) => {
+  const urls = normalizeCsvUrls(csvUrls);
+
+  const results = await Promise.all(
+    urls.map(async (url) => {
+      try {
+        return await fetchAndProcessData(url);
+      } catch (error) {
+        console.error("Erro ao carregar uma das planilhas:", error);
+        return [];
+      }
+    })
+  );
+
+  return results.flat().filter(Boolean);
 };

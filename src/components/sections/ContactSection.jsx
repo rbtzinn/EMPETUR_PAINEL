@@ -1,51 +1,101 @@
-import React, { useState } from "react";
-import { Mail, Phone, Clock, MapPin, FileSearch, MessageSquareWarning, BarChart3, Check } from "lucide-react";
+import React, { useMemo, useState } from "react";
+import {
+  BarChart3,
+  Check,
+  Clock,
+  FileSearch,
+  Mail,
+  MapPin,
+  MessageSquareWarning,
+  Phone,
+} from "lucide-react";
 import FadeIn from "../ui/FadeIn";
+import { useLanguage } from "../../contexts/LanguageContext";
+
+const CONTACT_META = {
+  email: {
+    color: "bg-blue-50 text-blue-600",
+    link: "mailto:empetur@empetur.pe.gov.br",
+    icon: Mail,
+  },
+  phone: {
+    color: "bg-purple-50 text-purple-600",
+    copiedColor: "bg-green-100 text-green-600",
+    icon: Phone,
+  },
+  hours: {
+    color: "bg-emerald-50 text-emerald-600",
+    link: "https://www.empetur.pe.gov.br/",
+    icon: Clock,
+  },
+  location: {
+    color: "bg-orange-50 text-orange-600",
+    link: "https://maps.google.com/?q=EMPETUR",
+    icon: MapPin,
+  },
+  esic: {
+    color: "bg-teal-50 text-teal-600",
+    link: "https://transparencia.pe.gov.br/participacao-cidada-pe/acesso-a-informacao/",
+    icon: FileSearch,
+  },
+  ouvidoria: {
+    color: "bg-rose-50 text-rose-600",
+    link: "https://www.ouvidoria.pe.gov.br/",
+    icon: MessageSquareWarning,
+  },
+  observatorio: {
+    color: "bg-indigo-50 text-indigo-600",
+    link: "https://www.empetur.pe.gov.br/institucional/observatorio-do-turismo",
+    icon: BarChart3,
+  },
+};
 
 export default function ContactSection({ id }) {
   const [copiedPhone, setCopiedPhone] = useState(false);
+  const { t } = useLanguage();
 
-  const handleCopyPhone = () => {
-    navigator.clipboard.writeText("(81) 3182-8000");
-    setCopiedPhone(true);
-    setTimeout(() => setCopiedPhone(false), 2500);
-  };
+  const contacts = useMemo(
+    () =>
+      t.contact.contacts.map((contact) => {
+        const meta = CONTACT_META[contact.id];
+        const Icon = copiedPhone && contact.id === "phone" ? Check : meta.icon;
 
-  const contacts = [
-    {
-      id: "email", label: "E-mail Oficial", value: "empetur@empetur.pe.gov.br", subValue: "Clique para enviar e-mail",
-      color: "bg-blue-50 text-blue-600", link: "mailto:empetur@empetur.pe.gov.br", icon: <Mail strokeWidth={2} size={24} className="lucide" />
-    },
-    {
-      id: "phone", label: copiedPhone ? "Copiado!" : "Telefone", value: "(81) 3182-8000", subValue: copiedPhone ? "Salvo na área de transferência" : "Clique para copiar",
-      color: copiedPhone ? "bg-green-100 text-green-600" : "bg-purple-50 text-purple-600", action: handleCopyPhone, icon: copiedPhone ? <Check strokeWidth={2.5} size={24} className="lucide" /> : <Phone strokeWidth={2} size={24} className="lucide" />
-    },
-    {
-      id: "hours", label: "Atendimento", value: "Segunda a Sexta • 08h às 17h", subValue: "Finais de semana: Fechado",
-      color: "bg-emerald-50 text-emerald-600", link: "https://www.empetur.pe.gov.br/", icon: <Clock strokeWidth={2} size={24} className="lucide" />
-    },
-    {
-      id: "location", label: "Localização", value: "Sede EMPETUR - Olinda/PE", subValue: "Ver no Google Maps",
-      color: "bg-orange-50 text-orange-600", link: "https://maps.google.com/?q=EMPETUR", icon: <MapPin strokeWidth={2} size={24} className="lucide" />
-    },
-    {
-      id: "esic", label: "Acesso à Informação", value: "Portal e-SIC PE", subValue: "Solicite dados não disponíveis",
-      color: "bg-teal-50 text-teal-600", link: "https://transparencia.pe.gov.br/participacao-cidada-pe/acesso-a-informacao/", icon: <FileSearch strokeWidth={2} size={24} className="lucide" />
-    },
-    {
-      id: "ouvidoria", label: "Ouvidoria Geral", value: "Manifestações e Denúncias", subValue: "Registre sua reclamação",
-      color: "bg-rose-50 text-rose-600", link: "https://www.ouvidoria.pe.gov.br/", icon: <MessageSquareWarning strokeWidth={2} size={24} className="lucide" />
-    },
-    {
-      id: "observatorio", label: "Dados Turísticos", value: "Observatório de Turismo", subValue: "Acesse pesquisas e boletins",
-      color: "bg-indigo-50 text-indigo-600", link: "https://www.empetur.pe.gov.br/institucional/observatorio-do-turismo", icon: <BarChart3 strokeWidth={2} size={24} className="lucide" />
-    }
-  ];
+        return {
+          ...contact,
+          action:
+            contact.id === "phone"
+              ? () => {
+                  navigator.clipboard.writeText("(81) 3182-8000");
+                  setCopiedPhone(true);
+                  setTimeout(() => setCopiedPhone(false), 2500);
+                }
+              : undefined,
+          color:
+            copiedPhone && contact.id === "phone"
+              ? meta.copiedColor
+              : meta.color,
+          link: meta.link,
+          icon: <Icon strokeWidth={contact.id === "phone" ? 2.5 : 2} size={24} className="lucide" />,
+          label:
+            copiedPhone && contact.id === "phone"
+              ? contact.copiedLabel
+              : contact.label,
+          subValue:
+            copiedPhone && contact.id === "phone"
+              ? contact.copiedSubValue
+              : contact.subValue,
+        };
+      }),
+    [copiedPhone, t.contact.contacts]
+  );
 
   return (
-    <section id={id} className="py-24 md:py-32 bg-[#F8FAFC]" aria-label="Contato e informações">
+    <section
+      id={id}
+      className="bg-[#F8FAFC] py-24 md:py-32"
+      aria-label={t.contact.aria}
+    >
       <style>{`
-        /* 🔴 Ícones amarelos com FUNDO PRETO no contraste negativo */
         body.contraste-negativo #contato .hc-icon-wrapper {
           background-color: #000 !important;
           border: 1px solid #ffea00 !important;
@@ -54,50 +104,92 @@ export default function ContactSection({ id }) {
           color: #ffea00 !important;
         }
       `}</style>
-      <div className="max-w-6xl mx-auto px-4 md:px-6">
-        <FadeIn className="hc-card bg-white rounded-[3rem] md:rounded-[4rem] p-8 md:p-16 lg:p-24 shadow-2xl shadow-blue-900/5 border border-slate-100 relative overflow-hidden">
 
-          <div className="absolute -top-32 -right-32 w-96 h-96 bg-[#00AEEF]/5 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-[#0B2341]/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="mx-auto max-w-7xl px-4 md:px-6">
+        <FadeIn className="hc-card relative overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-[0_26px_70px_-52px_rgba(11,35,65,0.32)] md:p-12 lg:p-14">
+          <div className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-[#00AEEF]/5 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-[#0B2341]/5 blur-3xl" />
 
-          <div className="text-center mb-16 md:mb-20 relative z-10">
-            <h2 className="text-3xl md:text-5xl font-black text-[#0B2341] mb-5 tracking-tight hc-text-destaque">Canais de Contato</h2>
-            <p className="text-slate-500 text-base md:text-lg max-w-2xl mx-auto font-light leading-relaxed hc-text-desc">
-              Exerça sua cidadania. Acesse os canais oficiais da EMPETUR para esclarecimentos, denúncias ou solicitações da Lei de Acesso à Informação.
+          <div className="relative z-10 mb-14 text-center md:mb-16">
+            <h2 className="mb-5 text-2xl font-black tracking-tight text-[#0B2341] hc-text-destaque sm:text-3xl md:text-5xl">
+              {t.contact.title}
+            </h2>
+            <p className="mx-auto max-w-3xl text-base font-light leading-8 text-slate-500 hc-text-desc md:text-lg">
+              {t.contact.description}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 relative z-10">
+          <div className="relative z-10 grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-5 lg:grid-cols-3">
             {contacts.map((contact, index) => {
-              const isLastOdd = index === contacts.length - 1 && contacts.length % 3 !== 0;
+              const isLastOdd =
+                index === contacts.length - 1 && contacts.length % 3 !== 0;
 
-              // 🔴 Comentário alterado para JS padrão fora dos parênteses
-              // Tailwind: items-center text-center no mobile, sm:items-start sm:text-left no desktop
-              const CardContent = (
-                <div className={`hc-card group flex flex-col p-6 rounded-[2rem] bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-xl hover:shadow-slate-200/50 hover:-translate-y-1 transition-all duration-300 h-full items-center text-center sm:items-start sm:text-left ${contact.id === 'phone' && copiedPhone ? 'ring-2 ring-green-400 bg-white' : ''}`}>
-                  <div className={`hc-icon-wrapper w-14 h-14 rounded-2xl flex items-center justify-center mb-5 shadow-sm group-hover:scale-110 transition-transform ${contact.color}`}>
+              const cardContent = (
+                <div
+                  className={`hc-card group flex h-full flex-col items-center rounded-[1.75rem] border border-slate-100 bg-slate-50 p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-xl hover:shadow-slate-200/40 sm:items-start sm:text-left ${
+                    contact.id === "phone" && copiedPhone
+                      ? "bg-white ring-2 ring-green-400"
+                      : ""
+                  }`}
+                >
+                  <div
+                    className={`hc-icon-wrapper mb-5 flex h-14 w-14 items-center justify-center rounded-2xl shadow-sm transition-transform group-hover:scale-110 ${contact.color}`}
+                  >
                     {contact.icon}
                   </div>
                   <div className="w-full">
-                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 hc-text-destaque">{contact.label}</div>
-                    <div className="text-base font-bold text-[#0B2341] group-hover:text-[#00AEEF] transition-colors mb-1 hc-text-destaque">{contact.value}</div>
-                    {contact.subValue && <div className={`text-xs font-medium ${contact.id === 'phone' && copiedPhone ? 'text-green-600' : 'text-slate-500'} hc-text-desc`}>{contact.subValue}</div>}
+                    <div className="mb-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400 hc-text-destaque">
+                      {contact.label}
+                    </div>
+                    <div className="mb-2 text-base font-bold leading-6 text-[#0B2341] transition-colors group-hover:text-[#00AEEF] hc-text-destaque">
+                      {contact.value}
+                    </div>
+                    {contact.subValue && (
+                      <div
+                        className={`text-xs font-medium hc-text-desc ${
+                          contact.id === "phone" && copiedPhone
+                            ? "text-green-600"
+                            : "text-slate-500"
+                        }`}
+                      >
+                        {contact.subValue}
+                      </div>
+                    )}
                   </div>
                 </div>
               );
 
               return (
-                <FadeIn key={contact.id} delay={0.1 * index} className={isLastOdd ? "md:col-span-2 lg:col-span-1 lg:w-full h-full" : "w-full h-full"}>
+                <FadeIn
+                  key={contact.id}
+                  delay={0.1 * index}
+                  className={
+                    isLastOdd
+                      ? "h-full md:col-span-2 lg:col-span-1 lg:w-full"
+                      : "h-full w-full"
+                  }
+                >
                   {contact.action ? (
-                    <button onClick={contact.action} className="w-full h-full outline-none focus:ring-4 focus:ring-[#00AEEF]/30 rounded-[2rem]">
-                      {CardContent}
+                    <button
+                      type="button"
+                      onClick={contact.action}
+                      className="h-full w-full rounded-[2rem] outline-none focus:ring-4 focus:ring-[#00AEEF]/30"
+                    >
+                      {cardContent}
                     </button>
                   ) : contact.link ? (
-                    <a href={contact.link} target={contact.link.startsWith('http') ? "_blank" : "_self"} rel="noopener noreferrer" className="block w-full h-full outline-none focus:ring-4 focus:ring-[#00AEEF]/30 rounded-[2rem]">
-                      {CardContent}
+                    <a
+                      href={contact.link}
+                      target={
+                        contact.link.startsWith("http") ? "_blank" : "_self"
+                      }
+                      rel="noopener noreferrer"
+                      className="block h-full w-full rounded-[2rem] outline-none focus:ring-4 focus:ring-[#00AEEF]/30"
+                    >
+                      {cardContent}
                     </a>
                   ) : (
-                    <div className="h-full">{CardContent}</div>
+                    <div className="h-full">{cardContent}</div>
                   )}
                 </FadeIn>
               );

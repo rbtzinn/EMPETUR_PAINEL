@@ -1,103 +1,119 @@
 import React, { useState } from "react";
-import { Target, RefreshCcw, ShieldCheck, ArrowRight } from "lucide-react";
+import { ArrowRight, RefreshCcw, ShieldCheck, Target } from "lucide-react";
 import FadeIn from "../ui/FadeIn";
 import GovernancaModal from "../ui/GovernancaModal";
+import { useLanguage } from "../../contexts/LanguageContext";
+
+const CARD_ICONS = [Target, RefreshCcw, ShieldCheck];
+const CARD_STYLES = [
+  "bg-blue-100 text-blue-600",
+  "bg-emerald-100 text-emerald-600",
+  "bg-white/10 text-white",
+];
 
 export default function AboutSection({ id }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { t } = useLanguage();
 
   return (
-    <section id={id} className="py-24 md:py-32 bg-white relative overflow-hidden" aria-label="Sobre o painel">
-      <GovernancaModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+    <section
+      id={id}
+      className="relative overflow-hidden bg-white py-24 md:py-32"
+      aria-label={t.about.aria}
+    >
+      <GovernancaModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
 
       <style>{`
         body.contraste-negativo .hc-sobre-bg { display: none !important; }
         body.contraste-negativo .hc-botao-borda { border: 2px solid #ffea00 !important; color: #ffea00 !important; background: transparent !important; }
         body.contraste-negativo .hc-botao-borda:hover { background: #ffea00 !important; color: #000 !important; }
-        
-        /* 🔴 CORREÇÃO: Ícones amarelos com FUNDO PRETO no contraste negativo */
-        body.contraste-negativo #sobre .hc-icon-wrapper {
-          background-color: #000 !important;
-          border: 1px solid #ffea00 !important;
-        }
-        body.contraste-negativo #sobre .hc-icon-wrapper .lucide {
-          color: #ffea00 !important;
-        }
+        body.contraste-negativo #sobre .hc-icon-wrapper { background-color: #000 !important; border: 1px solid #ffea00 !important; }
+        body.contraste-negativo #sobre .hc-icon-wrapper .lucide { color: #ffea00 !important; }
 
-        /* Centralização no mobile */
         @media (max-width: 640px) {
-          #sobre .max-w-2xl {
-            text-align: center;
-          }
-          #sobre .hc-card {
-            text-align: center;
-            align-items: center;
-            margin: 0 auto;
-          }
+          #sobre .max-w-2xl { text-align: center; }
+          #sobre .hc-card { text-align: center; align-items: center; margin: 0 auto; }
         }
       `}</style>
 
-      <div className="hc-sobre-bg absolute top-0 right-0 w-[500px] h-[500px] bg-slate-50 rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+      <div className="hc-sobre-bg pointer-events-none absolute right-0 top-0 h-[500px] w-[500px] translate-x-1/3 -translate-y-1/2 rounded-full bg-slate-50 opacity-50 blur-3xl" />
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        <FadeIn className="max-w-2xl mb-16 md:mb-24">
-          <div className="hc-sobre-bg w-12 h-1.5 bg-[#00AEEF] mb-6 rounded-full" />
-          <h2 className="text-4xl md:text-5xl font-black text-[#0B2341] mb-6 tracking-tight hc-text-destaque">
-            Transparência <br className="hidden md:block" /> em Foco
+      <div className="relative z-10 mx-auto max-w-7xl px-6">
+        <FadeIn className="mb-14 max-w-3xl md:mb-18">
+          <div className="hc-sobre-bg mb-6 h-1.5 w-12 rounded-full bg-[#00AEEF]" />
+          <h2 className="mb-5 text-3xl font-black tracking-tight text-[#0B2341] hc-text-destaque sm:text-4xl md:text-5xl">
+            {t.about.title}
           </h2>
-          <p className="text-lg md:text-xl text-slate-500 font-light leading-relaxed hc-text-desc">
-            Uma plataforma projetada para o cidadão consultar as contratações artísticas cruzando dados por <strong className="text-[#0B2341] font-bold hc-text-destaque">ano</strong>, <strong className="text-[#0B2341] font-bold hc-text-destaque">evento</strong> e <strong className="text-[#0B2341] font-bold hc-text-destaque">município</strong>.
+          <p className="max-w-2xl text-lg font-light leading-8 text-slate-500 hc-text-desc md:text-xl">
+            {t.about.description}
           </p>
         </FadeIn>
 
-        <FadeIn staggerChildren={true} direction="none" className="grid md:grid-cols-3 gap-6 lg:gap-8">
-          
-          <FadeIn direction="up" delay={0.1} className="h-full">
-            <div className="hc-card h-full p-8 md:p-10 rounded-[2.5rem] bg-slate-50 border border-slate-100 transition-all duration-300 group flex flex-col">
-              <div className="hc-icon-wrapper w-16 h-16 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center mb-8 shadow-inner">
-                <Target strokeWidth={2} className="w-8 h-8 lucide" />
-              </div>
-              <h3 className="text-2xl font-black text-[#0B2341] mb-4 tracking-tight hc-text-destaque">Objetivo Central</h3>
-              <p className="text-slate-500 leading-relaxed text-sm flex-1 hc-text-desc">
-                Centralizar informações para responder rapidamente a três perguntas fundamentais da gestão pública: <strong className="text-slate-700 hc-text-destaque">onde foi</strong>, <strong className="text-slate-700 hc-text-destaque">o que foi</strong> e <strong className="text-slate-700 hc-text-destaque">quando foi</strong>.
-              </p>
-            </div>
-          </FadeIn>
+        <FadeIn
+          staggerChildren
+          direction="none"
+          className="grid gap-6 md:grid-cols-3 lg:gap-7"
+        >
+          {t.about.cards.map((card, index) => {
+            const Icon = CARD_ICONS[index];
+            const isHighlight = index === 2;
 
-          <FadeIn direction="up" delay={0.2} className="h-full">
-            <div className="hc-card h-full p-8 md:p-10 rounded-[2.5rem] bg-slate-50 border border-slate-100 transition-all duration-300 group flex flex-col">
-              <div className="hc-icon-wrapper w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mb-8 shadow-inner">
-                <RefreshCcw strokeWidth={2} className="w-8 h-8 lucide" />
-              </div>
-              <h3 className="text-2xl font-black text-[#0B2341] mb-4 tracking-tight hc-text-destaque">Fonte de Dados</h3>
-              <p className="text-slate-500 leading-relaxed text-sm flex-1 hc-text-desc">
-                Extraímos os registros diretamente da base contábil oficial do Governo do Estado (<strong className="text-slate-700 hc-text-destaque">e-Fisco PE</strong>), com atualizações automatizadas mensalmente.
-              </p>
-            </div>
-          </FadeIn>
-
-          <FadeIn direction="up" delay={0.3} className="h-full">
-            <div className="hc-card h-full p-8 md:p-10 rounded-[2.5rem] bg-[#0B2341] border border-[#0B2341] transition-all duration-300 group flex flex-col relative overflow-hidden">
-              <div className="hc-sobre-bg absolute -right-6 -top-6 w-32 h-32 bg-[#00AEEF]/20 rounded-full blur-2xl"></div>
-              
-              <div className="hc-icon-wrapper relative z-10 w-16 h-16 rounded-2xl bg-white/10 text-white flex items-center justify-center mb-8 backdrop-blur-sm">
-                <ShieldCheck strokeWidth={2} className="w-8 h-8 lucide" />
-              </div>
-              <h3 className="relative z-10 text-2xl font-black text-white mb-4 tracking-tight hc-text-destaque">Sanidade de Dados</h3>
-              <p className="relative z-10 text-slate-300 leading-relaxed text-sm mb-8 flex-1 hc-text-desc">
-                Nosso motor de governança bloqueia automaticamente empenhos cancelados, valores zerados e duplicidades antes da exibição.
-              </p>
-              
-              <button 
-                onClick={() => setIsModalOpen(true)} 
-                className="hc-botao-borda relative z-10 mt-auto w-full py-4 px-6 rounded-2xl bg-[#00AEEF] text-white font-black text-xs uppercase tracking-widest transition-colors duration-300 active:scale-95 flex items-center justify-between"
+            return (
+              <FadeIn
+                key={card.title}
+                direction="up"
+                delay={0.1 * (index + 1)}
+                className="h-full"
               >
-                Entenda o Processo
-                <ArrowRight strokeWidth={2.5} className="w-4 h-4" />
-              </button>
-            </div>
-          </FadeIn>
+                <div
+                  className={`hc-card group relative flex h-full flex-col rounded-[2rem] border p-7 transition-all duration-300 md:p-8 ${
+                    isHighlight
+                      ? "overflow-hidden border-[#0B2341] bg-[#0B2341]"
+                      : "border-slate-100 bg-slate-50"
+                  }`}
+                >
+                  {isHighlight && (
+                    <div className="hc-sobre-bg absolute -right-6 -top-6 h-32 w-32 rounded-full bg-[#00AEEF]/20 blur-2xl" />
+                  )}
 
+                  <div
+                    className={`hc-icon-wrapper relative z-10 mb-7 flex h-14 w-14 items-center justify-center rounded-2xl shadow-inner ${CARD_STYLES[index]}`}
+                  >
+                    <Icon strokeWidth={2} className="lucide h-8 w-8" />
+                  </div>
+
+                  <h3
+                    className={`relative z-10 mb-4 text-2xl font-black tracking-tight hc-text-destaque ${
+                      isHighlight ? "text-white" : "text-[#0B2341]"
+                    }`}
+                  >
+                    {card.title}
+                  </h3>
+                  <p
+                    className={`relative z-10 flex-1 text-sm leading-7 hc-text-desc ${
+                      isHighlight ? "mb-8 text-slate-300" : "text-slate-500"
+                    }`}
+                  >
+                    {card.desc}
+                  </p>
+
+                  {isHighlight && (
+                    <button
+                      type="button"
+                      onClick={() => setIsModalOpen(true)}
+                      className="hc-botao-borda relative z-10 mt-auto flex w-full items-center justify-between rounded-2xl bg-[#00AEEF] px-5 py-4 text-xs font-black uppercase tracking-[0.18em] text-white transition-colors duration-300 active:scale-95"
+                    >
+                      {t.about.cta}
+                      <ArrowRight strokeWidth={2.5} className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+              </FadeIn>
+            );
+          })}
         </FadeIn>
       </div>
     </section>
