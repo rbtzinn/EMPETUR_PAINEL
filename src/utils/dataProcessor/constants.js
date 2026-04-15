@@ -1,0 +1,23 @@
+export const TIPOS_DESPESA_ACEITOS = new Set([
+  "NORMAL",
+  "TRANSFERÊNCIAS POR CONVÊNIOS",
+]);
+
+export const TERMOS_SERVICO_MEIO = [
+  "TRANSPORTE",
+  "LOCAÇÃO",
+  "LOCACAO",
+  "HOSPEDAGEM",
+  "PASSAGEM",
+  "DIÁRIA",
+  "DIARIA",
+  "LIMPEZA",
+  "COMBUSTÍVEL",
+  "COMBUSTIVEL",
+  "VIGILÂNCIA",
+  "VIGILANCIA",
+  "SEGURANÇA",
+  "SEGURANCA",
+  "GERADOR",
+  "BUFFET",
+];

@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, Filter, Menu, Trash2, X } from "lucide-react";
-import DropdownPesquisavel from "../ui/DropdownPesquisavel";
+import { Filter, Trash2, X } from "lucide-react";
 import LanguageSwitcher from "../ui/LanguageSwitcher";
 import { useLanguage } from "../../contexts/LanguageContext";
+import PainelFilterFields from "./painel/PainelFilterFields";
+import DesktopPainelMenu from "./painel/DesktopPainelMenu";
 
 export default function TopbarPainel({
   filtros,
@@ -82,19 +82,13 @@ export default function TopbarPainel({
               <div className="hc-pe-colors absolute left-0 top-0 h-1.5 w-full bg-gradient-to-r from-[#0B2341] via-[#00AEEF] via-yellow-400 via-red-500 to-green-500 opacity-90 transition-all duration-300" />
             </div>
 
-            <div className="grid flex-1 grid-cols-6 gap-3.5">
-              {Object.entries(t.dashboard.topbar.fields).map(([field, label]) => (
-                <DropdownPesquisavel
-                  key={field}
-                  label={label}
-                  value={filtros[field]}
-                  onChange={(value) =>
-                    setFiltros((current) => ({ ...current, [field]: value }))
-                  }
-                  options={getOpcoes(field)}
-                />
-              ))}
-            </div>
+            <PainelFilterFields
+              fields={t.dashboard.topbar.fields}
+              filtros={filtros}
+              setFiltros={setFiltros}
+              getOpcoes={getOpcoes}
+              className="grid flex-1 grid-cols-6 gap-3.5"
+            />
 
             <div className="flex items-center self-end gap-3 pr-1 pb-5">
               <button
@@ -114,44 +108,12 @@ export default function TopbarPainel({
                 {t.dashboard.topbar.clear}
               </button>
 
-              <div className="relative" ref={desktopMenuRef}>
-                <button
-                  type="button"
-                  onClick={() => setIsDesktopMenuOpen((current) => !current)}
-                  aria-label={t.languageSwitcher.label}
-                  aria-expanded={isDesktopMenuOpen}
-                  className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-[#0B2341] shadow-sm transition-all hover:border-[#00AEEF] hover:text-[#00AEEF] active:scale-95"
-                >
-                  <Menu size={18} strokeWidth={2.5} />
-                </button>
-
-                <AnimatePresence>
-                  {isDesktopMenuOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -8, scale: 0.98 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -8, scale: 0.98 }}
-                      transition={{ duration: 0.18, ease: "easeOut" }}
-                      className="absolute right-0 top-[calc(100%+0.75rem)] z-[90] w-[280px] overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white p-4 shadow-[0_24px_60px_-24px_rgba(11,35,65,0.35)]"
-                    >
-                      <div className="flex flex-col gap-4">
-                        <div className="flex justify-center">
-                          <LanguageSwitcher theme="light" className="justify-center" />
-                        </div>
-
-                        <Link
-                          to="/"
-                          onClick={() => setIsDesktopMenuOpen(false)}
-                          className="flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-[#0B2341] transition-all hover:border-[#00AEEF] hover:text-[#00AEEF] active:scale-[0.98]"
-                        >
-                          <ArrowLeft size={16} strokeWidth={2.5} />
-                          {t.dashboard.backToSite}
-                        </Link>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+              <DesktopPainelMenu
+                isOpen={isDesktopMenuOpen}
+                onToggle={() => setIsDesktopMenuOpen((current) => !current)}
+                onClose={() => setIsDesktopMenuOpen(false)}
+                menuRef={desktopMenuRef}
+              />
             </div>
           </div>
         </div>
@@ -198,19 +160,13 @@ export default function TopbarPainel({
                   <LanguageSwitcher theme="light" />
                 </div>
 
-                <div className="flex flex-col gap-5">
-                  {Object.entries(t.dashboard.topbar.fields).map(([field, label]) => (
-                    <DropdownPesquisavel
-                      key={field}
-                      label={label}
-                      value={filtros[field]}
-                      onChange={(value) =>
-                        setFiltros((current) => ({ ...current, [field]: value }))
-                      }
-                      options={getOpcoes(field)}
-                    />
-                  ))}
-                </div>
+                <PainelFilterFields
+                  fields={t.dashboard.topbar.fields}
+                  filtros={filtros}
+                  setFiltros={setFiltros}
+                  getOpcoes={getOpcoes}
+                  className="flex flex-col gap-5"
+                />
               </div>
 
               <div className="relative z-10 flex shrink-0 gap-3 border-t border-slate-100 bg-white p-6">

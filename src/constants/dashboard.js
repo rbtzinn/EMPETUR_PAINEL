@@ -10,6 +10,8 @@ export const DEFAULT_FILTERS = Object.freeze({
 export const FILTER_FIELDS = Object.freeze(Object.keys(DEFAULT_FILTERS));
 export const INITIAL_QUICK_TABLE_ROWS = 80;
 export const INITIAL_DASHBOARD_TABLE_ROWS = 120;
+export const DASHBOARD_TABLE_ROWS_STEP = 120;
+export const MIN_DASHBOARD_SEARCH_CHARS = 3;
 
 export const BLOCKED_CYCLE_TERMS = Object.freeze([
   "limpeza",
