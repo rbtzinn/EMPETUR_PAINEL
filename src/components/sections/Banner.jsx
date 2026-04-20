@@ -6,7 +6,7 @@ export default function Banner({ image }) {
   const { t } = useLanguage();
 
   return (
-    <section className="bg-[#F8FAFC] px-4 py-10 sm:px-4 sm:py-16 md:px-6">
+    <section className="bg-[#F8FAFC] px-4 pb-16 pt-12 sm:px-4 sm:pb-24 sm:pt-14 md:px-6">
       <style>{`
         body.contraste-negativo .hc-banner-container { background: #000 !important; border: 2px solid #ffea00 !important; box-shadow: none !important; }
         body.contraste-negativo .hc-banner-gradient { display: none !important; }
@@ -50,6 +50,8 @@ export default function Banner({ image }) {
           </FadeIn>
         </div>
       </div>
+
+      <div className="pointer-events-none mx-auto -mt-3 h-8 w-[88%] max-w-5xl rounded-full bg-[#0B2341]/10 blur-2xl sm:-mt-4 sm:h-10" />
     </section>
   );
 }

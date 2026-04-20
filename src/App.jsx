@@ -2,7 +2,6 @@ import React, { Suspense, lazy, useMemo, useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import Topbar from "./components/layout/Topbar";
-import Breadcrumb from "./components/layout/Breadcrumb";
 import Footer from "./components/layout/Footer";
 import CookieConsent from "./components/layout/CookieConsent";
 import Acessibilidade from "./components/Acessibilidade/Acessibilidade";
@@ -44,7 +43,6 @@ function Home({ csvUrls }) {
   return (
     <div className="app min-h-screen bg-[#F8FAFC]">
       <Topbar lookerShareUrl="/dashboard" />
-      <Breadcrumb />
       <main>
         <Hero
           apresentacoes={stats.apresentacoes}
