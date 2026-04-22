@@ -408,6 +408,7 @@
     },
     filters: {
       active: "Active filters:",
+      badge: "Active",
       none: "none (full view)",
     },
     charts: {

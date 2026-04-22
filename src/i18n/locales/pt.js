@@ -409,6 +409,7 @@
     },
     filters: {
       active: "Filtros ativos:",
+      badge: "Ativo",
       none: "nenhum (visão completa)",
     },
     charts: {

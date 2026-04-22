@@ -8,6 +8,8 @@ function DropdownPesquisavel({ label, value, onChange, options, compact = false 
   const [searchTerm, setSearchTerm] = useState("");
   const wrapperRef = useRef(null);
   const { t } = useLanguage();
+  const isActive = Boolean(value);
+  const compactDisplayValue = value || t.common.showAll;
 
   useEffect(() => {
     if (!isOpen) return undefined;
@@ -91,10 +93,53 @@ function DropdownPesquisavel({ label, value, onChange, options, compact = false 
   );
 
   return (
-    <div
-      className={`relative w-full ${compact ? '' : 'mb-5'} ${isOpen ? "z-[160]" : "z-10"}`}
-      ref={wrapperRef}
-    >
+    <>
+      <style>{`
+        @keyframes filter-status-pulse {
+          0%, 100% {
+            transform: scale(1);
+            opacity: 1;
+            box-shadow: 0 0 0 0 rgba(0, 174, 239, 0.35);
+          }
+          50% {
+            transform: scale(1.08);
+            opacity: 0.9;
+            box-shadow: 0 0 0 6px rgba(0, 174, 239, 0);
+          }
+        }
+        .hc-filter-active-dot {
+          animation: filter-status-pulse 1.8s ease-in-out infinite;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .hc-filter-active-dot {
+            animation: none !important;
+          }
+        }
+        body.contraste-negativo .hc-filter-shell[data-active="true"] {
+          border-color: #ffea00 !important;
+          box-shadow: 0 0 0 1px rgba(255,234,0,0.7), 0 0 0 4px rgba(255,234,0,0.12) !important;
+        }
+        body.contraste-negativo .hc-filter-active-dot {
+          background-color: #ffea00 !important;
+          box-shadow: 0 0 0 2px #000 !important;
+        }
+        body.contraste-negativo .hc-filter-active-bar {
+          background: linear-gradient(90deg, #ffea00 0%, #fff27a 100%) !important;
+        }
+        body.contraste-negativo .hc-filter-active-badge {
+          background-color: #ffea00 !important;
+          color: #000 !important;
+          border-color: #ffea00 !important;
+        }
+        body.contraste-negativo .hc-filter-floating-label {
+          color: #ffea00 !important;
+        }
+      `}</style>
+
+      <div
+        className={`relative w-full ${compact ? "" : "mb-5"} ${isOpen ? "z-[160]" : "z-10"}`}
+        ref={wrapperRef}
+      >
       {!compact && (
         <label className="block px-1 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 hc-text-destaque">
           {label}
@@ -102,27 +147,77 @@ function DropdownPesquisavel({ label, value, onChange, options, compact = false 
       )}
 
       <div
-        className={`relative flex w-full items-center ${compact ? 'rounded-lg' : 'rounded-2xl'} border bg-slate-50 shadow-sm transition-all hc-card ${
+        data-active={isActive ? "true" : "false"}
+        className={`hc-filter-shell relative flex w-full items-center ${compact ? "rounded-lg" : "rounded-2xl"} border bg-slate-50 shadow-sm transition-all hc-card ${
           isOpen
             ? "border-[#00AEEF] bg-white ring-4 ring-[#00AEEF]/10"
-            : "border-slate-200 hover:border-slate-300 hover:bg-slate-100"
+            : isActive
+              ? "border-[#00AEEF] bg-white shadow-[0_0_0_1px_rgba(0,174,239,0.34),0_12px_28px_-18px_rgba(0,174,239,0.8)]"
+              : "border-slate-200 hover:border-slate-300 hover:bg-slate-100"
         }`}
+        title={isActive ? `${label}: ${value}` : label}
       >
+        {isActive && (
+          <>
+            <div className={`hc-filter-active-bar absolute inset-x-0 top-0 rounded-t-[inherit] bg-gradient-to-r from-[#00AEEF] via-sky-400 to-[#0B2341] ${compact ? "h-[2px]" : "h-[3px]"}`} />
+            <span
+              className={`hc-filter-active-dot absolute z-[1] rounded-full bg-[#00AEEF] ${compact ? "right-1.5 top-1.5 h-2 w-2" : "right-2.5 top-2.5 h-2.5 w-2.5"}`}
+              aria-hidden="true"
+            />
+          </>
+        )}
+
+        {compact && (
+          <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start px-9 pt-1.5">
+            <div className="flex min-w-0 items-center gap-1.5 pr-16">
+              <span
+                className={`hc-filter-floating-label truncate text-[7px] font-black uppercase tracking-[0.16em] ${
+                  isActive ? "text-[#00AEEF]" : "text-slate-400"
+                }`}
+              >
+                {label}
+              </span>
+
+              {isActive && !isOpen && (
+                <span className="hc-filter-active-badge shrink-0 rounded-full border border-[#00AEEF]/20 bg-[#00AEEF]/10 px-1.5 py-[1px] text-[7px] font-black uppercase tracking-[0.16em] text-[#00AEEF]">
+                  {t.dashboard.filters.badge}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+
         <div className="pointer-events-none absolute left-3 text-slate-400 hc-text-destaque">
           <Search strokeWidth={2.5} className="h-3.5 w-3.5" />
         </div>
 
         <input
           type="text"
-          className={`w-full cursor-text truncate bg-transparent font-bold text-[#0B2341] outline-none placeholder-slate-400 hc-text-destaque ${compact ? 'py-1.5 pl-9 pr-8 text-[10px]' : 'py-3.5 pl-12 pr-14 text-sm'}`}
-          placeholder={compact ? label : (value || t.common.searchOrSelect)}
-          value={isOpen ? searchTerm : value || ""}
+          className={`w-full cursor-text truncate bg-transparent font-bold text-[#0B2341] outline-none placeholder-slate-400 hc-text-destaque ${
+            compact
+              ? "h-[48px] pt-4 pl-9 pr-16 pb-1 text-[11px]"
+              : "py-3.5 pl-12 pr-14 text-sm"
+          }`}
+          placeholder={compact ? (isOpen ? t.common.searchOrSelect : "") : (value || t.common.searchOrSelect)}
+          value={compact ? (isOpen ? searchTerm : "") : (isOpen ? searchTerm : value || "")}
           onClick={() => setIsOpen(true)}
           onChange={(event) => {
             setSearchTerm(event.target.value);
             setIsOpen(true);
           }}
         />
+
+        {compact && !isOpen && (
+          <div className="pointer-events-none absolute inset-y-0 left-9 right-14 flex items-end pb-1.5">
+            <span
+              className={`truncate text-[11px] font-black ${
+                isActive ? "text-[#0B2341]" : "text-slate-400"
+              }`}
+            >
+              {compactDisplayValue}
+            </span>
+          </div>
+        )}
 
         <div className="absolute right-3 flex items-center gap-1">
           {value && !isOpen && (
@@ -176,7 +271,8 @@ function DropdownPesquisavel({ label, value, onChange, options, compact = false 
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+      </div>
+    </>
   );
 }
 

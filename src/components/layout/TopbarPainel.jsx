@@ -82,7 +82,7 @@ export default function TopbarPainel({
         <div className="hc-pe-colors h-[2.5px] w-full bg-gradient-to-r from-[#0B2341] via-[#00AEEF] via-yellow-400 via-red-500 to-green-500" />
 
         {/* Linha principal: brand + filtros + modo + menu */}
-        <div className="flex items-center gap-0 px-5 py-0" style={{ minHeight: "44px" }}>
+        <div className="flex items-center gap-0 px-5 py-1" style={{ minHeight: "58px" }}>
 
           {/* Brand block */}
           <div className="hc-topbar-brand-pill mr-3 flex shrink-0 items-center gap-2.5 border-r border-slate-200 pr-4 py-2">
