@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import { Card, Metric, Text } from "@tremor/react";
 import { useLanguage } from "../../contexts/LanguageContext";
 
 export default function IndicadoresKPI({ filtrados, filtros, setFiltros }) {
@@ -38,44 +37,96 @@ export default function IndicadoresKPI({ filtrados, filtros, setFiltros }) {
 
   const temFiltroAtivo = Object.values(filtros).some((value) => value !== "");
 
+  const cardBase =
+    "rounded-xl overflow-hidden flex flex-col justify-between p-3 transition-all duration-200";
+  const shadow =
+    "0 1px 4px rgba(11,35,65,0.08), 0 0 0 1px rgba(226,232,240,0.5)";
+
   return (
-    <div className="mb-8 flex w-full flex-col gap-6 md:flex-row">
+    <div className="flex flex-col gap-2">
       <style>{`
-        body.contraste-negativo .hc-kpi-card { background-color: #000 !important; border: 2px solid #FFFF00 !important; }
-        body.contraste-negativo .hc-kpi-card * { color: #FFFF00 !important; }
-        body.contraste-negativo .hc-kpi-active { background-color: #333300 !important; }
+        body.contraste-negativo .hc-kpi-card {
+          background: #000 !important;
+          background-image: none !important;
+          border: 2px solid #ffff00 !important;
+          box-shadow: none !important;
+        }
+        body.contraste-negativo .hc-kpi-card * {
+          color: #ffff00 !important;
+        }
+        body.contraste-negativo .hc-kpi-active {
+          background: #333300 !important;
+        }
       `}</style>
 
-      <Card
-        className={`hc-kpi-card group relative flex flex-1 flex-col justify-center overflow-hidden rounded-3xl border-none shadow-xl shadow-blue-900/5 transition-all duration-300 ${
-          temFiltroAtivo
-            ? "hc-kpi-active cursor-pointer bg-[#0B2341] hover:bg-[#0f2d52]"
-            : "bg-[#0B2341]/80"
+      <div
+        role="button"
+        tabIndex={temFiltroAtivo ? 0 : -1}
+        aria-label={`${t.dashboard.kpi.presentations}: ${totalApresentacoes}${
+          temFiltroAtivo ? ". Clique para limpar filtros." : ""
         }`}
+        onClick={() =>
+          temFiltroAtivo &&
+          setFiltros((current) => ({
+            ...current,
+            municipio: "",
+            ciclo: "",
+            ano: "",
+            artista: "",
+            dataEvento: "",
+            nomeCredor: "",
+          }))
+        }
+        onKeyDown={(event) =>
+          event.key === "Enter" &&
+          temFiltroAtivo &&
+          setFiltros((current) => ({
+            ...current,
+            municipio: "",
+            ciclo: "",
+            ano: "",
+            artista: "",
+            dataEvento: "",
+            nomeCredor: "",
+          }))
+        }
+        className={`hc-kpi-card ${cardBase} ${
+          temFiltroAtivo ? "hc-kpi-active cursor-pointer hover:opacity-90" : "cursor-default"
+        }`}
+        style={{
+          background: "linear-gradient(135deg, #0B2341 0%, #0d2d52 100%)",
+          boxShadow: shadow,
+        }}
       >
-        <Text className="text-[10px] font-bold uppercase tracking-widest text-white/60">
+        <span className="text-[8px] font-black uppercase tracking-widest text-white/50">
           {t.dashboard.kpi.presentations}
-        </Text>
-        <Metric className="mt-2 text-5xl font-black text-white">
-          {totalApresentacoes}
-        </Metric>
+        </span>
+        <span className="mt-1 text-3xl font-black leading-none tracking-tight text-white">
+          {totalApresentacoes.toLocaleString("pt-BR")}
+        </span>
         {temFiltroAtivo && (
-          <div className="absolute bottom-4 right-5 flex items-center gap-1 rounded-md bg-[#00AEEF] px-2 py-1.5 text-[9px] font-black uppercase text-[#0B2341] opacity-0 shadow-md transition-opacity group-hover:opacity-100">
-            {t.common.clearFilters}
-          </div>
+          <span className="mt-1.5 text-[8px] font-bold text-[#00AEEF]">
+            x {t.common.clearFilters}
+          </span>
         )}
-      </Card>
+      </div>
 
-      <Card className="hc-kpi-card flex flex-1 flex-col justify-center rounded-3xl border-none bg-white shadow-xl shadow-blue-900/5">
-        <Text className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+      <div
+        role="region"
+        aria-label={`${t.dashboard.kpi.artists}: ${totalArtistas}`}
+        className={`hc-kpi-card ${cardBase} bg-white`}
+        style={{ boxShadow: shadow }}
+      >
+        <span className="text-[8px] font-black uppercase tracking-widest text-slate-400">
           {t.dashboard.kpi.artists}
-        </Text>
-        <Metric className="mt-2 text-5xl font-black text-[#0B2341]">
-          {totalArtistas}
-        </Metric>
-      </Card>
+        </span>
+        <span className="mt-1 text-3xl font-black leading-none tracking-tight text-[#0B2341]">
+          {totalArtistas.toLocaleString("pt-BR")}
+        </span>
+      </div>
 
-      <Card
+      <button
+        type="button"
         onClick={() =>
           setFiltros((current) => ({
             ...current,
@@ -85,27 +136,26 @@ export default function IndicadoresKPI({ filtrados, filtros, setFiltros }) {
                 : topMunicipio.normalizado,
           }))
         }
-        className={`hc-kpi-card group flex flex-1 cursor-pointer flex-col justify-center rounded-3xl border-none bg-white shadow-xl shadow-blue-900/5 transition-all duration-300 hover:scale-[1.02] ${
+        aria-label={`${t.dashboard.kpi.municipalities}: ${totalMunicipios}. ${t.dashboard.kpi.topDestination} ${topMunicipio.original}`}
+        className={`hc-kpi-card group ${cardBase} bg-white text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00AEEF] focus-visible:ring-offset-2 ${
           filtros.municipio === topMunicipio.normalizado
             ? "hc-kpi-active ring-2 ring-[#00AEEF]"
-            : ""
+            : "hover:scale-[1.01]"
         }`}
+        style={{ boxShadow: shadow }}
       >
-        <Text className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+        <span className="text-[8px] font-black uppercase tracking-widest text-slate-400">
           {t.dashboard.kpi.municipalities}
-        </Text>
-        <Metric className="mt-2 text-5xl font-black text-[#00AEEF]">
-          {totalMunicipios}
-        </Metric>
+        </span>
+        <span className="mt-1 text-3xl font-black leading-none tracking-tight text-[#00AEEF]">
+          {totalMunicipios.toLocaleString("pt-BR")}
+        </span>
         {totalMunicipios > 1 && (
-          <div className="mt-2 flex items-center gap-1.5 text-xs font-medium text-slate-500 transition-colors group-hover:text-[#00AEEF]">
-            <span className="truncate">
-              {t.dashboard.kpi.topDestination}{" "}
-              <span className="font-bold">{topMunicipio.original}</span>
-            </span>
-          </div>
+          <span className="mt-1.5 truncate text-[8px] font-bold text-slate-400 transition-colors group-hover:text-[#00AEEF]">
+            {t.dashboard.kpi.topDestination} <span className="font-black">{topMunicipio.original}</span>
+          </span>
         )}
-      </Card>
+      </button>
     </div>
   );
 }

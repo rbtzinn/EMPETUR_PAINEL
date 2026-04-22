@@ -5,6 +5,7 @@ import LanguageSwitcher from "../ui/LanguageSwitcher";
 import { useLanguage } from "../../contexts/LanguageContext";
 import PainelFilterFields from "./painel/PainelFilterFields";
 import DesktopPainelMenu from "./painel/DesktopPainelMenu";
+import ViewModeToggle from "../ui/ViewModeToggle";
 
 export default function TopbarPainel({
   filtros,
@@ -25,16 +26,11 @@ export default function TopbarPainel({
         setIsDesktopMenuOpen(false);
       }
     }
-
     function handleEscape(event) {
-      if (event.key === "Escape") {
-        setIsDesktopMenuOpen(false);
-      }
+      if (event.key === "Escape") setIsDesktopMenuOpen(false);
     }
-
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleEscape);
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscape);
@@ -46,7 +42,7 @@ export default function TopbarPainel({
       <style>{`
         body.contraste-negativo .hc-topbar-painel { 
           background-color: #000 !important; 
-          border: 2px solid #ffea00 !important; 
+          border-bottom: 2px solid #ffea00 !important; 
           box-shadow: none !important; 
         }
         body.contraste-negativo .hc-topbar-mobile { 
@@ -69,56 +65,82 @@ export default function TopbarPainel({
           color: #000 !important; 
           border: none !important;
         }
-        body.contraste-negativo .hc-topbar-painel-divider { 
-          background-color: #ffea00 !important; 
-          opacity: 0.3; 
+        body.contraste-negativo .hc-topbar-brand-pill {
+          background-color: #222 !important;
+          border-color: #ffea00 !important;
+          color: #ffea00 !important;
+        }
+        body.contraste-negativo .hc-topbar-separator {
+          background-color: #ffea00 !important;
+          opacity: 1 !important;
         }
       `}</style>
 
-      <div className="hidden w-full px-6 pt-6 lg:sticky lg:top-0 lg:z-50 lg:block">
-        <div className="mx-auto max-w-[1600px]">
-          <div className="hc-topbar-painel group relative flex items-end gap-4 rounded-[2.25rem] border border-slate-200/70 bg-white/95 p-4 pl-6 shadow-[0_20px_50px_-20px_rgba(11,35,65,0.25)] backdrop-blur-xl transition-all duration-500 hover:shadow-[0_20px_50px_-20px_rgba(0,174,239,0.2)]">
-            <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[2.5rem]">
-              <div className="hc-pe-colors absolute left-0 top-0 h-1.5 w-full bg-gradient-to-r from-[#0B2341] via-[#00AEEF] via-yellow-400 via-red-500 to-green-500 opacity-90 transition-all duration-300" />
-            </div>
+      {/* ── Desktop: barra completa, full-width, plana ── */}
+      <div className="hc-topbar-painel sticky top-0 z-50 hidden w-full border-b border-slate-200 bg-white/98 backdrop-blur-xl lg:block">
+        {/* Faixa de cor PE no topo */}
+        <div className="hc-pe-colors h-[2.5px] w-full bg-gradient-to-r from-[#0B2341] via-[#00AEEF] via-yellow-400 via-red-500 to-green-500" />
 
-            <PainelFilterFields
-              fields={t.dashboard.topbar.fields}
-              filtros={filtros}
-              setFiltros={setFiltros}
-              getOpcoes={getOpcoes}
-              className="grid flex-1 grid-cols-6 gap-3.5"
-            />
+        {/* Linha principal: brand + filtros + modo + menu */}
+        <div className="flex items-center gap-0 px-5 py-0" style={{ minHeight: "44px" }}>
 
-            <div className="flex items-center self-end gap-3 pr-1 pb-5">
-              <button
-                type="button"
-                onClick={limparFiltros}
-                disabled={!temFiltroAtivo}
-                className={`hc-btn-limpar group flex min-h-11 items-center justify-center gap-2 rounded-2xl px-5 text-[10px] font-black uppercase tracking-widest transition-all ${
-                  temFiltroAtivo
-                    ? "bg-red-50 text-red-500 shadow-sm ring-1 ring-red-100 hover:bg-red-500 hover:text-white active:scale-95"
-                    : "cursor-not-allowed bg-slate-50 text-slate-300 opacity-60"
-                }`}
-              >
-                <Trash2
-                  size={14}
-                  className={temFiltroAtivo ? "transition-transform group-hover:scale-110" : ""}
-                />
-                {t.dashboard.topbar.clear}
-              </button>
-
-              <DesktopPainelMenu
-                isOpen={isDesktopMenuOpen}
-                onToggle={() => setIsDesktopMenuOpen((current) => !current)}
-                onClose={() => setIsDesktopMenuOpen(false)}
-                menuRef={desktopMenuRef}
+          {/* Brand block */}
+          <div className="hc-topbar-brand-pill mr-3 flex shrink-0 items-center gap-2.5 border-r border-slate-200 pr-4 py-2">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[#0B2341] p-1">
+              <img
+                src="/images/empeturlogo.png"
+                alt="Logo EMPETUR"
+                className="h-full w-full object-contain brightness-0 invert"
               />
             </div>
           </div>
+
+          {/* Filtros */}
+          <PainelFilterFields
+            fields={t.dashboard.topbar.fields}
+            filtros={filtros}
+            setFiltros={setFiltros}
+            getOpcoes={getOpcoes}
+            className="grid flex-1 grid-cols-6 gap-1.5 py-2"
+            compact
+          />
+
+          {/* Separador */}
+          <div className="hc-topbar-separator mx-3 h-6 w-px shrink-0 bg-slate-200" />
+
+          {/* Toggle de modo */}
+          <div className="shrink-0">
+            <ViewModeToggle />
+          </div>
+
+          {/* Separador */}
+          <div className="hc-topbar-separator mx-3 h-6 w-px shrink-0 bg-slate-200" />
+
+          {/* Limpar */}
+          <button
+            type="button"
+            onClick={limparFiltros}
+            disabled={!temFiltroAtivo}
+            className={`hc-btn-limpar mr-2 flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-[8px] font-black uppercase tracking-widest transition-all ${temFiltroAtivo
+                ? "text-red-500 hover:bg-red-500 hover:text-white active:scale-95"
+                : "cursor-not-allowed text-slate-300 opacity-60"
+              }`}
+          >
+            <X size={11} />
+            {t.dashboard.topbar.clear}
+          </button>
+
+          {/* Menu de acessibilidade */}
+          <DesktopPainelMenu
+            isOpen={isDesktopMenuOpen}
+            onToggle={() => setIsDesktopMenuOpen((current) => !current)}
+            onClose={() => setIsDesktopMenuOpen(false)}
+            menuRef={desktopMenuRef}
+          />
         </div>
       </div>
 
+      {/* Mobile: drawer */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
@@ -174,11 +196,10 @@ export default function TopbarPainel({
                   type="button"
                   onClick={limparFiltros}
                   disabled={!temFiltroAtivo}
-                  className={`hc-btn-limpar flex flex-1 items-center justify-center gap-2 rounded-2xl py-4 text-sm font-black uppercase tracking-widest transition-all ${
-                    temFiltroAtivo
+                  className={`hc-btn-limpar flex flex-1 items-center justify-center gap-2 rounded-2xl py-4 text-sm font-black uppercase tracking-widest transition-all ${temFiltroAtivo
                       ? "bg-red-50 text-red-500 hover:bg-red-100"
                       : "bg-slate-50 text-slate-300 opacity-50"
-                  }`}
+                    }`}
                 >
                   <Trash2 size={16} strokeWidth={2.5} /> {t.dashboard.topbar.clear}
                 </button>

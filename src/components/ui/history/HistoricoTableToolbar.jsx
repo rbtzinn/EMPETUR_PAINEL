@@ -1,5 +1,4 @@
 import React from "react";
-import { Text, Title } from "@tremor/react";
 import { Layers, Search } from "lucide-react";
 
 export default function HistoricoTableToolbar({
@@ -14,46 +13,48 @@ export default function HistoricoTableToolbar({
   onOpenExport,
 }) {
   return (
-    <div className="relative flex shrink-0 flex-col items-start justify-between gap-6 overflow-hidden bg-[#0B2341] p-6 md:flex-row md:items-start md:p-8">
-      <div className="absolute right-0 top-0 h-64 w-64 rounded-full bg-[#00AEEF]/10 blur-3xl" />
+    <div className="relative flex shrink-0 flex-col items-stretch justify-between gap-3 overflow-hidden bg-[#0B2341] px-4 py-4 md:flex-row md:flex-nowrap md:items-center md:gap-2 md:py-3">
+      <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-[#00AEEF]/10 blur-3xl" />
 
-      <div className="relative z-10 w-full lg:w-auto">
-        <Title className="hc-text-destaque mb-2 text-2xl font-black tracking-tight text-white md:text-3xl">
+      <div className="relative z-10 min-w-0">
+        <span className="hc-text-destaque block text-sm font-black uppercase tracking-[0.14em] text-white md:truncate md:text-xs md:tracking-widest">
           {title}
-        </Title>
-        <Text className="hc-text-destaque text-sm font-medium uppercase tracking-widest text-slate-400">
+        </span>
+        <span className="hc-text-destaque block text-[10px] font-medium uppercase tracking-[0.12em] text-slate-300 md:truncate md:text-[9px] md:tracking-widest">
           {subtitle}
-        </Text>
+        </span>
       </div>
 
-      <div className="relative z-10 flex w-full flex-col items-stretch gap-3 sm:flex-row sm:items-center lg:w-auto">
-        <button
-          type="button"
-          onClick={onOpenExplanation}
-          className="hc-text-destaque flex min-h-11 items-center justify-center whitespace-nowrap rounded-xl border border-white/10 px-4 text-xs font-black uppercase tracking-[0.16em] text-[#00AEEF] transition-colors hover:border-white/20 hover:text-white focus:outline-none focus-visible:underline"
-        >
-          {rawDatabaseLabel}
-        </button>
+      <div className="relative z-10 flex flex-col gap-2 md:flex-row md:items-center">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onOpenExplanation}
+            className="hc-text-destaque flex h-10 flex-1 items-center justify-center whitespace-nowrap rounded-xl border border-white/10 px-3 text-[10px] font-black uppercase tracking-[0.14em] text-[#00AEEF] transition-colors hover:border-white/20 hover:text-white focus:outline-none focus-visible:underline md:h-7 md:flex-none md:rounded-lg md:text-[9px]"
+          >
+            {rawDatabaseLabel}
+          </button>
 
-        <button
-          type="button"
-          onClick={onOpenExport}
-          className="hc-text-destaque flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#00AEEF] px-4 py-2.5 text-xs font-black uppercase tracking-[0.16em] text-[#0B2341] shadow-lg shadow-sky-900/20 transition-all hover:bg-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-300 sm:w-auto"
-        >
-          <Layers size={16} /> {exportLabel}
-        </button>
+          <button
+            type="button"
+            onClick={onOpenExport}
+            className="hc-text-destaque flex h-10 flex-1 items-center justify-center gap-1.5 rounded-xl bg-[#00AEEF] px-3 text-[10px] font-black uppercase tracking-[0.14em] text-[#0B2341] shadow-lg shadow-sky-900/20 transition-all hover:bg-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-300 md:h-7 md:flex-none md:rounded-lg md:text-[9px]"
+          >
+            <Layers size={12} /> {exportLabel}
+          </button>
+        </div>
 
-        <div className="relative w-full sm:w-72">
+        <div className="relative w-full md:w-auto">
           <Search
-            size={18}
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+            size={12}
+            className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400"
           />
           <input
             type="text"
             placeholder={searchPlaceholder}
             value={termoBusca}
             onChange={(event) => onSearchChange(event.target.value)}
-            className="hc-text-destaque w-full rounded-xl border border-white/20 bg-white/10 py-2.5 pl-11 pr-4 text-sm text-white transition-all placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00AEEF]"
+            className="hc-text-destaque h-10 w-full rounded-xl border border-white/20 bg-white/10 pl-8 pr-3 text-[12px] text-white transition-all placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00AEEF] md:h-7 md:w-52 md:rounded-lg md:pl-7 md:text-[10px]"
           />
         </div>
       </div>

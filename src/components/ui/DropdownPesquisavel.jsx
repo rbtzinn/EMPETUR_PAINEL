@@ -3,7 +3,7 @@ import { Search, X, ChevronDown, RotateCcw } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLanguage } from "../../contexts/LanguageContext";
 
-function DropdownPesquisavel({ label, value, onChange, options }) {
+function DropdownPesquisavel({ label, value, onChange, options, compact = false }) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const wrapperRef = useRef(null);
@@ -92,28 +92,30 @@ function DropdownPesquisavel({ label, value, onChange, options }) {
 
   return (
     <div
-      className={`relative mb-5 w-full ${isOpen ? "z-[160]" : "z-10"}`}
+      className={`relative w-full ${compact ? '' : 'mb-5'} ${isOpen ? "z-[160]" : "z-10"}`}
       ref={wrapperRef}
     >
-      <label className="block px-1 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 hc-text-destaque">
-        {label}
-      </label>
+      {!compact && (
+        <label className="block px-1 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 hc-text-destaque">
+          {label}
+        </label>
+      )}
 
       <div
-        className={`relative flex w-full items-center rounded-2xl border bg-slate-50 shadow-sm transition-all hc-card ${
+        className={`relative flex w-full items-center ${compact ? 'rounded-lg' : 'rounded-2xl'} border bg-slate-50 shadow-sm transition-all hc-card ${
           isOpen
             ? "border-[#00AEEF] bg-white ring-4 ring-[#00AEEF]/10"
             : "border-slate-200 hover:border-slate-300 hover:bg-slate-100"
         }`}
       >
-        <div className="pointer-events-none absolute left-4 text-slate-400 hc-text-destaque">
-          <Search strokeWidth={2.5} className="h-4 w-4" />
+        <div className="pointer-events-none absolute left-3 text-slate-400 hc-text-destaque">
+          <Search strokeWidth={2.5} className="h-3.5 w-3.5" />
         </div>
 
         <input
           type="text"
-          className="w-full cursor-text truncate bg-transparent py-3.5 pl-12 pr-14 text-sm font-bold text-[#0B2341] outline-none placeholder-slate-400 hc-text-destaque"
-          placeholder={value || t.common.searchOrSelect}
+          className={`w-full cursor-text truncate bg-transparent font-bold text-[#0B2341] outline-none placeholder-slate-400 hc-text-destaque ${compact ? 'py-1.5 pl-9 pr-8 text-[10px]' : 'py-3.5 pl-12 pr-14 text-sm'}`}
+          placeholder={compact ? label : (value || t.common.searchOrSelect)}
           value={isOpen ? searchTerm : value || ""}
           onClick={() => setIsOpen(true)}
           onChange={(event) => {
@@ -131,19 +133,23 @@ function DropdownPesquisavel({ label, value, onChange, options }) {
                 onChange("");
                 setSearchTerm("");
               }}
-              className="rounded-full p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-500 hc-text-destaque"
+              className={`text-slate-400 transition-colors hover:text-red-500 hc-text-destaque ${compact ? 'p-0.5' : 'rounded-full p-1.5 hover:bg-red-50'}`}
               title={t.common.clear}
             >
-              <X strokeWidth={2.5} className="h-4 w-4" />
+              <X strokeWidth={2.5} className={compact ? 'h-3 w-3' : 'h-4 w-4'} />
             </button>
           )}
 
           <button
             type="button"
-            className={`rounded-full p-1.5 transition-colors hc-text-destaque ${
-              isOpen
-                ? "bg-blue-50 text-[#00AEEF]"
-                : "text-slate-400 hover:bg-slate-100"
+            className={`transition-colors hc-text-destaque ${
+              compact
+                ? `p-0.5 ${isOpen ? 'text-[#00AEEF]' : 'text-slate-400'}`
+                : `rounded-full p-1.5 ${
+                    isOpen
+                      ? 'bg-blue-50 text-[#00AEEF]'
+                      : 'text-slate-400 hover:bg-slate-100'
+                  }`
             }`}
             onClick={() => setIsOpen((open) => !open)}
           >

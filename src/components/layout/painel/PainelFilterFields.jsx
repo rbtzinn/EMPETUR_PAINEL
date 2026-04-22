@@ -7,6 +7,7 @@ export default function PainelFilterFields({
   setFiltros,
   getOpcoes,
   className = "",
+  compact = false,
 }) {
   return (
     <div className={className}>
@@ -19,6 +20,7 @@ export default function PainelFilterFields({
             setFiltros((current) => ({ ...current, [field]: value }))
           }
           options={getOpcoes(field)}
+          compact={compact}
         />
       ))}
     </div>

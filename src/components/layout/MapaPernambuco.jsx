@@ -6,7 +6,6 @@ import {
   ZoomableGroup,
 } from "react-simple-maps";
 import { geoCentroid } from "d3-geo";
-import { Card } from "@tremor/react";
 import {
   normalizarMunicipio,
   canonizarMunicipio,
@@ -95,12 +94,13 @@ export default function MapaPernambuco({
   const hoverLabel = hover ? labelMunicipioMapa(hover) : "";
 
   return (
-    <Card
+    <div
       onMouseMove={(e) => setTooltipPos({ x: e.clientX, y: e.clientY })}
-      className="hidden lg:flex w-full h-[300px] mb-8 bg-white border-none rounded-3xl shadow-xl shadow-blue-900/5 p-3 relative flex-col items-center overflow-hidden mapa-pe hc-card focus:outline-none focus-visible:ring-4 focus-visible:ring-[#00AEEF] focus-visible:ring-offset-4"
+      className="flex w-full h-full min-h-0 bg-white rounded-xl p-2 relative flex-col items-center overflow-hidden mapa-pe hc-card focus:outline-none focus-visible:ring-4 focus-visible:ring-[#00AEEF] focus-visible:ring-offset-4"
       role="region"
       aria-label="Mapa interativo de Pernambuco mostrando a densidade de apresentações por município."
       tabIndex={0}
+      style={{ boxShadow: "0 1px 4px rgba(11,35,65,0.08), 0 0 0 1px rgba(226,232,240,0.5)" }}
     >
       <div className="sr-only">
         Gráfico do mapa de Pernambuco.
@@ -213,10 +213,10 @@ export default function MapaPernambuco({
       </div>
 
       <div
-        className="absolute bottom-6 left-6 bg-white/95 backdrop-blur-sm p-5 rounded-2xl shadow-xl shadow-blue-900/5 border border-slate-100 flex flex-col gap-3 z-10 pointer-events-none min-w-[200px] hc-legenda"
+        className="absolute bottom-3 left-3 bg-white/95 backdrop-blur-sm px-3 py-2 rounded-xl shadow-md border border-slate-100 flex flex-col gap-1.5 z-10 pointer-events-none min-w-[140px] hc-legenda"
         aria-hidden="true"
       >
-        <div className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mb-1 hc-text">
+        <div className="text-slate-400 font-black uppercase tracking-widest text-[8px] mb-0.5 hc-text">
           Volume de Apresentações
         </div>
 
@@ -228,16 +228,16 @@ export default function MapaPernambuco({
           { bg: "var(--mapa-4)", label: "30+" },
         ].map((item, index) => (
           <div key={index} className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <span
-                className="w-3.5 h-3.5 rounded-full shadow-sm border border-slate-200"
+                className="w-2.5 h-2.5 rounded-full shadow-sm border border-slate-200"
                 style={{ backgroundColor: item.bg }}
               ></span>
-              <span className="text-[#0B2341] font-black text-xs hc-text">
+              <span className="text-[#0B2341] font-black text-[9px] hc-text">
                 {item.label}
               </span>
             </div>
-            <span className="text-slate-400 font-bold text-[10px] ml-4 hc-text">
+            <span className="text-slate-400 font-bold text-[8px] ml-2 hc-text">
               SHOWS
             </span>
           </div>
@@ -258,6 +258,6 @@ export default function MapaPernambuco({
           </div>
         </div>
       )}
-    </Card>
+    </div>
   );
 }

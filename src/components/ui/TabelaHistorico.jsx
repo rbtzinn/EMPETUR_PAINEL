@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Card } from "@tremor/react";
 
 import ExportModal from "./ExportModal";
 import ExplicacaoBaseBrutaModal from "./ExplicacaoBaseBrutaModal";
 import { useLanguage } from "../../contexts/LanguageContext";
+import { useViewMode } from "../../contexts/ViewModeContext";
 import {
   DASHBOARD_TABLE_ROWS_STEP,
   INITIAL_DASHBOARD_TABLE_ROWS,
@@ -24,6 +24,7 @@ export default function TabelaHistorico({
   const tableContainerRef = useRef(null);
   const pendingScrollTopRef = useRef(null);
   const { t } = useLanguage();
+  const { isMobile } = useViewMode();
   const isEnglish = t.locale === "en-US";
   const termoBuscaNormalizado = termoBusca.trim();
   const buscaAtiva = termoBuscaNormalizado.length >= MIN_DASHBOARD_SEARCH_CHARS;
@@ -89,7 +90,7 @@ export default function TabelaHistorico({
     : `Digite pelo menos ${MIN_DASHBOARD_SEARCH_CHARS} caracteres para pesquisar em todo o histórico.`;
 
   return (
-    <div className="mb-8 w-full">
+    <div className="h-full w-full flex flex-col min-h-0">
       <style>{`
         body.contraste-negativo .hc-tabela-card { background-color: #000 !important; border: 1px solid #ffea00 !important; }
         body.contraste-negativo .hc-tabela-header { background-color: #111 !important; color: #ffea00 !important; box-shadow: inset 0 -2px 0 0 #ffea00 !important; }
@@ -97,19 +98,27 @@ export default function TabelaHistorico({
         body.contraste-negativo .hc-text-destaque { color: #ffea00 !important; }
         body.contraste-negativo .hc-pilula { background-color: transparent !important; color: #ffea00 !important; border: 1px solid #ffea00 !important; }
         body.contraste-negativo .hc-valor { color: #00ff00 !important; }
+        body.contraste-negativo .hc-tabela-limit-info {
+          background-color: #111 !important;
+          border-bottom: 1px solid #ffea00 !important;
+          color: #ffea00 !important;
+        }
       `}</style>
 
       <ExportModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        dados={dadosExibidos}
+        dados={dadosBuscados}
       />
       <ExplicacaoBaseBrutaModal
         isOpen={isExplicacaoOpen}
         onClose={() => setIsExplicacaoOpen(false)}
       />
 
-      <Card className="hc-tabela-card flex flex-col overflow-hidden rounded-[2rem] border-none bg-white p-0 shadow-[0_26px_70px_-52px_rgba(11,35,65,0.28)]">
+      <div
+        className="hc-tabela-card flex h-full min-h-0 flex-col overflow-hidden rounded-xl bg-white"
+        style={{ boxShadow: "0 1px 4px rgba(11,35,65,0.08), 0 0 0 1px rgba(226,232,240,0.5)" }}
+      >
         <HistoricoTableToolbar
           title={t.dashboard.table.title}
           subtitle={t.dashboard.table.subtitle}
@@ -123,7 +132,7 @@ export default function TabelaHistorico({
         />
 
         {deveLimitarResultados && dadosBuscados.length > INITIAL_DASHBOARD_TABLE_ROWS && (
-          <div className="border-b border-slate-100 bg-slate-50/80 px-6 py-3 text-xs font-bold uppercase tracking-[0.16em] text-slate-400 md:px-8">
+          <div className="hc-tabela-limit-info border-b border-slate-100 bg-slate-50/80 px-4 py-3 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400 md:px-8 md:text-xs md:tracking-[0.16em]">
             {buscaCurtaDemais ? mensagemBuscaCurta : mensagemLimite}
           </div>
         )}
@@ -132,10 +141,11 @@ export default function TabelaHistorico({
           dadosExibidos={dadosExibidos}
           setFiltros={setFiltros}
           t={t}
+          isMobile={isMobile}
           containerRef={tableContainerRef}
           footer={
             aindaTemMaisResultados ? (
-              <div className="border-t border-slate-100 bg-white px-6 py-5 md:px-8">
+              <div className="border-t border-slate-100 bg-white px-4 py-5 md:px-8">
                 <button
                   type="button"
                   onClick={() => {
@@ -148,7 +158,7 @@ export default function TabelaHistorico({
 
                     setVisibleRows((current) => current + DASHBOARD_TABLE_ROWS_STEP);
                   }}
-                  className="hc-text-destaque inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-5 text-xs font-black uppercase tracking-[0.16em] text-[#0B2341] transition-all hover:border-[#00AEEF] hover:text-[#00AEEF] active:scale-[0.98]"
+                  className="hc-text-destaque inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-5 text-xs font-black uppercase tracking-[0.16em] text-[#0B2341] transition-all hover:border-[#00AEEF] hover:text-[#00AEEF] active:scale-[0.98] md:w-auto"
                 >
                   {isEnglish ? "Show more" : "Mostrar mais"}
                 </button>
@@ -156,7 +166,7 @@ export default function TabelaHistorico({
             ) : null
           }
         />
-      </Card>
+      </div>
     </div>
   );
 }

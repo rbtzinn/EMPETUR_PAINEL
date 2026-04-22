@@ -24,32 +24,32 @@ export default function HistoricoTableContent({
   return (
     <div
       ref={containerRef}
-      className="relative max-h-[600px] overflow-auto bg-white scrollbar-moderna"
+      className="relative min-h-0 flex-1 overflow-auto bg-white scrollbar-moderna bi-scroll"
     >
       <table className="w-full min-w-[1200px] border-collapse text-left">
         <thead className="hc-tabela-header sticky top-0 z-30 bg-slate-50 shadow-[inset_0_-1px_0_0_#e2e8f0]">
           <tr>
-            <th className="px-6 py-6 text-[10px] font-bold uppercase tracking-wider text-slate-400 hc-text-destaque">
+            <th className="px-4 py-2 text-[9px] font-bold uppercase tracking-wider text-slate-400 hc-text-destaque">
               <div className="flex items-center gap-2">
                 <User size={14} /> {t.dashboard.table.headers.artist}
               </div>
             </th>
-            <th className="px-6 py-6 text-[10px] font-bold uppercase tracking-wider text-slate-400 hc-text-destaque">
+            <th className="px-4 py-2 text-[9px] font-bold uppercase tracking-wider text-slate-400 hc-text-destaque">
               <div className="flex items-center gap-2">
                 <ShieldAlert size={14} /> {t.dashboard.table.headers.creditor}
               </div>
             </th>
-            <th className="px-6 py-6 text-[10px] font-bold uppercase tracking-wider text-slate-400 hc-text-destaque">
+            <th className="px-4 py-2 text-[9px] font-bold uppercase tracking-wider text-slate-400 hc-text-destaque">
               <div className="flex items-center gap-2">
                 <MapPin size={14} /> {t.dashboard.table.headers.municipality}
               </div>
             </th>
-            <th className="px-6 py-6 text-[10px] font-bold uppercase tracking-wider text-slate-400 hc-text-destaque">
+            <th className="px-4 py-2 text-[9px] font-bold uppercase tracking-wider text-slate-400 hc-text-destaque">
               <div className="flex items-center gap-2">
                 <Layers size={14} /> {t.dashboard.table.headers.cycle}
               </div>
             </th>
-            <th className="px-6 py-6 text-[10px] font-bold uppercase tracking-wider text-slate-400 hc-text-destaque">
+            <th className="px-4 py-2 text-[9px] font-bold uppercase tracking-wider text-slate-400 hc-text-destaque">
               <div className="flex items-center gap-2">
                 <Calendar size={14} /> {t.dashboard.table.headers.eventDeadline}
               </div>
@@ -70,7 +70,7 @@ export default function HistoricoTableContent({
                 className="hc-tabela-linha border-b border-slate-50 bg-white transition-colors even:bg-blue-50/30 hover:bg-slate-100"
               >
                 <td
-                  className="group max-w-[220px] cursor-pointer align-top px-6 py-6"
+                  className="group max-w-[220px] cursor-pointer align-top px-4 py-2.5"
                   onClick={() =>
                     setFiltros((current) => ({
                       ...current,
@@ -94,7 +94,7 @@ export default function HistoricoTableContent({
                 </td>
 
                 <td
-                  className="group max-w-[240px] cursor-pointer align-top px-6 py-6"
+                  className="group max-w-[240px] cursor-pointer align-top px-4 py-2.5"
                   onClick={() =>
                     setFiltros((current) => ({
                       ...current,
@@ -114,7 +114,7 @@ export default function HistoricoTableContent({
                 </td>
 
                 <td
-                  className="cursor-pointer align-top px-6 py-6"
+                  className="cursor-pointer align-top px-4 py-2.5"
                   onClick={() =>
                     setFiltros((current) => ({
                       ...current,
@@ -137,7 +137,7 @@ export default function HistoricoTableContent({
                 </td>
 
                 <td
-                  className="cursor-pointer align-top px-6 py-6"
+                  className="cursor-pointer align-top px-4 py-2.5"
                   onClick={() =>
                     setFiltros((current) => ({
                       ...current,
@@ -150,7 +150,7 @@ export default function HistoricoTableContent({
                   </span>
                 </td>
 
-                <td className="align-top px-6 py-6">
+                <td className="align-top px-4 py-2.5">
                   <div className="mt-1 flex flex-col gap-2">
                     <span className="text-sm font-bold text-slate-700 hc-text-destaque">
                       {item.dataEvento}
@@ -167,7 +167,7 @@ export default function HistoricoTableContent({
                   </div>
                 </td>
 
-                <td className="px-6 py-6 text-right align-top">
+                <td className="px-4 py-2.5 text-right align-top">
                   <div className="mt-1">
                     <span className="hc-valor font-mono text-sm font-black text-[#00AEEF]">
                       {formatCurrency(item.valor, t.locale)}

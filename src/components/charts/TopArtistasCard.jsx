@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import { Card, Text, Title } from "@tremor/react";
 import InfoTooltip from "../ui/InfoTooltip";
 import { useLanguage } from "../../contexts/LanguageContext";
 
@@ -29,43 +28,44 @@ export default function TopArtistasCard({ filtrados }) {
   const maxShows = topArtistas[0]?.total || 1;
 
   return (
-    <Card
-      className="relative flex h-full flex-col rounded-3xl border-none bg-white p-6 shadow-xl shadow-blue-900/5 md:p-8"
+    <div
+      className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-xl bg-white p-3"
       role="region"
       aria-label={t.dashboard.charts.topArtistsTitle}
+      style={{ boxShadow: "0 1px 4px rgba(11,35,65,0.08), 0 0 0 1px rgba(226,232,240,0.5)" }}
     >
-      <div className="mb-2 flex items-center justify-between" aria-hidden="true">
-        <Title className="font-black text-[#0B2341]">
+      {/* Header */}
+      <div className="mb-2 flex shrink-0 items-center justify-between" aria-hidden="true">
+        <span className="text-[10px] font-black uppercase tracking-widest text-[#0B2341]">
           {t.dashboard.charts.topArtistsTitle}
-        </Title>
+        </span>
         <InfoTooltip text={t.dashboard.charts.topArtistsTooltip} />
       </div>
 
-      <Text className="mb-6 border-b border-slate-100 pb-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+      <span className="mb-2 block shrink-0 border-b border-slate-100 pb-2 text-[9px] font-bold uppercase tracking-widest text-slate-400">
         {t.dashboard.charts.topArtistsSubtitle}
-      </Text>
+      </span>
 
-      <div className="flex flex-1 flex-col gap-4 overflow-y-auto pr-2">
+      {/* Lista compacta com scroll interno */}
+      <div className="scrollbar-moderna flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto pr-1">
         {topArtistas.length > 0 ? (
           topArtistas.map((item, index) => (
             <div
               key={item.nome}
               tabIndex={0}
               aria-label={`${index + 1}: ${item.nome} com ${item.total} ${t.common.shows}`}
-              className="group flex flex-col gap-1.5 rounded-md p-1 transition-colors focus:outline-none focus-visible:bg-slate-50 focus-visible:ring-2 focus-visible:ring-[#00AEEF] focus-visible:ring-offset-2"
+              className="group flex flex-col gap-1 rounded px-1 py-0.5 transition-colors focus:outline-none focus-visible:bg-slate-50 focus-visible:ring-2 focus-visible:ring-[#00AEEF] focus-visible:ring-offset-1"
             >
               <div className="flex items-end justify-between" aria-hidden="true">
-                <span className="truncate pr-4 text-xs font-bold text-[#0B2341] transition-colors group-hover:text-[#00AEEF]">
+                <span className="truncate pr-2 text-[10px] font-bold text-[#0B2341] transition-colors group-hover:text-[#00AEEF]">
                   {index + 1}. {item.nome}
                 </span>
-                <span className="whitespace-nowrap text-[10px] font-black text-slate-400">
+                <span className="whitespace-nowrap text-[9px] font-black text-slate-400">
                   {item.total}{" "}
-                  {item.total === 1
-                    ? t.common.showUpperSingular
-                    : t.common.showUpperPlural}
+                  {item.total === 1 ? t.common.showUpperSingular : t.common.showUpperPlural}
                 </span>
               </div>
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100" aria-hidden="true">
+              <div className="h-1 w-full overflow-hidden rounded-full bg-slate-100" aria-hidden="true">
                 <div
                   className="h-full rounded-full bg-[#00AEEF] transition-all duration-1000 ease-out"
                   style={{ width: `${(item.total / maxShows) * 100}%` }}
@@ -74,11 +74,11 @@ export default function TopArtistasCard({ filtrados }) {
             </div>
           ))
         ) : (
-          <div className="flex h-full items-center justify-center text-sm font-medium text-slate-400">
+          <div className="flex h-full items-center justify-center text-xs font-medium text-slate-400">
             {t.common.noDataFound}
           </div>
         )}
       </div>
-    </Card>
+    </div>
   );
 }

@@ -18,6 +18,7 @@ import ContactSection from "./components/sections/ContactSection";
 
 import { useProcessedData } from "./hooks/useProcessedData";
 import { useLanguage } from "./contexts/LanguageContext";
+import { ViewModeProvider } from "./contexts/ViewModeContext";
 
 const PainelCompleto = lazy(() => import("./pages/PainelCompleto"));
 
@@ -70,37 +71,39 @@ function App() {
   const { t } = useLanguage();
 
   return (
-    <Router>
-      <div id="conteudo-site">
-        <Suspense
-          fallback={
-            <div className="flex min-h-screen items-center justify-center bg-[#F8FAFC]">
-              <span className="text-lg font-black text-[#0B2341]">
-                {t.dashboard.loading}
-              </span>
-            </div>
-          }
-        >
-          <Routes>
-            <Route path="/" element={<Home csvUrls={CSV_URLS} />} />
-            <Route
-              path="/dashboard"
-              element={<PainelCompleto csvUrls={CSV_URLS} />}
-            />
-          </Routes>
-        </Suspense>
-      </div>
+    <ViewModeProvider>
+      <Router>
+        <div id="conteudo-site">
+          <Suspense
+            fallback={
+              <div className="flex min-h-screen items-center justify-center bg-[#F8FAFC]">
+                <span className="text-lg font-black text-[#0B2341]">
+                  {t.dashboard.loading}
+                </span>
+              </div>
+            }
+          >
+            <Routes>
+              <Route path="/" element={<Home csvUrls={CSV_URLS} />} />
+              <Route
+                path="/dashboard"
+                element={<PainelCompleto csvUrls={CSV_URLS} />}
+              />
+            </Routes>
+          </Suspense>
+        </div>
 
-      <Acessibilidade />
-      <CookieConsent />
+        <Acessibilidade />
+        <CookieConsent />
 
-      <ModalSugestao
-        isOpen={isSugestaoOpen}
-        onClose={() => setIsSugestaoOpen(false)}
-      />
+        <ModalSugestao
+          isOpen={isSugestaoOpen}
+          onClose={() => setIsSugestaoOpen(false)}
+        />
 
-      <BotaoSugestaoFlutuante onOpen={() => setIsSugestaoOpen(true)} />
-    </Router>
+        <BotaoSugestaoFlutuante onOpen={() => setIsSugestaoOpen(true)} />
+      </Router>
+    </ViewModeProvider>
   );
 }
 
