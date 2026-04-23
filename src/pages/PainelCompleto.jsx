@@ -69,6 +69,12 @@ export default function PainelCompleto({ csvUrls }) {
       ano: value === current.ano ? "" : value,
     }));
 
+  const toggleArtistFilter = (value) =>
+    setFiltros((current) => ({
+      ...current,
+      artista: value === current.artista ? "" : value,
+    }));
+
   const handleExportBI = async (mode) => {
     const dateStamp = new Date().toISOString().slice(0, 10);
 
@@ -323,6 +329,7 @@ export default function PainelCompleto({ csvUrls }) {
           <div className="bi-tabela bi-scroll overflow-y-auto">
             <TabelaHistorico
               filtrados={filtrados}
+              filtros={filtros}
               setFiltros={setFiltros}
               temFiltroAtivo={temFiltroAtivo}
             />
@@ -368,7 +375,11 @@ export default function PainelCompleto({ csvUrls }) {
           </div>
 
           <div className="bi-artistas">
-            <TopArtistasCard filtrados={filtrados} />
+            <TopArtistasCard
+              filtrados={filtrados}
+              onFilter={toggleArtistFilter}
+              filtroAtivo={filtros.artista || ""}
+            />
           </div>
         </div>
       </main>

@@ -16,6 +16,7 @@ import {
 
 export default function HistoricoTableContent({
   dadosExibidos,
+  filtros = {},
   setFiltros,
   t,
   containerRef,
@@ -27,36 +28,54 @@ export default function HistoricoTableContent({
   const secondaryTextClass = comfortable ? "text-xs" : "text-[10px]";
   const creditorTextClass = comfortable ? "text-sm" : "text-xs";
   const pillTextClass = comfortable ? "text-xs" : "text-[10px]";
+  const getHeaderClass = (field) =>
+    filtros?.[field]
+      ? "hc-filtered-column-header bg-sky-50 text-[#00AEEF] shadow-[inset_0_-3px_0_#00AEEF]"
+      : "text-slate-400";
 
   return (
     <div
       ref={containerRef}
       className="relative min-h-0 flex-1 overflow-auto bg-white scrollbar-moderna bi-scroll"
     >
+      <style>{`
+        body.contraste-negativo .hc-filtered-column-header {
+          background-color: #ffea00 !important;
+          color: #000 !important;
+          box-shadow: inset 0 -3px 0 #000 !important;
+        }
+        body.contraste-negativo .hc-tabela-header .hc-filtered-column-header,
+        body.contraste-negativo .hc-filtered-column-header.hc-text-destaque,
+        body.contraste-negativo .hc-filtered-column-header .lucide,
+        body.contraste-negativo .hc-filtered-column-header span {
+          color: #000 !important;
+        }
+      `}</style>
+
       <table className="w-full min-w-[1200px] border-collapse text-left">
         <thead className="hc-tabela-header sticky top-0 z-30 bg-slate-50 shadow-[inset_0_-1px_0_0_#e2e8f0]">
           <tr>
-            <th className={`px-4 py-3 font-bold uppercase tracking-wider text-slate-400 hc-text-destaque ${headerTextClass}`}>
+            <th className={`px-4 py-3 font-bold uppercase tracking-wider transition-colors hc-text-destaque ${headerTextClass} ${getHeaderClass("artista")}`}>
               <div className="flex items-center gap-2">
                 <User size={14} /> {t.dashboard.table.headers.artist}
               </div>
             </th>
-            <th className={`px-4 py-3 font-bold uppercase tracking-wider text-slate-400 hc-text-destaque ${headerTextClass}`}>
+            <th className={`px-4 py-3 font-bold uppercase tracking-wider transition-colors hc-text-destaque ${headerTextClass} ${getHeaderClass("nomeCredor")}`}>
               <div className="flex items-center gap-2">
                 <ShieldAlert size={14} /> {t.dashboard.table.headers.creditor}
               </div>
             </th>
-            <th className={`px-4 py-3 font-bold uppercase tracking-wider text-slate-400 hc-text-destaque ${headerTextClass}`}>
+            <th className={`px-4 py-3 font-bold uppercase tracking-wider transition-colors hc-text-destaque ${headerTextClass} ${getHeaderClass("municipio")}`}>
               <div className="flex items-center gap-2">
                 <MapPin size={14} /> {t.dashboard.table.headers.municipality}
               </div>
             </th>
-            <th className={`px-4 py-3 font-bold uppercase tracking-wider text-slate-400 hc-text-destaque ${headerTextClass}`}>
+            <th className={`px-4 py-3 font-bold uppercase tracking-wider transition-colors hc-text-destaque ${headerTextClass} ${getHeaderClass("ciclo")}`}>
               <div className="flex items-center gap-2">
                 <Layers size={14} /> {t.dashboard.table.headers.cycle}
               </div>
             </th>
-            <th className={`px-4 py-3 font-bold uppercase tracking-wider text-slate-400 hc-text-destaque ${headerTextClass}`}>
+            <th className={`px-4 py-3 font-bold uppercase tracking-wider transition-colors hc-text-destaque ${headerTextClass} ${getHeaderClass("dataEvento")}`}>
               <div className="flex items-center gap-2">
                 <Calendar size={14} /> {t.dashboard.table.headers.eventDeadline}
               </div>

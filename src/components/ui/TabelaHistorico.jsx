@@ -14,6 +14,7 @@ import HistoricoTableContent from "./history/HistoricoTableContent";
 
 export default function TabelaHistorico({
   filtrados,
+  filtros = {},
   setFiltros,
   temFiltroAtivo = false,
   comfortable = false,
@@ -143,6 +144,7 @@ export default function TabelaHistorico({
 
         <HistoricoTableContent
           dadosExibidos={dadosExibidos}
+          filtros={filtros}
           setFiltros={setFiltros}
           t={t}
           isMobile={isMobile}

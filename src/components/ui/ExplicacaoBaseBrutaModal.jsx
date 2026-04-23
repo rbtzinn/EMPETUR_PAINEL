@@ -2,12 +2,14 @@ import React from "react";
 import { ArrowRight, Database } from "lucide-react";
 import FadeIn from "./FadeIn";
 import { useLanguage } from "../../contexts/LanguageContext";
+import { useBodyScrollLock } from "../../hooks/useBodyScrollLock";
 
 const BASE_BRUTA_URL =
   "https://docs.google.com/spreadsheets/d/1P94FuVBBiScKlty_slbSVOE5N6uO5g3bzD5giKMtT3I/view";
 
 export default function ExplicacaoBaseBrutaModal({ isOpen, onClose }) {
   const { t } = useLanguage();
+  useBodyScrollLock(isOpen);
 
   if (!isOpen) return null;
 

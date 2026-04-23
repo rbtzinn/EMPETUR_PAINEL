@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import FadeIn from "./FadeIn";
 import { useLanguage } from "../../contexts/LanguageContext";
+import { useBodyScrollLock } from "../../hooks/useBodyScrollLock";
 
 const GOOGLE_SHEETS_URL =
   "https://script.google.com/macros/s/AKfycbwM2iYw61mWk6G1K4fc06XD4GZuyMo6ahIHRnGN9pazyR_GBoZRR-jcFVgrCett-JFLEw/exec";
@@ -19,6 +20,7 @@ export default function ModalSugestao({ isOpen, onClose }) {
   const [sugestao, setSugestao] = useState("");
   const [status, setStatus] = useState("idle");
   const { t } = useLanguage();
+  useBodyScrollLock(isOpen);
 
   const handleClose = () => {
     onClose();

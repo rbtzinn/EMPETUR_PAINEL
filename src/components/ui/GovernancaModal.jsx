@@ -2,6 +2,7 @@ import React from "react";
 import { X } from "lucide-react";
 import FadeIn from "./FadeIn";
 import { useLanguage } from "../../contexts/LanguageContext";
+import { useBodyScrollLock } from "../../hooks/useBodyScrollLock";
 
 const STEP_COLOR_CLASSES = {
   red: "bg-red-100 text-red-600",
@@ -12,6 +13,7 @@ const STEP_COLOR_CLASSES = {
 
 export default function GovernancaModal({ isOpen, onClose }) {
   const { t } = useLanguage();
+  useBodyScrollLock(isOpen);
 
   if (!isOpen) return null;
 

@@ -148,7 +148,7 @@ function DropdownPesquisavel({ label, value, onChange, options, compact = false 
 
       <div
         data-active={isActive ? "true" : "false"}
-        className={`hc-filter-shell relative flex w-full items-center ${compact ? "rounded-lg" : "rounded-2xl"} border bg-slate-50 shadow-sm transition-all hc-card ${
+        className={`hc-filter-shell relative flex w-full items-center overflow-hidden ${compact ? "rounded-lg" : "rounded-2xl"} border bg-slate-50 shadow-sm transition-all hc-card ${
           isOpen
             ? "border-[#00AEEF] bg-white ring-4 ring-[#00AEEF]/10"
             : isActive
@@ -161,7 +161,7 @@ function DropdownPesquisavel({ label, value, onChange, options, compact = false 
           <>
             <div className={`hc-filter-active-bar absolute inset-x-0 top-0 rounded-t-[inherit] bg-gradient-to-r from-[#00AEEF] via-sky-400 to-[#0B2341] ${compact ? "h-[2px]" : "h-[3px]"}`} />
             <span
-              className={`hc-filter-active-dot absolute z-[1] rounded-full bg-[#00AEEF] ${compact ? "right-1.5 top-1.5 h-2 w-2" : "right-2.5 top-2.5 h-2.5 w-2.5"}`}
+              className={`hc-filter-active-dot absolute z-[2] rounded-full bg-[#00AEEF] ${compact ? "right-1.5 top-1.5 h-2 w-2" : "right-2.5 top-2.5 h-2.5 w-2.5"}`}
               aria-hidden="true"
             />
           </>

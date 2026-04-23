@@ -16,7 +16,7 @@ export default function BotaoSugestaoFlutuante({ onOpen }) {
 
       <div
         className={`fixed bottom-4 z-[140] flex items-end justify-end transition-all duration-300 sm:bottom-6 ${
-          minimizado ? "left-0" : "left-3 sm:left-4"
+          minimizado ? "-left-7 sm:-left-9" : "left-3 sm:left-4"
         }`}
       >
         <AnimatePresence initial={false} mode="wait">
@@ -59,7 +59,9 @@ export default function BotaoSugestaoFlutuante({ onOpen }) {
               <button
                 type="button"
                 onClick={() => setMinimizado(false)}
-                className="hc-btn-sugestao flex h-10 w-10 items-center justify-center rounded-r-full rounded-l-none border-y border-r border-slate-100 bg-white pr-1.5 text-[#0B2341] shadow-[0_10px_40px_-10px_rgba(11,35,65,0.15)] transition-all hover:pl-1.5 hover:text-[#00AEEF] sm:h-14 sm:w-12 sm:pr-2 sm:hover:pl-2"
+                aria-label={t.suggestion.floatingButton}
+                title={t.suggestion.floatingButton}
+                className="hc-btn-sugestao flex h-11 w-12 items-center justify-end rounded-r-full rounded-l-none border-y border-r border-slate-200 bg-slate-100 pr-2 text-[#0B2341] shadow-[0_10px_34px_-16px_rgba(11,35,65,0.22)] transition-all hover:translate-x-2 hover:bg-white hover:text-[#00AEEF] active:scale-95 sm:h-14 sm:w-14 sm:pr-3"
               >
                 <ChevronLeft strokeWidth={2.5} className="h-4 w-4 rotate-180 sm:h-5 sm:w-5" />
               </button>

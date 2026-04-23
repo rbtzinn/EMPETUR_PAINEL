@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
 } from "lucide-react";
 import FadeIn from "../ui/FadeIn";
@@ -19,6 +19,7 @@ import PanelRecordsTable from "./panel/PanelRecordsTable";
 export default function PanelSection({ id, csvUrls, lookerShareUrl }) {
   const { data: dados, loading } = useProcessedData(csvUrls);
   const [filtros, setFiltros] = useState(createDefaultFilters);
+  const [visibleRows, setVisibleRows] = useState(INITIAL_QUICK_TABLE_ROWS);
   const { t } = useLanguage();
   const isEnglish = t.locale === "en-US";
 
@@ -41,13 +42,16 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) {
   );
 
   const temFiltroAtivo = useMemo(() => hasActiveFilters(filtros), [filtros]);
+
+  useEffect(() => {
+    setVisibleRows(INITIAL_QUICK_TABLE_ROWS);
+  }, [filtrados]);
+
   const dadosExibidos = useMemo(
-    () =>
-      temFiltroAtivo
-        ? filtrados
-        : filtrados.slice(0, INITIAL_QUICK_TABLE_ROWS),
-    [filtrados, temFiltroAtivo]
+    () => filtrados.slice(0, visibleRows),
+    [filtrados, visibleRows]
   );
+  const aindaTemMaisResultados = filtrados.length > visibleRows;
 
   if (loading) {
     return (
@@ -105,10 +109,15 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) {
           <PanelRecordsTable
             dadosExibidos={dadosExibidos}
             filtrados={filtrados}
+            filtros={filtros}
             temFiltroAtivo={temFiltroAtivo}
             setFiltros={setFiltros}
             t={t}
             isEnglish={isEnglish}
+            aindaTemMaisResultados={aindaTemMaisResultados}
+            onShowMore={() =>
+              setVisibleRows((current) => current + INITIAL_QUICK_TABLE_ROWS)
+            }
           />
         </FadeIn>
       </div>

@@ -17,25 +17,43 @@ import { INITIAL_QUICK_TABLE_ROWS } from "../../../constants/dashboard";
 export default function PanelRecordsTable({
   dadosExibidos,
   filtrados,
+  filtros,
   temFiltroAtivo,
   setFiltros,
   t,
   isEnglish,
+  aindaTemMaisResultados,
+  onShowMore,
 }) {
   const headers = [
-    { icon: <User size={14} />, label: t.panelSection.table.artistHeader },
+    { field: "artista", icon: <User size={14} />, label: t.panelSection.table.artistHeader },
     {
+      field: "nomeCredor",
       icon: <ShieldAlert size={14} />,
       label: t.panelSection.table.contractorHeader,
       title: "Documento anonimizado (LGPD)",
     },
-    { icon: <MapPin size={14} />, label: t.panelSection.table.municipalityHeader },
-    { icon: <Layers size={14} />, label: t.panelSection.table.cycleHeader },
-    { icon: <Calendar size={14} />, label: t.panelSection.table.dateHeader },
+    { field: "municipio", icon: <MapPin size={14} />, label: t.panelSection.table.municipalityHeader },
+    { field: "ciclo", icon: <Layers size={14} />, label: t.panelSection.table.cycleHeader },
+    { field: "dataEvento", icon: <Calendar size={14} />, label: t.panelSection.table.dateHeader },
   ];
 
   return (
     <div className="hc-tabela-card flex flex-col overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_60px_-48px_rgba(11,35,65,0.35)]">
+      <style>{`
+        body.contraste-negativo .hc-filtered-column-header {
+          background-color: #ffea00 !important;
+          color: #000 !important;
+          box-shadow: inset 0 -3px 0 #000 !important;
+        }
+        body.contraste-negativo .hc-tabela-header .hc-filtered-column-header,
+        body.contraste-negativo .hc-tabela-header .hc-filtered-column-header.hc-tabela-header,
+        body.contraste-negativo .hc-filtered-column-header .lucide,
+        body.contraste-negativo .hc-filtered-column-header span {
+          color: #000 !important;
+        }
+      `}</style>
+
       <div className="relative flex flex-col items-start justify-between gap-4 border-b border-slate-100/80 p-6 md:flex-row md:items-center md:p-8">
         <div>
           <h3 className="mb-1 text-2xl font-black tracking-tight text-[#0B2341] hc-text-destaque">
@@ -52,11 +70,11 @@ export default function PanelRecordsTable({
         </div>
       </div>
 
-      {!temFiltroAtivo && filtrados.length > INITIAL_QUICK_TABLE_ROWS && (
+      {filtrados.length > INITIAL_QUICK_TABLE_ROWS && (
         <div className="border-b border-slate-100/80 bg-slate-50/80 px-6 py-3 text-xs font-bold uppercase tracking-[0.18em] text-slate-400 md:px-8">
           {isEnglish
-            ? `Showing the first ${INITIAL_QUICK_TABLE_ROWS} records. Apply a filter to load the full list.`
-            : `Exibindo os primeiros ${INITIAL_QUICK_TABLE_ROWS} registros. Aplique um filtro para liberar a lista completa.`}
+            ? `Showing ${dadosExibidos.length} of ${filtrados.length} records. Use Show more to load more results.`
+            : `Exibindo ${dadosExibidos.length} de ${filtrados.length} registros. Use Mostrar mais para carregar mais resultados.`}
         </div>
       )}
 
@@ -67,12 +85,17 @@ export default function PanelRecordsTable({
               {headers.map((header) => (
                 <th
                   key={header.label}
-                  className="whitespace-nowrap px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 hc-tabela-header"
+                  className={`whitespace-nowrap px-6 py-5 text-[10px] font-black uppercase tracking-widest transition-colors hc-tabela-header ${
+                    filtros?.[header.field]
+                      ? "hc-filtered-column-header bg-sky-50 text-[#00AEEF] shadow-[inset_0_-3px_0_#00AEEF]"
+                      : "text-slate-400"
+                  }`}
                   title={header.title}
+                  aria-sort={filtros?.[header.field] ? "other" : undefined}
                 >
                   <div className="flex items-center gap-2">
                     {header.icon}
-                    {header.label}
+                    <span>{header.label}</span>
                   </div>
                 </th>
               ))}
@@ -202,6 +225,18 @@ export default function PanelRecordsTable({
           </tbody>
         </table>
       </div>
+
+      {aindaTemMaisResultados && (
+        <div className="border-t border-slate-100/80 bg-white px-6 py-5 md:px-8">
+          <button
+            type="button"
+            onClick={onShowMore}
+            className="hc-text-destaque inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-5 text-xs font-black uppercase tracking-[0.16em] text-[#0B2341] transition-all hover:border-[#00AEEF] hover:text-[#00AEEF] active:scale-[0.98] md:w-auto"
+          >
+            {isEnglish ? "Show more" : "Mostrar mais"}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

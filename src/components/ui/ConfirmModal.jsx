@@ -2,9 +2,11 @@ import React from "react";
 import { ExternalLink } from "lucide-react";
 import FadeIn from "./FadeIn";
 import { useLanguage } from "../../contexts/LanguageContext";
+import { useBodyScrollLock } from "../../hooks/useBodyScrollLock";
 
 export default function ConfirmModal({ isOpen, onClose, onConfirm }) {
   const { t } = useLanguage();
+  useBodyScrollLock(isOpen);
 
   if (!isOpen) return null;
 

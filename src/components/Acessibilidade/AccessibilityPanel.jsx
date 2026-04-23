@@ -12,6 +12,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import ToggleCard from "./ToggleCard";
 import ControlRow from "./ControlRow";
+import { useBodyScrollLock } from "../../hooks/useBodyScrollLock";
 
 const controlesNumericos = [
   { id: "tamanhoFonte", label: "Tamanho da fonte", min: 80, max: 150 },
@@ -27,6 +28,8 @@ export default function AccessibilityPanel({
   ajustarNumero,
   redefinirTudo,
 }) {
+  useBodyScrollLock(menuAberto);
+
   return (
     <AnimatePresence>
       {menuAberto && (

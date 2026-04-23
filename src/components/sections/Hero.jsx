@@ -92,6 +92,13 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
   }, []);
 
   useEffect(() => {
+    if (!isDesktopHero) {
+      setVideoReady(true);
+      return undefined;
+    }
+
+    setVideoReady(false);
+
     const video = videoRef.current;
     if (!video) return;
 
@@ -108,7 +115,7 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
     }
 
     return () => video.removeEventListener("loadedmetadata", handleLoadedMetadata);
-  }, []);
+  }, [isDesktopHero]);
 
   useEffect(() => {
     if (!videoReady) return;
@@ -125,6 +132,7 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
   useEffect(() => {
     const hero = heroRef.current;
     const video = videoRef.current;
+    if (!isDesktopHero) return;
     if (!hero || !video || !videoReady) return;
 
     if (!isDesktopHero || isHighContrast) {
@@ -248,29 +256,31 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
       >
         <Breadcrumb />
 
-        <video
-          ref={videoRef}
-          className="hero-video absolute inset-0 h-full w-full object-cover"
-          src="/hero-video.mp4"
-          muted
-          playsInline
-          preload="auto"
-          loop={!isDesktopHero}
-          controls={false}
-          disablePictureInPicture
-          controlsList="nodownload nofullscreen noremoteplayback"
-          style={{
-            pointerEvents: "none",
-            objectPosition: "46% 52%",
-            transform: "scale(1.08)",
-            transformOrigin: "center center",
-          }}
-        />
+        {isDesktopHero && (
+          <video
+            ref={videoRef}
+            className="hero-video absolute inset-0 h-full w-full object-cover"
+            src="/hero-video.mp4"
+            muted
+            playsInline
+            preload="auto"
+            loop={false}
+            controls={false}
+            disablePictureInPicture
+            controlsList="nodownload nofullscreen noremoteplayback"
+            style={{
+              pointerEvents: "none",
+              objectPosition: "46% 52%",
+              transform: "scale(1.08)",
+              transformOrigin: "center center",
+            }}
+          />
+        )}
 
-        <div className="hero-overlay absolute inset-0 z-[1] bg-[linear-gradient(to_bottom,rgba(7,24,47,0.42)_0%,rgba(7,24,47,0.12)_52%,rgba(7,24,47,0.65)_100%)]" />
-        <div className="absolute inset-0 z-[1] bg-[linear-gradient(to_right,#0B2341_0%,#0B2341_16%,rgba(11,35,65,0.86)_34%,rgba(11,35,65,0.46)_54%,transparent_100%)]" />
+        <div className="hero-overlay absolute inset-0 z-[1] bg-[radial-gradient(circle_at_top,#123f72_0%,#0B2341_42%,#06182e_100%)] md:bg-[linear-gradient(to_bottom,rgba(7,24,47,0.42)_0%,rgba(7,24,47,0.12)_52%,rgba(7,24,47,0.65)_100%)]" />
+        <div className="absolute inset-0 z-[1] hidden bg-[linear-gradient(to_right,#0B2341_0%,#0B2341_16%,rgba(11,35,65,0.86)_34%,rgba(11,35,65,0.46)_54%,transparent_100%)] md:block" />
         <div
-          className="absolute inset-0 z-[2] flex flex-col items-start justify-start"
+          className="absolute inset-0 z-[2] flex flex-col items-center justify-start md:items-start"
           style={{
             padding: "176px 0 2rem",
             opacity: contentVisible ? 1 : 0,
@@ -279,7 +289,7 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
           }}
         >
           <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
-            <div style={{ width: "100%", maxWidth: "clamp(280px, 39%, 520px)" }}>
+            <div className="mx-auto flex w-full max-w-full flex-col items-center text-center md:mx-0 md:block md:text-left" style={{ maxWidth: isDesktopHero ? "clamp(280px, 39%, 520px)" : "100%" }}>
               <div className="hero-badge mb-4 inline-flex max-w-full items-center rounded-full border border-white/20 bg-white/10 px-2.5 py-1.5 text-[8px] font-bold uppercase tracking-[0.08em] text-white backdrop-blur-md shadow-sm sm:mb-5 sm:px-4 sm:py-2 sm:text-[10px] sm:tracking-[0.12em]">
                 {t.hero.badge}
               </div>
@@ -300,11 +310,11 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
                 </span>
               </h1>
 
-              <p className="hc-text-desc mt-3 max-w-[31rem] text-[12px] font-light leading-relaxed text-slate-200 sm:mt-4 sm:text-[14px] md:text-[15px]">
+              <p className="hc-text-desc mt-3 w-full max-w-none text-center text-[12px] font-light leading-relaxed text-slate-200 sm:mt-4 sm:text-[14px] md:max-w-[31rem] md:text-left md:text-[15px]">
                 {t.hero.description}
               </p>
 
-              <div className="hero-stats mt-5 grid w-full max-w-[38rem] grid-cols-1 divide-y-2 divide-slate-100 rounded-2xl border border-white/70 bg-white/95 p-3 shadow-2xl shadow-blue-950/20 backdrop-blur-lg sm:mt-5 sm:p-4 md:grid-cols-3 md:divide-x-2 md:divide-y-0 md:p-5">
+              <div className="hero-stats mt-5 grid w-full max-w-full grid-cols-1 divide-y-2 divide-slate-100 rounded-2xl border border-white/70 bg-white/95 p-3 shadow-2xl shadow-blue-950/20 backdrop-blur-lg sm:mt-5 sm:p-4 md:max-w-[38rem] md:grid-cols-3 md:divide-x-2 md:divide-y-0 md:p-5">
                 <AnimatedCounter
                   end={apresentacoes}
                   label={t.hero.stats.presentations}

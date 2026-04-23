@@ -117,6 +117,12 @@ export default function PainelPadraoLayout({
       ano: value === current.ano ? "" : value,
     }));
 
+  const toggleArtista = (value) =>
+    setFiltros((current) => ({
+      ...current,
+      artista: value === current.artista ? "" : value,
+    }));
+
   const toggleMunicipio = (nome) =>
     setFiltros((current) => ({
       ...current,
@@ -440,7 +446,12 @@ export default function PainelPadraoLayout({
           </Card>
 
           <Card className="flex h-72 flex-col overflow-hidden p-0">
-            <TopArtistasCard filtrados={filtrados} />
+            <TopArtistasCard
+              filtrados={filtrados}
+              comfortable
+              onFilter={toggleArtista}
+              filtroAtivo={filtros.artista || ""}
+            />
           </Card>
         </div>
 
@@ -455,6 +466,7 @@ export default function PainelPadraoLayout({
         >
           <TabelaHistorico
             filtrados={filtrados}
+            filtros={filtros}
             setFiltros={setFiltros}
             temFiltroAtivo={temFiltroAtivo}
             comfortable

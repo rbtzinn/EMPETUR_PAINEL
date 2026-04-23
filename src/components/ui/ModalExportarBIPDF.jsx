@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { useLanguage } from "../../contexts/LanguageContext";
+import { useBodyScrollLock } from "../../hooks/useBodyScrollLock";
 import FadeIn from "./FadeIn";
 
 const MODE_ICONS = {
@@ -19,6 +20,7 @@ const MODE_ICONS = {
 
 export default function ModalExportarBIPDF({ isOpen, onClose, onConfirm }) {
   const { t } = useLanguage();
+  useBodyScrollLock(isOpen);
   const exportTexts = t.dashboard.biExport;
   const [selectedMode, setSelectedMode] = useState("report");
   const [status, setStatus] = useState("idle");

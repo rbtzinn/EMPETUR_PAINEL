@@ -535,6 +535,7 @@
         "Comparison between Carnival, Sao Joao, Support, and Festival PE.",
       historyKicker: "Historical Series",
       historyDescription: "Annual contracted volume by the state.",
+      topArtistsKicker: "Top Artists",
     },
     table: {
       title: "Performance History",

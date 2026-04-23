@@ -117,6 +117,15 @@ body.contraste-negativo #conteudo-site .hc-card:hover {
   background-color: #111 !important;
 }
 
+body.contraste-negativo #conteudo-site .hc-top-artist-row-active {
+  background-color: #ffea00 !important;
+  border: 2px solid #fff !important;
+}
+
+body.contraste-negativo #conteudo-site .hc-top-artist-row-active * {
+  color: #000 !important;
+}
+
 /* Botões Azuis -> Fundo Preto com Borda Amarela */
 body.contraste-negativo #conteudo-site :is(.hc-botao-destaque, .bg-\[\#00AEEF\]) {
   background-color: #000 !important;

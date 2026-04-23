@@ -537,6 +537,7 @@
         "Comparativo entre Carnaval, São João, Apoio e Festival PE.",
       historyKicker: "Série Histórica",
       historyDescription: "Volume anual contratado pelo estado.",
+      topArtistsKicker: "Top Artistas",
     },
     table: {
       title: "Histórico de Apresentações",

@@ -6,9 +6,11 @@ import {
   exportarParaExcelPersonalizado,
 } from "../../utils/ExportUtils";
 import { useLanguage } from "../../contexts/LanguageContext";
+import { useBodyScrollLock } from "../../hooks/useBodyScrollLock";
 
 export default function ExportModal({ isOpen, onClose, dados }) {
   const { t } = useLanguage();
+  useBodyScrollLock(isOpen);
 
   if (!isOpen) return null;
 
