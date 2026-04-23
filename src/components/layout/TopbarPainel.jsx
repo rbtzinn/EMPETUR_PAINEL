@@ -18,7 +18,9 @@ export default function TopbarPainel({
 }) {
   const { t } = useLanguage();
   const [isDesktopMenuOpen, setIsDesktopMenuOpen] = useState(false);
+  const [desktopTopbarHeight, setDesktopTopbarHeight] = useState(64);
   const desktopMenuRef = useRef(null);
+  const desktopTopbarRef = useRef(null);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -34,6 +36,29 @@ export default function TopbarPainel({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
+
+  useEffect(() => {
+    const topbar = desktopTopbarRef.current;
+    if (!topbar) return undefined;
+
+    const updateTopbarHeight = () => {
+      const nextHeight = Math.ceil(topbar.getBoundingClientRect().height);
+      if (nextHeight > 0) {
+        setDesktopTopbarHeight(nextHeight);
+      }
+    };
+
+    updateTopbarHeight();
+
+    const resizeObserver = new ResizeObserver(updateTopbarHeight);
+    resizeObserver.observe(topbar);
+    window.addEventListener("resize", updateTopbarHeight);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateTopbarHeight);
     };
   }, []);
 
@@ -78,7 +103,10 @@ export default function TopbarPainel({
 
       {/* ── Desktop: barra completa, full-width, plana ── */}
       <div className="hidden lg:block">
-        <div className="hc-topbar-painel fixed inset-x-0 top-0 z-50 w-full border-b border-slate-200 bg-white/98 backdrop-blur-xl">
+        <div
+          ref={desktopTopbarRef}
+          className="hc-topbar-painel fixed inset-x-0 top-0 z-50 w-full border-b border-slate-200 bg-white/98 backdrop-blur-xl"
+        >
           {/* Faixa de cor PE no topo */}
           <div className="hc-pe-colors h-[2.5px] w-full bg-gradient-to-r from-[#0B2341] via-[#00AEEF] via-yellow-400 via-red-500 to-green-500" />
 
@@ -140,7 +168,7 @@ export default function TopbarPainel({
             />
           </div>
         </div>
-        <div className="h-[63px]" aria-hidden="true" />
+        <div style={{ height: desktopTopbarHeight }} aria-hidden="true" />
       </div>
 
       {/* Mobile: drawer */}
