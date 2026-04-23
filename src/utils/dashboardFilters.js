@@ -1,4 +1,5 @@
 import { BLOCKED_CYCLE_TERMS, FILTER_FIELDS } from "../constants/dashboard";
+import { normalizarArtista } from "./artistUtils";
 
 const localeCompare = (left, right) =>
   String(left).localeCompare(String(right), "pt-BR", { sensitivity: "base" });
@@ -98,6 +99,23 @@ export const buildFilterOptions = (
         .map(([value, label]) => ({ value, label }))
         .sort((left, right) => localeCompare(left.label, right.label));
 
+      return options;
+    }
+
+    if (currentField === "artista") {
+      const labelsByValue = new Map();
+
+      rows.forEach((item) => {
+        const value = item.artista;
+        if (!value) return;
+
+        const normalizedValue = normalizarArtista(value);
+        if (!labelsByValue.has(normalizedValue)) {
+          labelsByValue.set(normalizedValue, value);
+        }
+      });
+
+      options[currentField] = Array.from(labelsByValue.values()).sort(localeCompare);
       return options;
     }
 

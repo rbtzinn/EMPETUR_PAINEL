@@ -164,7 +164,7 @@ export default function PainelCompleto({ csvUrls }) {
   ═══════════════════════════════════════════════════ */
   if (isMobile || !isBIMode) {
     return (
-      <div className="hc-bg-painel flex h-screen flex-col overflow-hidden bg-[#F3F7FA]">
+      <div className="hc-bg-painel flex min-h-screen flex-col bg-[#F3F7FA]">
         <style>{`
           body.contraste-negativo .hc-bg-painel { background-color: #000 !important; }
         `}</style>

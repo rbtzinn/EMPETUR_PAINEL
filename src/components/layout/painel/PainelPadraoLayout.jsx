@@ -37,7 +37,7 @@ function RankingRow({ index, nome, total, max, selecionado, onClick }) {
       }`}
     >
       <span
-        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[9px] font-black ${
+          className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-black ${
           index <= 3 ? "bg-[#0B2341] text-white" : "bg-slate-100 text-slate-500"
         }`}
       >
@@ -46,7 +46,7 @@ function RankingRow({ index, nome, total, max, selecionado, onClick }) {
 
       <span className="min-w-0 flex-1">
         <span
-          className={`block truncate text-[11px] font-bold ${
+          className={`block truncate text-[13px] font-bold ${
             selecionado ? "text-[#00AEEF]" : "text-[#0B2341] group-hover:text-[#00AEEF]"
           }`}
         >
@@ -63,7 +63,7 @@ function RankingRow({ index, nome, total, max, selecionado, onClick }) {
       </span>
 
       <span
-        className={`shrink-0 rounded-lg px-2 py-0.5 text-[9px] font-black ${
+        className={`shrink-0 rounded-lg px-2 py-0.5 text-[11px] font-black ${
           selecionado ? "bg-blue-100 text-[#00AEEF]" : "bg-slate-100 text-slate-500"
         }`}
       >
@@ -137,7 +137,7 @@ export default function PainelPadraoLayout({
 
   return (
     <div
-      className="hc-padrao-surface bi-scroll flex-1 overflow-y-auto bg-[#F3F7FA]"
+      className="hc-padrao-surface flex-1 bg-[#F3F7FA]"
       aria-label={t.dashboard.viewMode.defaultPanelAria}
     >
       <style>{`
@@ -216,7 +216,7 @@ export default function PainelPadraoLayout({
 
       <div className="hc-padrao-page mx-auto max-w-[1440px] space-y-4 px-4 pb-10 pt-4 sm:px-5 sm:pt-6 lg:pt-4">
         <div
-          className="hc-padrao-hero relative overflow-hidden rounded-[1.75rem] px-4 py-5 sm:px-6"
+          className="hc-padrao-hero relative overflow-hidden rounded-[1.75rem] px-5 py-6 sm:px-7 sm:py-7"
           style={{
             background: "linear-gradient(135deg, #0B2341 0%, #0d2d52 60%, #093070 100%)",
             boxShadow: "0 8px 32px rgba(11,35,65,0.25)",
@@ -228,22 +228,22 @@ export default function PainelPadraoLayout({
           <div className="relative mb-4 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0 w-full flex-1 text-center sm:text-left">
               <div className="mb-3 flex items-center justify-center gap-2 sm:justify-start">
-                <span className="hc-padrao-hero-badge inline-flex max-w-full rounded-full border border-[#00AEEF]/30 bg-[#00AEEF]/10 px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.18em] text-[#00AEEF] sm:text-[8px]">
+                <span className="hc-padrao-hero-badge inline-flex max-w-full rounded-full border border-[#00AEEF]/30 bg-[#00AEEF]/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-[#00AEEF] sm:text-[10px]">
                   {t.dashboard.header.badge}
                 </span>
               </div>
 
-              <h1 className="hc-padrao-hero-title w-full text-center text-[2rem] font-black leading-[1.05] tracking-tight text-white sm:mx-0 sm:text-left sm:text-lg sm:leading-snug">
+              <h1 className="hc-padrao-hero-title w-full text-center text-[2.15rem] font-black leading-[1.05] tracking-tight text-white sm:mx-0 sm:text-left sm:text-3xl sm:leading-tight">
                 {t.dashboard.header.title}
               </h1>
 
-              <p className="hc-padrao-hero-text mt-3 w-full max-w-none text-center text-[13px] font-medium leading-6 text-slate-300 sm:mt-1 sm:max-w-[56ch] sm:text-left sm:text-[10px] sm:leading-normal sm:text-slate-400">
+              <p className="hc-padrao-hero-text mt-3 w-full max-w-none text-center text-[15px] font-medium leading-7 text-slate-300 sm:mt-2 sm:max-w-[68ch] sm:text-left sm:text-sm sm:leading-6 sm:text-slate-300">
                 {t.dashboard.header.description}
               </p>
             </div>
 
             <div className="flex w-full shrink-0 flex-col items-center gap-2 text-center lg:w-auto lg:items-end lg:text-right">
-              <span className="hc-padrao-hero-meta w-full text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400 sm:text-[8px] sm:tracking-widest sm:text-slate-500">
+              <span className="hc-padrao-hero-meta w-full text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400 sm:text-[10px] sm:tracking-widest sm:text-slate-400">
                 {t.dashboard.header.lastUpdate}: {dataUltimaAtualizacao}
               </span>
 
@@ -261,7 +261,7 @@ export default function PainelPadraoLayout({
                       nomeCredor: "",
                     }))
                   }
-                  className="hc-padrao-clear-btn flex min-h-10 items-center gap-1 rounded-full border border-red-400/30 bg-red-500/10 px-3 py-2 text-[11px] font-bold text-red-300 transition-all hover:bg-red-500/20 sm:min-h-0 sm:px-2 sm:py-1 sm:text-[9px] sm:text-red-400"
+                  className="hc-padrao-clear-btn flex min-h-10 items-center gap-1 rounded-full border border-red-400/30 bg-red-500/10 px-3 py-2 text-xs font-bold text-red-300 transition-all hover:bg-red-500/20 sm:min-h-0 sm:px-3 sm:py-1.5 sm:text-[11px] sm:text-red-400"
                 >
                   <RefreshCw className="h-2.5 w-2.5" /> {t.common.clearFilters}
                 </button>
@@ -294,13 +294,13 @@ export default function PainelPadraoLayout({
             ].map(({ label, valor, accent }) => (
               <div
                 key={label}
-                className="hc-padrao-kpi flex min-h-[108px] flex-col justify-between rounded-2xl border border-white/10 bg-white/5 px-3 py-3 backdrop-blur-sm sm:min-h-0 sm:rounded-xl sm:py-2.5"
+                className="hc-padrao-kpi flex min-h-[116px] flex-col justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-4 backdrop-blur-sm sm:min-h-[112px] sm:rounded-xl sm:py-3.5"
               >
-                <span className="hc-padrao-kpi-label text-[10px] leading-4 font-black uppercase tracking-[0.14em] text-slate-300 sm:text-[8px] sm:tracking-widest sm:text-slate-400">
+                <span className="hc-padrao-kpi-label text-[11px] leading-4 font-black uppercase tracking-[0.14em] text-slate-300 sm:text-[10px] sm:tracking-widest sm:text-slate-300">
                   {label}
                 </span>
                 <span
-                  className={`hc-padrao-kpi-value mt-2 block text-[1.9rem] font-black leading-none tracking-tight sm:mt-1.5 sm:truncate sm:text-xl ${
+                  className={`hc-padrao-kpi-value mt-2 block text-[2rem] font-black leading-none tracking-tight sm:mt-2 sm:truncate sm:text-3xl ${
                     accent ? "text-[#00AEEF]" : "text-white"
                   }`}
                 >
@@ -311,11 +311,11 @@ export default function PainelPadraoLayout({
           </div>
 
           <div className="hc-padrao-filterbar relative mt-4 flex flex-wrap items-center justify-center gap-2 border-t border-white/5 pt-3 sm:justify-start">
-            <Filter className="h-2.5 w-2.5 shrink-0 text-slate-500" strokeWidth={2.5} />
-            <span className="hc-padrao-hero-filters text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400 sm:text-[8px] sm:tracking-widest sm:text-slate-500">
+            <Filter className="h-3 w-3 shrink-0 text-slate-500" strokeWidth={2.5} />
+            <span className="hc-padrao-hero-filters text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400 sm:text-[10px] sm:tracking-widest sm:text-slate-400">
               {t.dashboard.filters.active}
             </span>
-            <span className="hc-padrao-hero-filters text-[11px] leading-5 text-slate-300 sm:text-[8px] sm:text-slate-400">
+            <span className="hc-padrao-hero-filters text-[12px] leading-5 text-slate-300 sm:text-[11px] sm:text-slate-300">
               {filtrosAtivosTexto}
             </span>
           </div>
@@ -325,23 +325,23 @@ export default function PainelPadraoLayout({
           <Card className={`overflow-hidden p-0 ${isMobile ? "hidden" : ""}`}>
             <div className="flex items-center justify-between border-b border-slate-100 px-5 py-3">
               <div>
-                <p className="hc-padrao-card-kicker text-[8px] font-black uppercase tracking-widest text-slate-400">
+                <p className="hc-padrao-card-kicker text-[10px] font-black uppercase tracking-widest text-slate-400">
                   {t.dashboard.standardLayout.mapKicker}
                 </p>
-                <h2 className="hc-padrao-card-title text-sm font-black text-[#0B2341]">
+                <h2 className="hc-padrao-card-title text-lg font-black text-[#0B2341]">
                   {t.dashboard.standardLayout.mapTitle}
                 </h2>
-                <p className="hc-padrao-card-text text-[9px] text-slate-400">
+                <p className="hc-padrao-card-text text-xs text-slate-400">
                   {t.dashboard.standardLayout.mapDescription}
                 </p>
               </div>
 
               <div className="hc-padrao-map-chip flex items-center gap-1.5 rounded-xl border border-slate-100 bg-slate-50 px-3 py-1.5">
                 <MapPin className="h-3 w-3 text-[#00AEEF]" strokeWidth={2.5} />
-                <span className="text-[10px] font-black text-[#0B2341]">
+                <span className="text-xs font-black text-[#0B2341]">
                   {totalMunicipios.toLocaleString(numberLocale)}
                 </span>
-                <span className="text-[8px] text-slate-400">
+                <span className="text-[10px] text-slate-400">
                   {t.dashboard.standardLayout.mappedMunicipalities}
                 </span>
               </div>
@@ -363,13 +363,13 @@ export default function PainelPadraoLayout({
 
           <Card className="flex flex-col overflow-hidden p-0">
             <div className="border-b border-slate-100 px-4 py-3">
-              <p className="hc-padrao-card-kicker text-[8px] font-black uppercase tracking-widest text-slate-400">
+              <p className="hc-padrao-card-kicker text-[10px] font-black uppercase tracking-widest text-slate-400">
                 {t.dashboard.standardLayout.rankingKicker}
               </p>
-              <h2 className="hc-padrao-card-title text-sm font-black text-[#0B2341]">
+              <h2 className="hc-padrao-card-title text-lg font-black text-[#0B2341]">
                 {t.dashboard.standardLayout.rankingTitle}
               </h2>
-              <p className="hc-padrao-card-text text-[9px] text-slate-400">
+              <p className="hc-padrao-card-text text-xs text-slate-400">
                 {t.dashboard.standardLayout.rankingDescription}
               </p>
             </div>
@@ -393,13 +393,13 @@ export default function PainelPadraoLayout({
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           <Card className="flex h-72 flex-col overflow-hidden p-0">
             <div className="border-b border-slate-100 px-5 py-3">
-              <p className="hc-padrao-card-kicker text-[8px] font-black uppercase tracking-widest text-slate-400">
+              <p className="hc-padrao-card-kicker text-[10px] font-black uppercase tracking-widest text-slate-400">
                 {t.dashboard.standardLayout.cycleKicker}
               </p>
-              <h2 className="hc-padrao-card-title text-base font-black text-[#0B2341]">
+              <h2 className="hc-padrao-card-title text-lg font-black text-[#0B2341]">
                 {t.dashboard.charts.cycleTitle}
               </h2>
-              <p className="hc-padrao-card-text text-[9px] text-slate-400">
+              <p className="hc-padrao-card-text text-xs text-slate-400">
                 {t.dashboard.standardLayout.cycleDescription}
               </p>
             </div>
@@ -417,13 +417,13 @@ export default function PainelPadraoLayout({
 
           <Card className="flex h-72 flex-col overflow-hidden p-0">
             <div className="border-b border-slate-100 px-5 py-3">
-              <p className="hc-padrao-card-kicker text-[8px] font-black uppercase tracking-widest text-slate-400">
+              <p className="hc-padrao-card-kicker text-[10px] font-black uppercase tracking-widest text-slate-400">
                 {t.dashboard.standardLayout.historyKicker}
               </p>
-              <h2 className="hc-padrao-card-title text-base font-black text-[#0B2341]">
+              <h2 className="hc-padrao-card-title text-lg font-black text-[#0B2341]">
                 {t.dashboard.charts.yearTitle}
               </h2>
-              <p className="hc-padrao-card-text text-[9px] text-slate-400">
+              <p className="hc-padrao-card-text text-xs text-slate-400">
                 {t.dashboard.standardLayout.historyDescription}
               </p>
             </div>
@@ -457,6 +457,7 @@ export default function PainelPadraoLayout({
             filtrados={filtrados}
             setFiltros={setFiltros}
             temFiltroAtivo={temFiltroAtivo}
+            comfortable
           />
         </Card>
       </div>

@@ -16,6 +16,7 @@ export default function TabelaHistorico({
   filtrados,
   setFiltros,
   temFiltroAtivo = false,
+  comfortable = false,
 }) {
   const [termoBusca, setTermoBusca] = useState("");
   const [visibleRows, setVisibleRows] = useState(INITIAL_DASHBOARD_TABLE_ROWS);
@@ -129,10 +130,13 @@ export default function TabelaHistorico({
           onSearchChange={setTermoBusca}
           onOpenExplanation={() => setIsExplicacaoOpen(true)}
           onOpenExport={() => setIsModalOpen(true)}
+          comfortable={comfortable}
         />
 
         {deveLimitarResultados && dadosBuscados.length > INITIAL_DASHBOARD_TABLE_ROWS && (
-          <div className="hc-tabela-limit-info border-b border-slate-100 bg-slate-50/80 px-4 py-3 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400 md:px-8 md:text-xs md:tracking-[0.16em]">
+          <div className={`hc-tabela-limit-info border-b border-slate-100 bg-slate-50/80 px-4 py-3 font-bold uppercase tracking-[0.14em] text-slate-400 md:px-8 md:tracking-[0.16em] ${
+            comfortable ? "text-xs md:text-sm" : "text-[11px] md:text-xs"
+          }`}>
             {buscaCurtaDemais ? mensagemBuscaCurta : mensagemLimite}
           </div>
         )}
@@ -143,6 +147,7 @@ export default function TabelaHistorico({
           t={t}
           isMobile={isMobile}
           containerRef={tableContainerRef}
+          comfortable={comfortable}
           footer={
             aindaTemMaisResultados ? (
               <div className="border-t border-slate-100 bg-white px-4 py-5 md:px-8">

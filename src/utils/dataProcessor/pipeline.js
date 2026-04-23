@@ -1,4 +1,5 @@
 import * as Extractors from "../extractors";
+import { canonizarArtista } from "../artistUtils";
 import {
   createProcessedRecord,
   createUniqueCommitmentKey,
@@ -24,7 +25,7 @@ export const processDashboardRows = (rows = []) => {
     if (ehServicoMeio(obsLimpa)) return acc;
 
     const valor = obterValorPrincipal(linha);
-    const artista = Extractors.extrairArtista(obs);
+    const artista = canonizarArtista(Extractors.extrairArtista(obs));
     const { municipio, municipioNormalizado } = resolveMunicipio(obs);
     const dataEvento = Extractors.extrairDataEvento(obs, linha["Data do Empenho"]);
     const nomeEvento = Extractors.extrairNomeEvento(obs, artista);

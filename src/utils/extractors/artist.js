@@ -1,19 +1,20 @@
 import { normalizarEspacos } from "../stringUtils";
+import { canonizarArtista } from "../artistUtils";
 
 export const extrairArtista = (obsOriginal) => {
-  if (!obsOriginal) return "NÃO IDENTIFICADO";
+  if (!obsOriginal) return "NÃƒO IDENTIFICADO";
 
   let obs = normalizarEspacos(obsOriginal.toUpperCase());
 
   const regexArtista =
-    /(?:(?:\d{1,2}\s+)?(?:A?PRE[A-ZÇÃ.]*|PRESENT[A-ZÇÃ.]*)(?:\s*ART[IÍ]STIC[A-Z.]*)?|ART[IÍ]STIC[A-Z.]*|SHOW|CONTRATA[ÇC][ÃA]O|CACH[EÊ])(?:.*?)\s+(?:DE|DA|DO|DAS|DOS)\s+(.+?)(?:,|\s+NO\s+|\s+NA\s+|\s+EM\s+|\s+PARA\s+|\s+DURANTE\s+|\s+NO\s+DIA|\s*EVENTO|\s*-\s*|$)/;
+    /(?:(?:\d{1,2}\s+)?(?:A?PRE[A-ZÃ‡Ãƒ.]*|PRESENT[A-ZÃ‡Ãƒ.]*)(?:\s*ART[IÃ]STIC[A-Z.]*)?|ART[IÃ]STIC[A-Z.]*|SHOW|CONTRATA[Ã‡C][ÃƒA]O|CACH[EÃŠ])(?:.*?)\s+(?:DE|DA|DO|DAS|DOS)\s+(.+?)(?:,|\s+NO\s+|\s+NA\s+|\s+EM\s+|\s+PARA\s+|\s+DURANTE\s+|\s+NO\s+DIA|\s*EVENTO|\s*-\s*|$)/;
 
   const match = obs.match(regexArtista);
-  let artistaRaw = "NÃO IDENTIFICADO";
+  let artistaRaw = "NÃƒO IDENTIFICADO";
 
   if (match?.[1]) {
     artistaRaw = match[1].replace(/\(.*?\)/g, "").trim();
-  } else if (/FESTIVAL|PERNAMBUCO MEU PA[IÍ]S|CARNAVAL|S[ÃA]O JO[ÃA]O|FESTA/i.test(obs)) {
+  } else if (/FESTIVAL|PERNAMBUCO MEU PA[IÃ]S|CARNAVAL|S[ÃƒA]O JO[ÃƒA]O|FESTA/i.test(obs)) {
     const regexFallback = /^(.+?)(?:,|\s+NO\s+|\s+NA\s+|\s+EM\s+)/;
     const fallbackMatch = obs.match(regexFallback);
     if (fallbackMatch?.[1]) {
@@ -23,26 +24,26 @@ export const extrairArtista = (obsOriginal) => {
 
   artistaRaw = artistaRaw
     .replace(
-      /^(?:UM|UMA|DOIS|DUAS|TR[EÊ]S|QUATRO)?\s*(?:\(\d{1,2}\))?\s*(?:APRESENTA[ÇC][OÕ]ES|APRESENTA[ÇC][ÃA]O|SHOWS?|ART[IÍ]STIC[A-Z.]*)*\s*(?:DE|DA|DO|DAS|DOS)?\s*/i,
+      /^(?:UM|UMA|DOIS|DUAS|TR[EÃŠ]S|QUATRO)?\s*(?:\(\d{1,2}\))?\s*(?:APRESENTA[Ã‡C][OÃ•]ES|APRESENTA[Ã‡C][ÃƒA]O|SHOWS?|ART[IÃ]STIC[A-Z.]*)*\s*(?:DE|DA|DO|DAS|DOS)?\s*/i,
       ""
     )
     .replace(/^\d{1,2}\s+/, "")
     .trim();
 
   const palavrasSujas = [
-    "APRESENTAÇÕES",
+    "APRESENTAÃ‡Ã•ES",
     "APRESENTACOES",
-    "APRESENTAÇÃO",
+    "APRESENTAÃ‡ÃƒO",
     "APRESENTACAO",
-    "PRESENTAÇÃO",
+    "PRESENTAÃ‡ÃƒO",
     "PRESENTACAO",
     "APRESEN",
     "PRESE",
-    "ARTÍSTICAS",
+    "ARTÃSTICAS",
     "ARTISTICAS",
-    "ARTÍSTICA",
+    "ARTÃSTICA",
     "ARTISTICA",
-    "CONTRATAÇÃO",
+    "CONTRATAÃ‡ÃƒO",
     "VALOR",
     "REFERENTE",
     "PROCESSO",
@@ -59,30 +60,8 @@ export const extrairArtista = (obsOriginal) => {
     .replace(/^(DE|DA|DO|DAS|DOS)\s+/, "")
     .replace(/^(?:O\s+|A\s+)?(?:CANTORA?|ARTISTA|BANDA)\s+/i, "")
     .replace(/\s*-\s*$/, "")
-    .replace(/\s*(?:FESTIVAL|PERNAMBUCO MEU PA[IÍ]S|EDI[ÇC][ÃA]O|POLO|NA CIDADE).*$/i, "")
+    .replace(/\s*(?:FESTIVAL|PERNAMBUCO MEU PA[IÃ]S|EDI[Ã‡C][ÃƒA]O|POLO|NA CIDADE).*$/i, "")
     .trim();
 
-  const mapaArtistas = {
-    ALYSSON: "ALYSSON CANTOR",
-    "BANDA D ROMANCE": "BANDA D' ROMANCE",
-    "BANDA D' ROMANCE": "BANDA D' ROMANCE",
-    "D' ROMANCE": "BANDA D' ROMANCE",
-    "D ROMANCE": "BANDA D' ROMANCE",
-    "BANDA KEBRANÇAS": "BANDA KEBRANÇA",
-    "BANDA KEBRANÇA": "BANDA KEBRANÇA",
-    "BANDA SWINGNOVO": "BANDA SWING NOVO",
-    "BANDA SWING NOVO": "BANDA SWING NOVO",
-    "SWING NOVO": "BANDA SWING NOVO",
-    "MARILIA MARQUES": "MARÍLIA MARQUES",
-    "MARÍLIA MARQUES": "MARÍLIA MARQUES",
-    "MATHEUS VINNI": "MATHEUS VINI",
-    "MATHEUS VINI": "MATHEUS VINI",
-    "ORQUESTRA DE FREVO MEXE COM TUDO -": "ORQUESTRA DE FREVO MEXE COM TUDO",
-    "ORQUESTRA DE FREVO MEXE COM TUDO": "ORQUESTRA DE FREVO MEXE COM TUDO",
-    "ORQ DE FREVO MEXE COM TUDO": "ORQUESTRA DE FREVO MEXE COM TUDO",
-    "BFULÔ DE MANDACARÚ": "FULÔ DE MANDACARÚ",
-    "BFULO DE MANDACARU": "FULÔ DE MANDACARÚ",
-  };
-
-  return mapaArtistas[artistaRaw] || artistaRaw;
+  return canonizarArtista(artistaRaw);
 };
