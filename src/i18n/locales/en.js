@@ -372,6 +372,95 @@
     loading: "Loading Official Dashboard...",
     mobileFilterButton: "Filter Results",
     backToSite: "Back to Site",
+    tour: {
+      dialogAriaLabel: "Guided dashboard tutorial",
+      close: "Close",
+      next: "Next",
+      progress: "Step {current} of {total}",
+      steps: {
+        mobile: {
+          filters: {
+            title: "Open the filters whenever you need to refine the view",
+            description:
+              "Tap here to open the dashboard filters. You can combine municipality, cycle, year, artist, creditor, and event date.",
+          },
+          summary: {
+            title: "This card summarizes the current view",
+            description:
+              "It contains the panel title, the last update date, and the main indicators. Whenever you filter something, this block updates with the new reading.",
+          },
+          ranking: {
+            title: "The territorial ranking is clickable",
+            description:
+              "The municipalities shown here work as shortcuts. Tap any item to filter the entire dashboard by that city.",
+          },
+          artists: {
+            title: "Top artists also filter the dashboard",
+            description:
+              "This ranking shows the artists with the most performances in the current view. Tapping a name instantly applies the artist filter.",
+          },
+          table: {
+            title: "The table gathers the detailed records",
+            description:
+              "Here you can inspect the full history for the current view. You can search, export, and browse the records without leaving the panel.",
+          },
+        },
+        default: {
+          filters: {
+            title: "The filters stay pinned at the top",
+            description:
+              "Use this bar to refine the dashboard by municipality, cycle, year, creditor, artist, and event date. It is the starting point of the navigation.",
+          },
+          viewMode: {
+            title: "You can switch the visualization mode",
+            description:
+              "Here you toggle between BI mode, which is more compact, and the default mode, which is more spacious. The data stays the same, only the reading layout changes.",
+          },
+          summary: {
+            title: "This block summarizes the current situation",
+            description:
+              "The header centralizes the main indicators, the last update date, and the active filters. It is the quickest way to read the dashboard as a whole.",
+          },
+          map: {
+            title: "Map and ranking strengthen the territorial reading",
+            description:
+              "This area helps you understand the distribution by municipality. Both the map and the ranking can be used as dashboard filters.",
+          },
+          table: {
+            title: "This is the detailed history",
+            description:
+              "The table shows the records for the current view with search, export, and internal scrolling. This is where you inspect the data more closely.",
+          },
+        },
+        bi: {
+          filters: {
+            title: "In BI mode, filters still lead the analysis",
+            description:
+              "Even in the compact layout, this bar controls the whole dashboard. This is where you combine cuts before reading the rest of the screen.",
+          },
+          kpis: {
+            title: "The KPIs show the main numbers",
+            description:
+              "This block quickly summarizes how many performances, artists, and municipalities are in the current view, plus the top destination.",
+          },
+          map: {
+            title: "The map anchors the territorial analysis",
+            description:
+              "The map helps you see where performances are concentrated across the state. Clicking a municipality also filters the BI view.",
+          },
+          table: {
+            title: "The table concentrates the operational detail",
+            description:
+              "Use this area to inspect filtered records, search for specific items, and export the current view more precisely.",
+          },
+          artists: {
+            title: "The artist ranking works as a shortcut",
+            description:
+              "Here you see who appears most often in the current selection. Clicking an artist applies the related filter and updates the entire BI.",
+          },
+        },
+      },
+    },
     topbar: {
       title: "Filter Data",
       fields: {

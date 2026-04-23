@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useState } from "react";
+import React, { Suspense, lazy, useEffect, useMemo, useState } from "react";
 import { useDashboardData } from "../hooks/useDashboardData";
 import {
   canonizarMunicipio,
@@ -19,15 +19,48 @@ import TopArtistasCard from "../components/charts/TopArtistasCard";
 import MobileDashboardFilterBar from "../components/layout/painel/MobileDashboardFilterBar";
 import DashboardLoadingScreen from "../components/layout/painel/DashboardLoadingScreen";
 import PainelPadraoLayout from "../components/layout/painel/PainelPadraoLayout";
+import DashboardTutorialOverlay from "../components/ui/DashboardTutorialOverlay";
 
 const IndicadoresKPI = lazy(() => import("../components/charts/IndicadoresKPI"));
 const TopMunicipiosChart = lazy(() => import("../components/charts/TopMunicipiosChart"));
 const DashboardChartCard = lazy(() => import("../components/layout/painel/DashboardChartCard"));
 const ModalExportarBIPDF = lazy(() => import("../components/ui/ModalExportarBIPDF"));
+const DASHBOARD_TUTORIAL_STORAGE_KEY = "empetur-dashboard-tour-v1";
+const DASHBOARD_TUTORIAL_FORCE_PARAM = "tour";
+const FALLBACK_TUTORIAL_TEXTS = {
+  dialogAriaLabel: "Dashboard tutorial",
+  close: "Fechar",
+  next: "Próximo",
+  progress: "Etapa {current} de {total}",
+  steps: {
+    mobile: {
+      filters: { title: "", description: "" },
+      summary: { title: "", description: "" },
+      ranking: { title: "", description: "" },
+      artists: { title: "", description: "" },
+      table: { title: "", description: "" },
+    },
+    default: {
+      filters: { title: "", description: "" },
+      viewMode: { title: "", description: "" },
+      summary: { title: "", description: "" },
+      map: { title: "", description: "" },
+      table: { title: "", description: "" },
+    },
+    bi: {
+      filters: { title: "", description: "" },
+      kpis: { title: "", description: "" },
+      map: { title: "", description: "" },
+      table: { title: "", description: "" },
+      artists: { title: "", description: "" },
+    },
+  },
+};
 
 export default function PainelCompleto({ csvUrls }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const dataUltimaAtualizacao = "06/04/2026";
   const { t } = useLanguage();
   const { isBIMode, isMobile } = useViewMode();
@@ -46,16 +79,35 @@ export default function PainelCompleto({ csvUrls }) {
 
   const limparFiltros = () => setFiltros(createDefaultFilters());
 
+  useEffect(() => {
+    if (loading || typeof window === "undefined") return undefined;
+
+    const searchParams = new URLSearchParams(window.location.search);
+    const shouldForceTutorial = searchParams.get(DASHBOARD_TUTORIAL_FORCE_PARAM) === "1";
+
+    let shouldSkipTutorial = false;
+    try {
+      shouldSkipTutorial =
+        window.localStorage.getItem(DASHBOARD_TUTORIAL_STORAGE_KEY) === "done";
+    } catch {
+      shouldSkipTutorial = false;
+    }
+
+    if (shouldSkipTutorial && !shouldForceTutorial) return undefined;
+
+    const timeoutId = window.setTimeout(() => {
+      setIsTutorialOpen(true);
+    }, 350);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [loading]);
+
   const normalizarMunicipioParaFiltro = (nome = "") => {
     if (!nome) return "";
     const canonico = canonizarMunicipio(nome);
     if (!canonico || canonico === "NÃO IDENTIFICADO") return "";
     return normalizarMunicipio(canonico);
   };
-
-  if (loading) {
-    return <DashboardLoadingScreen label={t.dashboard.loading} />;
-  }
 
   const toggleCycleFilter = (value) =>
     setFiltros((current) => ({
@@ -140,6 +192,114 @@ export default function PainelCompleto({ csvUrls }) {
     <div className="h-full min-h-[220px] rounded-xl border border-slate-200 bg-white/70" />
   );
 
+  const closeTutorial = () => {
+    if (typeof window !== "undefined") {
+      try {
+        window.localStorage.setItem(DASHBOARD_TUTORIAL_STORAGE_KEY, "done");
+      } catch {
+        // no-op
+      }
+    }
+
+    setIsTutorialOpen(false);
+  };
+
+  const tutorialTexts = t?.dashboard?.tour || FALLBACK_TUTORIAL_TEXTS;
+
+  const tutorialSteps = useMemo(() => {
+    if (isMobile) {
+      return [
+        {
+          target: '[data-tour="filters-mobile"]',
+          title: tutorialTexts.steps.mobile.filters.title,
+          description: tutorialTexts.steps.mobile.filters.description,
+        },
+        {
+          target: '[data-tour="hero-summary"]',
+          title: tutorialTexts.steps.mobile.summary.title,
+          description: tutorialTexts.steps.mobile.summary.description,
+        },
+        {
+          target: '[data-tour="ranking-card"]',
+          title: tutorialTexts.steps.mobile.ranking.title,
+          description: tutorialTexts.steps.mobile.ranking.description,
+        },
+        {
+          target: '[data-tour="artists-card"]',
+          title: tutorialTexts.steps.mobile.artists.title,
+          description: tutorialTexts.steps.mobile.artists.description,
+        },
+        {
+          target: '[data-tour="history-table"]',
+          title: tutorialTexts.steps.mobile.table.title,
+          description: tutorialTexts.steps.mobile.table.description,
+        },
+      ];
+    }
+
+    if (isBIMode) {
+      return [
+        {
+          target: '[data-tour="filters-desktop"]',
+          title: tutorialTexts.steps.bi.filters.title,
+          description: tutorialTexts.steps.bi.filters.description,
+        },
+        {
+          target: '[data-tour="bi-kpis"]',
+          title: tutorialTexts.steps.bi.kpis.title,
+          description: tutorialTexts.steps.bi.kpis.description,
+        },
+        {
+          target: '[data-tour="bi-map"]',
+          title: tutorialTexts.steps.bi.map.title,
+          description: tutorialTexts.steps.bi.map.description,
+        },
+        {
+          target: '[data-tour="bi-table"]',
+          title: tutorialTexts.steps.bi.table.title,
+          description: tutorialTexts.steps.bi.table.description,
+        },
+        {
+          target: '[data-tour="bi-artists"]',
+          title: tutorialTexts.steps.bi.artists.title,
+          description: tutorialTexts.steps.bi.artists.description,
+        },
+      ];
+    }
+
+    return [
+      {
+        target: '[data-tour="filters-desktop"]',
+        title: tutorialTexts.steps.default.filters.title,
+        description: tutorialTexts.steps.default.filters.description,
+      },
+      {
+        target: '[data-tour="view-mode-toggle"]',
+        title: tutorialTexts.steps.default.viewMode.title,
+        description: tutorialTexts.steps.default.viewMode.description,
+      },
+      {
+        target: '[data-tour="hero-summary"]',
+        title: tutorialTexts.steps.default.summary.title,
+        description: tutorialTexts.steps.default.summary.description,
+      },
+      {
+        target: '[data-tour="map-card"]',
+        title: tutorialTexts.steps.default.map.title,
+        description: tutorialTexts.steps.default.map.description,
+      },
+      {
+        target: '[data-tour="history-table"]',
+        title: tutorialTexts.steps.default.table.title,
+        description: tutorialTexts.steps.default.table.description,
+      },
+    ];
+  }, [isBIMode, isMobile, tutorialTexts]);
+
+  if (loading) {
+    return <DashboardLoadingScreen label={t.dashboard.loading} />;
+  }
+
   /* ─────────────────────────────────────────────────
      SHARED HEADER (topbar + BI header bar)
      Renderizado sempre, independente do modo
@@ -184,6 +344,12 @@ export default function PainelCompleto({ csvUrls }) {
           registrosPorMunicipio={registrosPorMunicipio}
           registrosPorAno={registrosPorAno}
           dataUltimaAtualizacao={dataUltimaAtualizacao}
+        />
+        <DashboardTutorialOverlay
+          isOpen={isTutorialOpen && tutorialSteps.length > 0}
+          steps={tutorialSteps}
+          texts={tutorialTexts}
+          onClose={closeTutorial}
         />
       </div>
     );
@@ -284,7 +450,7 @@ export default function PainelCompleto({ csvUrls }) {
       >
         {/* ── COLUNA ESQUERDA: KPIs + Top Municípios ── */}
         <div className="bi-col-left">
-          <div className="bi-kpis">
+          <div className="bi-kpis" data-tour="bi-kpis">
             <Suspense fallback={cardFallback}>
               <IndicadoresKPI
                 filtrados={filtrados}
@@ -293,7 +459,7 @@ export default function PainelCompleto({ csvUrls }) {
               />
             </Suspense>
           </div>
-          <div className="bi-municipios">
+          <div className="bi-municipios" data-tour="bi-municipios">
             <Suspense fallback={cardFallback}>
               <TopMunicipiosChart
                 data={registrosPorMunicipio}
@@ -312,7 +478,7 @@ export default function PainelCompleto({ csvUrls }) {
 
         {/* ── COLUNA CENTRAL: Mapa + Tabela ── */}
         <div className="bi-col-center">
-          <div className="bi-mapa">
+          <div className="bi-mapa" data-tour="bi-map">
             <Suspense fallback={cardFallback}>
               <MapaPernambuco
                 dados={filtrados}
@@ -326,7 +492,7 @@ export default function PainelCompleto({ csvUrls }) {
               />
             </Suspense>
           </div>
-          <div className="bi-tabela bi-scroll overflow-y-auto">
+          <div className="bi-tabela bi-scroll overflow-y-auto" data-tour="bi-table">
             <TabelaHistorico
               filtrados={filtrados}
               filtros={filtros}
@@ -374,7 +540,7 @@ export default function PainelCompleto({ csvUrls }) {
             </Suspense>
           </div>
 
-          <div className="bi-artistas">
+          <div className="bi-artistas" data-tour="bi-artists">
             <TopArtistasCard
               filtrados={filtrados}
               onFilter={toggleArtistFilter}
@@ -392,6 +558,13 @@ export default function PainelCompleto({ csvUrls }) {
           onConfirm={handleExportBI}
         />
       </Suspense>
+
+      <DashboardTutorialOverlay
+        isOpen={isTutorialOpen && tutorialSteps.length > 0}
+        steps={tutorialSteps}
+        texts={tutorialTexts}
+        onClose={closeTutorial}
+      />
 
     </div>
   );

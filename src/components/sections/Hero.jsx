@@ -1,10 +1,33 @@
-import React, { useEffect, useRef, useState } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import React, { useEffect, useState } from "react";
 import { useLanguage } from "../../contexts/LanguageContext";
 import Breadcrumb from "../layout/Breadcrumb";
 
-gsap.registerPlugin(ScrollTrigger);
+const HERO_SLIDES = [
+  {
+    src: "/images/hero-pernambuco-olinda.jpg",
+    alt: "Centro histórico de Olinda, em Pernambuco",
+    credit: "Olinda / Wikimedia Commons / Lyssuel Calvet / CC BY 2.0",
+    position: "center 58%",
+  },
+  {
+    src: "/images/hero-pernambuco-frevo.jpg",
+    alt: "Passistas de frevo em Olinda, Pernambuco",
+    credit: "Frevo em Olinda / Wikimedia Commons / rededoesporte / CC BY 3.0",
+    position: "center 34%",
+  },
+  {
+    src: "/images/hero-pernambuco-caruaru.jpg",
+    alt: "Trio de forró no São João de Caruaru, Pernambuco",
+    credit: "São João de Caruaru / Wikimedia Commons / Patrick-br / CC BY-SA 3.0",
+    position: "center center",
+  },
+  {
+    src: "/images/hero-pernambuco-serra-negra.jpg",
+    alt: "Paisagem de Serra Negra, em Bezerros, Pernambuco",
+    credit: "Serra Negra, Bezerros / Wikimedia Commons / Paulo Lins / CC BY-SA 2.0",
+    position: "center center",
+  },
+];
 
 const AnimatedCounter = ({ end, suffix = "", label, active }) => {
   const [count, setCount] = useState(0);
@@ -43,37 +66,14 @@ const AnimatedCounter = ({ end, suffix = "", label, active }) => {
 
 export default function Hero({ apresentacoes, municipios, artistas }) {
   const { t } = useLanguage();
-  const heroRef = useRef(null);
-  const videoRef = useRef(null);
-  const scrollTriggerRef = useRef(null);
-  const [isDesktopHero, setIsDesktopHero] = useState(
-    () => typeof window !== "undefined" && window.innerWidth >= 768
-  );
   const [isHighContrast, setIsHighContrast] = useState(
     () =>
       typeof document !== "undefined" &&
       document.body.classList.contains("contraste-negativo")
   );
-  const [videoReady, setVideoReady] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
   const [contentVisible, setContentVisible] = useState(false);
   const [countersActive, setCountersActive] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return undefined;
-
-    const mediaQuery = window.matchMedia("(min-width: 768px)");
-    const updateMode = (event) => setIsDesktopHero(event.matches);
-
-    setIsDesktopHero(mediaQuery.matches);
-
-    if (typeof mediaQuery.addEventListener === "function") {
-      mediaQuery.addEventListener("change", updateMode);
-      return () => mediaQuery.removeEventListener("change", updateMode);
-    }
-
-    mediaQuery.addListener(updateMode);
-    return () => mediaQuery.removeListener(updateMode);
-  }, []);
 
   useEffect(() => {
     if (typeof document === "undefined") return undefined;
@@ -92,34 +92,6 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
   }, []);
 
   useEffect(() => {
-    if (!isDesktopHero) {
-      setVideoReady(true);
-      return undefined;
-    }
-
-    setVideoReady(false);
-
-    const video = videoRef.current;
-    if (!video) return;
-
-    const handleLoadedMetadata = () => {
-      video.pause();
-      video.currentTime = 0;
-      setVideoReady(true);
-    };
-
-    video.addEventListener("loadedmetadata", handleLoadedMetadata);
-
-    if (video.readyState >= 1) {
-      handleLoadedMetadata();
-    }
-
-    return () => video.removeEventListener("loadedmetadata", handleLoadedMetadata);
-  }, [isDesktopHero]);
-
-  useEffect(() => {
-    if (!videoReady) return;
-
     const showTimer = setTimeout(() => setContentVisible(true), 220);
     const countersTimer = setTimeout(() => setCountersActive(true), 700);
 
@@ -127,74 +99,17 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
       clearTimeout(showTimer);
       clearTimeout(countersTimer);
     };
-  }, [videoReady]);
+  }, []);
 
   useEffect(() => {
-    const hero = heroRef.current;
-    const video = videoRef.current;
-    if (!isDesktopHero) return;
-    if (!hero || !video || !videoReady) return;
+    if (isHighContrast) return undefined;
 
-    if (!isDesktopHero || isHighContrast) {
-      scrollTriggerRef.current = null;
-      video.currentTime = 0;
+    const intervalId = window.setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+    }, 4200);
 
-      if (!isHighContrast) {
-        const playPromise = video.play();
-        if (playPromise && typeof playPromise.catch === "function") {
-          playPromise.catch(() => {});
-        }
-      } else {
-        video.pause();
-      }
-
-      return () => {
-        video.pause();
-      };
-    }
-
-    const scrubState = { time: 0 };
-    const duration = Math.max(0.01, video.duration || 0);
-    const endDistance = Math.max(
-      Math.round(window.innerHeight * 1.05),
-      Math.round(duration * 620)
-    );
-
-    const context = gsap.context(() => {
-      const timeline = gsap.timeline({
-        defaults: { ease: "none" },
-        scrollTrigger: {
-          trigger: hero,
-          start: "top top",
-          end: `+=${endDistance}`,
-          scrub: 0.35,
-          pin: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-        },
-      });
-
-      scrollTriggerRef.current = timeline.scrollTrigger ?? null;
-
-      timeline.to(scrubState, {
-        time: duration,
-        onUpdate: () => {
-          const nextTime = Math.min(scrubState.time, Math.max(duration - 1 / 60, 0));
-
-          if (Math.abs(video.currentTime - nextTime) > 1 / 120) {
-            video.currentTime = nextTime;
-          }
-        },
-      });
-    }, hero);
-
-    ScrollTrigger.refresh();
-
-    return () => {
-      scrollTriggerRef.current = null;
-      context.revert();
-    };
-  }, [videoReady, isDesktopHero, isHighContrast]);
+    return () => window.clearInterval(intervalId);
+  }, [isHighContrast]);
 
   const handleScrollToPanel = (event) => {
     event.preventDefault();
@@ -211,9 +126,6 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
       <style>{`
         body.contraste-negativo #inicio {
           background: #000 !important;
-        }
-        body.contraste-negativo .hero-video {
-          display: none !important;
         }
         body.contraste-negativo .hero-overlay,
         body.contraste-negativo #inicio > .absolute.inset-0.z-\\[1\\] {
@@ -241,41 +153,34 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
           background: #ffea00 !important;
           color: #000 !important;
         }
-        .hero-video::-webkit-media-controls {
-          display: none !important;
-        }
-        .hero-video::-webkit-media-controls-enclosure {
-          display: none !important;
+        .hero-slide {
+          transition: opacity 1.1s ease, transform 6s ease;
         }
       `}</style>
 
       <section
-        ref={heroRef}
         id="inicio"
         className="relative h-screen overflow-hidden bg-[#0B2341]"
       >
         <Breadcrumb />
 
-        {isDesktopHero && (
-          <video
-            ref={videoRef}
-            className="hero-video absolute inset-0 h-full w-full object-cover"
-            src="/hero-video.mp4"
-            muted
-            playsInline
-            preload="auto"
-            loop={false}
-            controls={false}
-            disablePictureInPicture
-            controlsList="nodownload nofullscreen noremoteplayback"
-            style={{
-              pointerEvents: "none",
-              objectPosition: "46% 52%",
-              transform: "scale(1.08)",
-              transformOrigin: "center center",
-            }}
-          />
-        )}
+        {!isHighContrast && HERO_SLIDES.map((slide, index) => {
+          const active = index === currentSlide;
+
+          return (
+            <img
+              key={slide.src}
+              src={slide.src}
+              alt={slide.alt}
+              className="hero-slide absolute inset-0 h-full w-full object-cover"
+              style={{
+                opacity: active ? 1 : 0,
+                objectPosition: slide.position,
+                transform: active ? "scale(1.06)" : "scale(1.015)",
+              }}
+            />
+          );
+        })}
 
         <div className="hero-overlay absolute inset-0 z-[1] bg-[radial-gradient(circle_at_top,#123f72_0%,#0B2341_42%,#06182e_100%)] md:bg-[linear-gradient(to_bottom,rgba(7,24,47,0.42)_0%,rgba(7,24,47,0.12)_52%,rgba(7,24,47,0.65)_100%)]" />
         <div className="absolute inset-0 z-[1] hidden bg-[linear-gradient(to_right,#0B2341_0%,#0B2341_16%,rgba(11,35,65,0.86)_34%,rgba(11,35,65,0.46)_54%,transparent_100%)] md:block" />
@@ -289,7 +194,7 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
           }}
         >
           <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
-            <div className="mx-auto flex w-full max-w-full flex-col items-center text-center md:mx-0 md:block md:text-left" style={{ maxWidth: isDesktopHero ? "clamp(280px, 39%, 520px)" : "100%" }}>
+            <div className="mx-auto flex w-full max-w-full flex-col items-center text-center md:mx-0 md:block md:text-left" style={{ maxWidth: "clamp(280px, 39%, 520px)" }}>
               <div className="hero-badge mb-4 inline-flex max-w-full items-center rounded-full border border-white/20 bg-white/10 px-2.5 py-1.5 text-[8px] font-bold uppercase tracking-[0.08em] text-white backdrop-blur-md shadow-sm sm:mb-5 sm:px-4 sm:py-2 sm:text-[10px] sm:tracking-[0.12em]">
                 {t.hero.badge}
               </div>
@@ -342,6 +247,16 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
               </a>
             </div>
           </div>
+
+          {!isHighContrast && (
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[3]">
+              <div className="mx-auto flex max-w-7xl justify-end px-4 pb-4 sm:px-6">
+                <span className="rounded-full border border-white/15 bg-[#071B34]/55 px-3 py-1 text-[9px] font-medium text-white/75 backdrop-blur-md">
+                  {HERO_SLIDES[currentSlide]?.credit}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </section>
     </>

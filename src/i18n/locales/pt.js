@@ -373,6 +373,95 @@
     loading: "Carregando Dashboard Oficial...",
     mobileFilterButton: "Filtrar Resultados",
     backToSite: "Voltar ao Site",
+    tour: {
+      dialogAriaLabel: "Tutorial guiado do painel",
+      close: "Fechar",
+      next: "Próximo",
+      progress: "Etapa {current} de {total}",
+      steps: {
+        mobile: {
+          filters: {
+            title: "Abra os filtros quando quiser refinar",
+            description:
+              "Toque aqui para abrir os filtros do painel. Você pode combinar município, ciclo, ano, artista, credor e data do evento.",
+          },
+          summary: {
+            title: "Este card resume a visão atual",
+            description:
+              "Aqui ficam o título do painel, a última atualização e os indicadores principais. Sempre que você filtrar algo, este bloco reflete a nova leitura.",
+          },
+          ranking: {
+            title: "O ranking territorial é clicável",
+            description:
+              "Os municípios mostrados aqui funcionam como atalho. Basta tocar em um item para filtrar o painel inteiro por aquela cidade.",
+          },
+          artists: {
+            title: "Top artistas também filtra o painel",
+            description:
+              "Este ranking mostra os artistas com mais apresentações na visão atual. Ao tocar em um nome, o filtro de artista é aplicado imediatamente.",
+          },
+          table: {
+            title: "A tabela reúne os registros detalhados",
+            description:
+              "Aqui você consulta o histórico completo da visão atual. Dá para pesquisar, exportar e navegar pelos registros sem sair do painel.",
+          },
+        },
+        default: {
+          filters: {
+            title: "Os filtros ficam sempre no topo",
+            description:
+              "Use esta barra para refinar o painel por município, ciclo, ano, credor, artista e data do evento. É o ponto de partida da navegação.",
+          },
+          viewMode: {
+            title: "Você pode trocar o modo de visualização",
+            description:
+              "Aqui você alterna entre o modo BI, mais compacto, e o modo padrão, mais espaçado. Os dados continuam os mesmos, muda só a forma de leitura.",
+          },
+          summary: {
+            title: "Este bloco resume a situação atual",
+            description:
+              "O cabeçalho centraliza os indicadores principais, a última atualização e os filtros ativos. É a melhor leitura rápida do painel inteiro.",
+          },
+          map: {
+            title: "Mapa e ranking ajudam na leitura territorial",
+            description:
+              "Nesta área você entende a distribuição por município. Tanto o mapa quanto o ranking podem ser usados como filtros do painel.",
+          },
+          table: {
+            title: "Aqui está o histórico detalhado",
+            description:
+              "A tabela mostra os registros da visão atual com pesquisa, exportação e scroll interno. É onde você confere o dado mais de perto.",
+          },
+        },
+        bi: {
+          filters: {
+            title: "No BI, os filtros seguem no topo",
+            description:
+              "Mesmo no modo compacto, esta barra controla todo o painel. É por aqui que você cruza os recortes antes de analisar o restante da tela.",
+          },
+          kpis: {
+            title: "Os KPIs mostram os números principais",
+            description:
+              "Este bloco resume rapidamente quantas apresentações, artistas e municípios aparecem na visão atual, além do principal destino.",
+          },
+          map: {
+            title: "Mapa e distribuição territorial ficam no centro da análise",
+            description:
+              "O mapa ajuda a enxergar a concentração das apresentações no estado. Clicar em um município também filtra o BI.",
+          },
+          table: {
+            title: "A tabela concentra o detalhamento operacional",
+            description:
+              "Use esta área para consultar os registros filtrados, pesquisar itens específicos e exportar a visão atual com mais precisão.",
+          },
+          artists: {
+            title: "O ranking de artistas funciona como atalho",
+            description:
+              "Aqui você vê quem mais aparece na seleção atual. Um clique no artista aplica o filtro correspondente e atualiza todo o BI.",
+          },
+        },
+      },
+    },
     topbar: {
       title: "Filtrar Dados",
       fields: {

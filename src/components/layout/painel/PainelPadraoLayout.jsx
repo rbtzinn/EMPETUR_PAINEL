@@ -222,6 +222,7 @@ export default function PainelPadraoLayout({
 
       <div className="hc-padrao-page mx-auto max-w-[1440px] space-y-4 px-4 pb-10 pt-4 sm:px-5 sm:pt-6 lg:pt-4">
         <div
+          data-tour="hero-summary"
           className="hc-padrao-hero relative overflow-hidden rounded-[1.75rem] px-5 py-6 sm:px-7 sm:py-7"
           style={{
             background: "linear-gradient(135deg, #0B2341 0%, #0d2d52 60%, #093070 100%)",
@@ -328,7 +329,10 @@ export default function PainelPadraoLayout({
         </div>
 
         <div className={`grid grid-cols-1 gap-4 ${isMobile ? "" : "lg:grid-cols-[1fr_320px]"}`}>
-          <Card className={`overflow-hidden p-0 ${isMobile ? "hidden" : ""}`}>
+          <Card
+            data-tour="map-card"
+            className={`overflow-hidden p-0 ${isMobile ? "hidden" : ""}`}
+          >
             <div className="flex items-center justify-between border-b border-slate-100 px-5 py-3">
               <div>
                 <p className="hc-padrao-card-kicker text-[10px] font-black uppercase tracking-widest text-slate-400">
@@ -367,7 +371,7 @@ export default function PainelPadraoLayout({
             </div>
           </Card>
 
-          <Card className="flex flex-col overflow-hidden p-0">
+          <Card data-tour="ranking-card" className="flex flex-col overflow-hidden p-0">
             <div className="border-b border-slate-100 px-4 py-3">
               <p className="hc-padrao-card-kicker text-[10px] font-black uppercase tracking-widest text-slate-400">
                 {t.dashboard.standardLayout.rankingKicker}
@@ -397,7 +401,7 @@ export default function PainelPadraoLayout({
         </div>
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-          <Card className="flex h-72 flex-col overflow-hidden p-0">
+          <Card data-tour="cycle-card" className="flex h-72 flex-col overflow-hidden p-0">
             <div className="border-b border-slate-100 px-5 py-3">
               <p className="hc-padrao-card-kicker text-[10px] font-black uppercase tracking-widest text-slate-400">
                 {t.dashboard.standardLayout.cycleKicker}
@@ -421,7 +425,7 @@ export default function PainelPadraoLayout({
             </div>
           </Card>
 
-          <Card className="flex h-72 flex-col overflow-hidden p-0">
+          <Card data-tour="artists-card" className="flex h-72 flex-col overflow-hidden p-0">
             <div className="border-b border-slate-100 px-5 py-3">
               <p className="hc-padrao-card-kicker text-[10px] font-black uppercase tracking-widest text-slate-400">
                 {t.dashboard.standardLayout.historyKicker}
@@ -456,6 +460,7 @@ export default function PainelPadraoLayout({
         </div>
 
         <Card
+          data-tour="history-table"
           className="overflow-hidden p-0"
           style={{
             maxHeight: isMobile ? "920px" : "500px",

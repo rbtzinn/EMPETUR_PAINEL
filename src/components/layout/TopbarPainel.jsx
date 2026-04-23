@@ -105,6 +105,7 @@ export default function TopbarPainel({
       <div className="hidden lg:block">
         <div
           ref={desktopTopbarRef}
+          data-tour="filters-desktop"
           className="hc-topbar-painel fixed inset-x-0 top-0 z-50 w-full border-b border-slate-200 bg-white/98 backdrop-blur-xl"
         >
           {/* Faixa de cor PE no topo */}
@@ -138,7 +139,7 @@ export default function TopbarPainel({
             <div className="hc-topbar-separator mx-3 h-6 w-px shrink-0 bg-slate-200" />
 
             {/* Toggle de modo */}
-            <div className="shrink-0">
+            <div className="shrink-0" data-tour="view-mode-toggle">
               <ViewModeToggle />
             </div>
 
