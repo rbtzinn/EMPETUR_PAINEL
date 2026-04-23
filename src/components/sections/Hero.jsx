@@ -1,7 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useLanguage } from "../../contexts/LanguageContext";
 import Breadcrumb from "../layout/Breadcrumb";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+gsap.registerPlugin(ScrollTrigger);
+
+/*
 const HERO_SLIDES = [
   {
     src: "/images/hero-pernambuco-olinda.jpg",
@@ -28,6 +33,7 @@ const HERO_SLIDES = [
     position: "center center",
   },
 ];
+*/
 
 const AnimatedCounter = ({ end, suffix = "", label, active }) => {
   const [count, setCount] = useState(0);
@@ -71,9 +77,12 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
       typeof document !== "undefined" &&
       document.body.classList.contains("contraste-negativo")
   );
-  const [currentSlide, setCurrentSlide] = useState(0);
+  // const [currentSlide, setCurrentSlide] = useState(0);
   const [contentVisible, setContentVisible] = useState(false);
   const [countersActive, setCountersActive] = useState(false);
+
+  const heroRef = useRef(null);
+  const videoRef = useRef(null);
 
   useEffect(() => {
     if (typeof document === "undefined") return undefined;
@@ -101,6 +110,7 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
     };
   }, []);
 
+  /*
   useEffect(() => {
     if (isHighContrast) return undefined;
 
@@ -110,13 +120,49 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
 
     return () => window.clearInterval(intervalId);
   }, [isHighContrast]);
+  */
+
+  useEffect(() => {
+    // Only apply scroll video effect on desktop (md and up)
+    const isDesktop = window.matchMedia("(min-width: 768px)").matches;
+    
+    if (isDesktop && videoRef.current && heroRef.current) {
+      const video = videoRef.current;
+      
+      const setupScroll = () => {
+        ScrollTrigger.create({
+          trigger: heroRef.current,
+          start: "top top",
+          end: "+=2500", // The scroll duration that holds the hero
+          pin: true,
+          scrub: true,
+          onUpdate: (self) => {
+            if (video.duration) {
+              video.currentTime = video.duration * self.progress;
+            }
+          }
+        });
+      };
+
+      if (video.readyState >= 1) {
+        setupScroll();
+      } else {
+        video.addEventListener("loadedmetadata", setupScroll);
+      }
+
+      return () => {
+        ScrollTrigger.getAll().forEach(t => t.kill());
+        video.removeEventListener("loadedmetadata", setupScroll);
+      };
+    }
+  }, []);
 
   const handleScrollToPanel = (event) => {
     event.preventDefault();
 
     const target = document.getElementById("painel");
     if (target) {
-      const offset = target.getBoundingClientRect().top + window.pageYOffset - 80;
+      const offset = target.getBoundingClientRect().top + window.scrollY - 80;
       window.scrollTo({ top: offset, behavior: "smooth" });
     }
   };
@@ -160,30 +206,57 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
 
       <section
         id="inicio"
+        ref={heroRef}
         className="relative h-screen overflow-hidden bg-[#0B2341]"
       >
         <Breadcrumb />
 
-        {!isHighContrast && HERO_SLIDES.map((slide, index) => {
-          const active = index === currentSlide;
+        {!isHighContrast && (
+          <>
+            {/* Mobile slides */}
+            {/* 
+            <div className="md:hidden">
+              {HERO_SLIDES.map((slide, index) => {
+                const active = index === currentSlide;
 
-          return (
-            <img
-              key={slide.src}
-              src={slide.src}
-              alt={slide.alt}
-              className="hero-slide absolute inset-0 h-full w-full object-cover"
-              style={{
-                opacity: active ? 1 : 0,
-                objectPosition: slide.position,
-                transform: active ? "scale(1.06)" : "scale(1.015)",
-              }}
-            />
-          );
-        })}
+                return (
+                  <img
+                    key={slide.src}
+                    src={slide.src}
+                    alt={slide.alt}
+                    className="hero-slide absolute inset-0 h-full w-full object-cover"
+                    style={{
+                      opacity: active ? 1 : 0,
+                      objectPosition: slide.position,
+                      transform: active ? "scale(1.06)" : "scale(1.015)",
+                    }}
+                  />
+                );
+              })}
+            </div>
+            */}
 
-        <div className="hero-overlay absolute inset-0 z-[1] bg-[radial-gradient(circle_at_top,#123f72_0%,#0B2341_42%,#06182e_100%)] md:bg-[linear-gradient(to_bottom,rgba(7,24,47,0.42)_0%,rgba(7,24,47,0.12)_52%,rgba(7,24,47,0.65)_100%)]" />
-        <div className="absolute inset-0 z-[1] hidden bg-[linear-gradient(to_right,#0B2341_0%,#0B2341_16%,rgba(11,35,65,0.86)_34%,rgba(11,35,65,0.46)_54%,transparent_100%)] md:block" />
+            {/* Desktop Video Background */}
+            <div className="absolute inset-0 hidden h-full w-full md:block">
+              <video
+                ref={videoRef}
+                src="/VideoHERO_scroll.mp4"
+                className="absolute inset-y-0 right-0 h-full w-[65%] lg:w-[70%] object-cover object-center"
+                style={{
+                  maskImage: 'linear-gradient(to right, transparent 0%, black 15%)',
+                  WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 15%)'
+                }}
+                muted
+                playsInline
+                preload="auto"
+              />
+            </div>
+          </>
+        )}
+
+        <div className="hero-overlay absolute inset-0 z-[1] bg-[radial-gradient(circle_at_top,#123f72_0%,#0B2341_42%,#06182e_100%)] md:bg-[linear-gradient(to_bottom,rgba(7,24,47,0.42)_0%,rgba(7,24,47,0.12)_52%,rgba(7,24,47,0.65)_100%)] md:hidden" />
+        <div className="absolute inset-0 z-[1] hidden bg-[linear-gradient(to_right,#0B2341_0%,#0B2341_16%,rgba(11,35,65,0.86)_34%,rgba(11,35,65,0.46)_54%,transparent_100%)] md:block pointer-events-none" />
+        
         <div
           className="absolute inset-0 z-[2] flex flex-col items-center justify-start md:items-start"
           style={{
@@ -248,8 +321,9 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
             </div>
           </div>
 
+          {/*
           {!isHighContrast && (
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[3]">
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] md:hidden">
               <div className="mx-auto flex max-w-7xl justify-end px-4 pb-4 sm:px-6">
                 <span className="rounded-full border border-white/15 bg-[#071B34]/55 px-3 py-1 text-[9px] font-medium text-white/75 backdrop-blur-md">
                   {HERO_SLIDES[currentSlide]?.credit}
@@ -257,6 +331,7 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
               </div>
             </div>
           )}
+          */}
         </div>
       </section>
     </>
