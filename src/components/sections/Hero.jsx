@@ -6,34 +6,32 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-/*
 const HERO_SLIDES = [
   {
-    src: "/images/hero-pernambuco-olinda.jpg",
-    alt: "Centro histórico de Olinda, em Pernambuco",
-    credit: "Olinda / Wikimedia Commons / Lyssuel Calvet / CC BY 2.0",
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Convento_de_S%C3%A3o_Francisco_-_Olinda_-_Pernambuco_-_Brasil.jpg/1280px-Convento_de_S%C3%A3o_Francisco_-_Olinda_-_Pernambuco_-_Brasil.jpg",
+    alt: "Centro Histórico de Olinda, em Pernambuco",
+    credit: "Olinda / Wikimedia Commons / CC BY-SA 4.0",
     position: "center 58%",
   },
   {
-    src: "/images/hero-pernambuco-frevo.jpg",
-    alt: "Passistas de frevo em Olinda, Pernambuco",
-    credit: "Frevo em Olinda / Wikimedia Commons / rededoesporte / CC BY 3.0",
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Passistas_de_Frevo.jpg/1280px-Passistas_de_Frevo.jpg",
+    alt: "Passistas de frevo no Carnaval",
+    credit: "Frevo / Wikimedia Commons / CC BY-SA 4.0",
     position: "center 34%",
   },
   {
-    src: "/images/hero-pernambuco-caruaru.jpg",
-    alt: "Trio de forró no São João de Caruaru, Pernambuco",
-    credit: "São João de Caruaru / Wikimedia Commons / Patrick-br / CC BY-SA 3.0",
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Um_mundo_chamado_Sert%C3%A3o.jpg/1280px-Um_mundo_chamado_Sert%C3%A3o.jpg",
+    alt: "Paisagem típica do Sertão de Pernambuco",
+    credit: "Sertão (Caatinga) / Wikimedia Commons / CC BY-SA 4.0",
     position: "center center",
   },
   {
-    src: "/images/hero-pernambuco-serra-negra.jpg",
-    alt: "Paisagem de Serra Negra, em Bezerros, Pernambuco",
-    credit: "Serra Negra, Bezerros / Wikimedia Commons / Paulo Lins / CC BY-SA 2.0",
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Antonio_Vaz_island_-_Recife%2C_Pernambuco%2C_Brazil_%28cropped%29.jpg/1280px-Antonio_Vaz_island_-_Recife%2C_Pernambuco%2C_Brazil_%28cropped%29.jpg",
+    alt: "Vista de Recife, Pernambuco",
+    credit: "Recife / Wikimedia Commons / CC BY-SA 4.0",
     position: "center center",
   },
 ];
-*/
 
 const AnimatedCounter = ({ end, suffix = "", label, active }) => {
   const [count, setCount] = useState(0);
@@ -77,7 +75,7 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
       typeof document !== "undefined" &&
       document.body.classList.contains("contraste-negativo")
   );
-  // const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
   const [contentVisible, setContentVisible] = useState(false);
   const [countersActive, setCountersActive] = useState(false);
 
@@ -110,7 +108,6 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
     };
   }, []);
 
-  /*
   useEffect(() => {
     if (isHighContrast) return undefined;
 
@@ -120,7 +117,6 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
 
     return () => window.clearInterval(intervalId);
   }, [isHighContrast]);
-  */
 
   useEffect(() => {
     // Only apply scroll video effect on desktop (md and up)
@@ -214,7 +210,6 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
         {!isHighContrast && (
           <>
             {/* Mobile slides */}
-            {/* 
             <div className="md:hidden">
               {HERO_SLIDES.map((slide, index) => {
                 const active = index === currentSlide;
@@ -234,7 +229,6 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
                 );
               })}
             </div>
-            */}
 
             {/* Desktop Video Background */}
             <div className="absolute inset-0 hidden h-full w-full md:block">
@@ -321,7 +315,6 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
             </div>
           </div>
 
-          {/*
           {!isHighContrast && (
             <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] md:hidden">
               <div className="mx-auto flex max-w-7xl justify-end px-4 pb-4 sm:px-6">
@@ -331,7 +324,6 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
               </div>
             </div>
           )}
-          */}
         </div>
       </section>
     </>
