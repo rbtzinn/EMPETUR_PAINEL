@@ -52,12 +52,12 @@ const AnimatedCounter = ({ end, suffix = "", label, active }) => {
   }, [end, active]);
 
   return (
-    <div className="flex flex-col items-center justify-center px-3 py-4 sm:p-4">
-      <div className="hero-counter-value mb-1 font-mono text-2xl font-black text-[#0B2341] sm:text-4xl md:text-5xl">
+    <div className="flex min-w-0 flex-col items-center justify-center px-1.5 py-2 sm:px-3 sm:py-3 md:p-4">
+      <div className="hero-counter-value mb-0.5 font-mono text-[clamp(1rem,5vw,1.45rem)] font-black leading-none text-[#0B2341] sm:text-3xl md:mb-1 md:text-5xl">
         {count}
         {suffix}
       </div>
-      <div className="hero-counter-label text-center text-[9px] font-bold uppercase tracking-[0.16em] text-[#00AEEF] sm:text-xs">
+      <div className="hero-counter-label max-w-full text-center text-[7px] font-bold uppercase leading-tight tracking-[0.06em] text-[#00AEEF] sm:text-[10px] sm:tracking-[0.12em] md:text-xs md:tracking-[0.16em]">
         {label}
       </div>
     </div>
@@ -71,7 +71,6 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
       typeof document !== "undefined" &&
       document.body.classList.contains("contraste-negativo")
   );
-  const [currentSlide, setCurrentSlide] = useState(0);
   const [contentVisible, setContentVisible] = useState(false);
   const [countersActive, setCountersActive] = useState(false);
 
@@ -100,16 +99,6 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
       clearTimeout(countersTimer);
     };
   }, []);
-
-  useEffect(() => {
-    if (isHighContrast) return undefined;
-
-    const intervalId = window.setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
-    }, 4200);
-
-    return () => window.clearInterval(intervalId);
-  }, [isHighContrast]);
 
   const handleScrollToPanel = (event) => {
     event.preventDefault();
@@ -153,57 +142,30 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
           background: #ffea00 !important;
           color: #000 !important;
         }
-        .hero-slide {
-          transition: opacity 1.1s ease, transform 6s ease;
-        }
       `}</style>
 
       <section
         id="inicio"
-        className="relative h-screen overflow-hidden bg-[#0B2341]"
+        className="relative min-h-[780px] overflow-hidden bg-[#0B2341] sm:min-h-[760px] md:min-h-[780px] lg:min-h-[820px] xl:min-h-[840px] 2xl:min-h-[860px]"
       >
         <Breadcrumb />
 
         {!isHighContrast && (
-          <>
-            {/* Mobile slides */}
-            <div className="md:hidden">
-              {HERO_SLIDES.map((slide, index) => {
-                const active = index === currentSlide;
-
-                return (
-                  <img
-                    key={slide.src}
-                    src={slide.src}
-                    alt={slide.alt}
-                    className="hero-slide absolute inset-0 h-full w-full object-cover"
-                    style={{
-                      opacity: active ? 1 : 0,
-                      objectPosition: slide.position,
-                      transform: active ? "scale(1.06)" : "scale(1.015)",
-                    }}
-                  />
-                );
-              })}
-            </div>
-
-            <div className="absolute inset-0 hidden md:block">
-              <img
-                src="/images/heroImage.png"
-                alt="Imagem principal do painel de dados culturais de Pernambuco"
-                className="absolute inset-0 h-full w-full object-cover object-center"
-              />
-            </div>
-          </>
+          <div className="absolute inset-0">
+            <img
+              src="/images/heroImage.png"
+              alt="Imagem principal do painel de dados culturais de Pernambuco"
+              className="absolute inset-0 h-full w-full object-cover object-center"
+            />
+          </div>
         )}
 
         <div className="hero-overlay absolute inset-0 z-[1] bg-[radial-gradient(circle_at_top,#123f72_0%,#0B2341_42%,#06182e_100%)] md:bg-[linear-gradient(to_bottom,rgba(7,24,47,0.42)_0%,rgba(7,24,47,0.12)_52%,rgba(7,24,47,0.65)_100%)] md:hidden" />
         <div className="absolute inset-0 z-[1] hidden bg-[linear-gradient(to_bottom,rgba(7,24,47,0.55)_0%,rgba(7,24,47,0.22)_48%,rgba(7,24,47,0.68)_100%)] md:block pointer-events-none" />
         
         <div
-          className="absolute inset-0 z-[2] flex flex-col items-center justify-start"
+          className="absolute inset-0 z-[2] flex flex-col items-center justify-start pb-8 pt-[148px] sm:pt-[156px] md:pt-[176px] lg:pt-[196px] xl:pt-[208px]"
           style={{
-            padding: "176px 0 2rem",
             opacity: contentVisible ? 1 : 0,
             transform: contentVisible ? "translateY(0)" : "translateY(20px)",
             transition: "opacity 0.8s ease, transform 0.8s ease",
@@ -235,7 +197,7 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
                 {t.hero.description}
               </p>
 
-              <div className="hero-stats mt-5 grid w-full max-w-full grid-cols-1 divide-y-2 divide-slate-100 rounded-2xl border border-white/70 bg-white/95 p-3 shadow-2xl shadow-blue-950/20 backdrop-blur-lg sm:mt-5 sm:p-4 md:max-w-[38rem] md:grid-cols-3 md:divide-x-2 md:divide-y-0 md:p-5">
+              <div className="hero-stats mt-4 grid w-full max-w-full grid-cols-3 divide-x-2 divide-slate-100 rounded-2xl border border-white/70 bg-white/95 p-2 shadow-2xl shadow-blue-950/20 backdrop-blur-lg sm:mt-5 sm:p-3 md:max-w-[38rem] md:p-5">
                 <AnimatedCounter
                   end={apresentacoes}
                   label={t.hero.stats.presentations}
@@ -263,16 +225,6 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
               </a>
             </div>
           </div>
-
-          {!isHighContrast && (
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] md:hidden">
-              <div className="mx-auto flex max-w-7xl justify-end px-4 pb-4 sm:px-6">
-                <span className="rounded-full border border-white/15 bg-[#071B34]/55 px-3 py-1 text-[9px] font-medium text-white/75 backdrop-blur-md">
-                  {HERO_SLIDES[currentSlide]?.credit}
-                </span>
-              </div>
-            </div>
-          )}
         </div>
       </section>
     </>

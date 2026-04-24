@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDraggableButton } from "./hooks/useDraggableButton";
 import { useAccessibilityConfig } from "./hooks/useAccessibilityConfig";
 import AccessibilityButton from "./AccessibilityButton";
@@ -22,6 +22,21 @@ export default function Acessibilidade() {
     ajustarNumero,
     redefinirTudo,
   } = useAccessibilityConfig();
+
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      "--access-toolbar-y",
+      `${botaoPos.y}px`
+    );
+  }, [botaoPos.y]);
+
+  useEffect(() => {
+    document.body.classList.toggle("accessibility-menu-open", menuAberto);
+
+    return () => {
+      document.body.classList.remove("accessibility-menu-open");
+    };
+  }, [menuAberto]);
 
   return (
     <>

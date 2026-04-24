@@ -45,11 +45,11 @@ export default function AccessibilityPanel({
 
           {/* Painel Lateral Sliding */}
           <motion.div
-            initial={{ x: "-100%" }}
+            initial={{ x: "100%" }}
             animate={{ x: 0 }}
-            exit={{ x: "-100%" }}
+            exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed left-0 top-0 z-[202] flex h-full w-[90%] max-w-sm flex-col bg-slate-50 shadow-2xl overflow-hidden rounded-r-[2rem]"
+            className="fixed right-0 top-0 z-[202] flex h-full w-[90%] max-w-sm flex-col overflow-hidden rounded-l-[2rem] bg-slate-50 shadow-2xl"
           >
             {/* Header do Painel */}
             <div className="flex items-center justify-between bg-[#0B2341] p-6 text-white shrink-0 relative overflow-hidden">

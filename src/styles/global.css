@@ -256,3 +256,29 @@ body.ocultar-imagens #conteudo-site :is(img, svg, canvas) {
 :is([vw], [vw-access-button], [vw-plugin-wrapper]) {
   filter: none !important;
 }
+
+[vw].enabled {
+  display: block !important;
+  position: fixed !important;
+  left: auto !important;
+  top: calc(var(--access-toolbar-y, 50vh) + 40px) !important;
+  right: 0 !important;
+  bottom: auto !important;
+  transform: none !important;
+  margin: 0 !important;
+  z-index: 259 !important;
+}
+
+[vw-access-button] {
+  left: auto !important;
+  right: 0 !important;
+}
+
+[vw-plugin-wrapper] {
+  left: auto !important;
+  right: 0 !important;
+}
+
+body.accessibility-menu-open [vw].enabled {
+  display: none !important;
+}
