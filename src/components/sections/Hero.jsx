@@ -1,10 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useLanguage } from "../../contexts/LanguageContext";
 import Breadcrumb from "../layout/Breadcrumb";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
 
 const HERO_SLIDES = [
   {
@@ -79,9 +75,6 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
   const [contentVisible, setContentVisible] = useState(false);
   const [countersActive, setCountersActive] = useState(false);
 
-  const heroRef = useRef(null);
-  const videoRef = useRef(null);
-
   useEffect(() => {
     if (typeof document === "undefined") return undefined;
 
@@ -117,41 +110,6 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
 
     return () => window.clearInterval(intervalId);
   }, [isHighContrast]);
-
-  useEffect(() => {
-    // Only apply scroll video effect on desktop (md and up)
-    const isDesktop = window.matchMedia("(min-width: 768px)").matches;
-    
-    if (isDesktop && videoRef.current && heroRef.current) {
-      const video = videoRef.current;
-      
-      const setupScroll = () => {
-        ScrollTrigger.create({
-          trigger: heroRef.current,
-          start: "top top",
-          end: "+=2500", // The scroll duration that holds the hero
-          pin: true,
-          scrub: true,
-          onUpdate: (self) => {
-            if (video.duration) {
-              video.currentTime = video.duration * self.progress;
-            }
-          }
-        });
-      };
-
-      if (video.readyState >= 1) {
-        setupScroll();
-      } else {
-        video.addEventListener("loadedmetadata", setupScroll);
-      }
-
-      return () => {
-        ScrollTrigger.getAll().forEach(t => t.kill());
-        video.removeEventListener("loadedmetadata", setupScroll);
-      };
-    }
-  }, []);
 
   const handleScrollToPanel = (event) => {
     event.preventDefault();
@@ -202,7 +160,6 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
 
       <section
         id="inicio"
-        ref={heroRef}
         className="relative h-screen overflow-hidden bg-[#0B2341]"
       >
         <Breadcrumb />
@@ -230,29 +187,21 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
               })}
             </div>
 
-            {/* Desktop Video Background */}
-            <div className="absolute inset-0 hidden h-full w-full md:block">
-              <video
-                ref={videoRef}
-                src="/VideoHERO_scroll.mp4"
-                className="absolute inset-y-0 right-0 h-full w-[65%] lg:w-[70%] object-cover object-center"
-                style={{
-                  maskImage: 'linear-gradient(to right, transparent 0%, black 15%)',
-                  WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 15%)'
-                }}
-                muted
-                playsInline
-                preload="auto"
+            <div className="absolute inset-0 hidden md:block">
+              <img
+                src="/images/heroImage.png"
+                alt="Imagem principal do painel de dados culturais de Pernambuco"
+                className="absolute inset-0 h-full w-full object-cover object-center"
               />
             </div>
           </>
         )}
 
         <div className="hero-overlay absolute inset-0 z-[1] bg-[radial-gradient(circle_at_top,#123f72_0%,#0B2341_42%,#06182e_100%)] md:bg-[linear-gradient(to_bottom,rgba(7,24,47,0.42)_0%,rgba(7,24,47,0.12)_52%,rgba(7,24,47,0.65)_100%)] md:hidden" />
-        <div className="absolute inset-0 z-[1] hidden bg-[linear-gradient(to_right,#0B2341_0%,#0B2341_16%,rgba(11,35,65,0.86)_34%,rgba(11,35,65,0.46)_54%,transparent_100%)] md:block pointer-events-none" />
+        <div className="absolute inset-0 z-[1] hidden bg-[linear-gradient(to_bottom,rgba(7,24,47,0.55)_0%,rgba(7,24,47,0.22)_48%,rgba(7,24,47,0.68)_100%)] md:block pointer-events-none" />
         
         <div
-          className="absolute inset-0 z-[2] flex flex-col items-center justify-start md:items-start"
+          className="absolute inset-0 z-[2] flex flex-col items-center justify-start"
           style={{
             padding: "176px 0 2rem",
             opacity: contentVisible ? 1 : 0,
@@ -261,7 +210,7 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
           }}
         >
           <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
-            <div className="mx-auto flex w-full max-w-full flex-col items-center text-center md:mx-0 md:block md:text-left" style={{ maxWidth: "clamp(280px, 39%, 520px)" }}>
+            <div className="mx-auto flex w-full max-w-full flex-col items-center text-center" style={{ maxWidth: "clamp(280px, 52vw, 820px)" }}>
               <div className="hero-badge mb-4 inline-flex max-w-full items-center rounded-full border border-white/20 bg-white/10 px-2.5 py-1.5 text-[8px] font-bold uppercase tracking-[0.08em] text-white backdrop-blur-md shadow-sm sm:mb-5 sm:px-4 sm:py-2 sm:text-[10px] sm:tracking-[0.12em]">
                 {t.hero.badge}
               </div>
@@ -282,7 +231,7 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
                 </span>
               </h1>
 
-              <p className="hc-text-desc mt-3 w-full max-w-none text-center text-[12px] font-light leading-relaxed text-slate-200 sm:mt-4 sm:text-[14px] md:max-w-[31rem] md:text-left md:text-[15px]">
+              <p className="hc-text-desc mt-3 w-full max-w-none text-center text-[12px] font-light leading-relaxed text-slate-200 sm:mt-4 sm:text-[14px] md:max-w-[42rem] md:text-center md:text-[15px]">
                 {t.hero.description}
               </p>
 
