@@ -165,10 +165,12 @@ export default function DashboardTutorialOverlay({
     if (viewportWidth < 768) {
       return {
         top: "auto",
-        left: "50%",
-        bottom: TOUR_CARD_MIN_MARGIN,
-        transform: "translateX(-50%)",
-        width: `min(calc(100vw - ${TOUR_CARD_MIN_MARGIN * 2}px), ${TOUR_CARD_WIDTH}px)`,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        transform: "none",
+        width: "100%",
+        maxHeight: "min(54vh, 420px)",
       };
     }
 
@@ -306,7 +308,7 @@ export default function DashboardTutorialOverlay({
                   y: ["-3%", "5%", "-2%"],
                 }}
                 transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -left-24 top-12 h-80 w-80 rounded-full bg-[#00AEEF]/18 blur-3xl"
+                className="absolute -left-24 top-12 hidden h-80 w-80 rounded-full bg-[#00AEEF]/18 blur-3xl sm:block"
               />
               <motion.div
                 animate={{
@@ -314,7 +316,7 @@ export default function DashboardTutorialOverlay({
                   y: ["0%", "-4%", "3%"],
                 }}
                 transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-[#0B2341]/35 blur-3xl"
+                className="absolute bottom-0 right-0 hidden h-96 w-96 rounded-full bg-[#0B2341]/35 blur-3xl sm:block"
               />
             </motion.div>
           ))
@@ -323,7 +325,7 @@ export default function DashboardTutorialOverlay({
         {highlightRect && (
           <motion.div
             layout
-            className="hc-dashboard-tour-highlight pointer-events-none absolute rounded-[28px] border-2 border-[#73D7FF] bg-transparent shadow-[0_0_0_2px_rgba(115,215,255,0.16)]"
+            className="hc-dashboard-tour-highlight pointer-events-none absolute rounded-2xl border-2 border-[#73D7FF] bg-transparent shadow-[0_0_0_2px_rgba(115,215,255,0.16)] sm:rounded-[28px]"
             style={{
               top: highlightRect.top,
               left: highlightRect.left,
@@ -339,15 +341,15 @@ export default function DashboardTutorialOverlay({
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 24, opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="hc-dashboard-tour-card pointer-events-auto absolute rounded-[30px] border border-white/15 bg-[#071B34]/95 p-5 text-white shadow-[0_30px_90px_-34px_rgba(5,24,49,0.95)] backdrop-blur-xl sm:p-6"
+            className="hc-dashboard-tour-card pointer-events-auto absolute overflow-y-auto rounded-t-3xl border border-white/15 border-b-0 bg-[#071B34]/95 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 text-white shadow-[0_-22px_70px_-34px_rgba(5,24,49,0.95)] backdrop-blur-xl sm:rounded-[30px] sm:border-b sm:p-6 sm:shadow-[0_30px_90px_-34px_rgba(5,24,49,0.95)]"
             style={cardPosition}
           >
-            <div className="mb-4 flex items-start justify-between gap-4">
+            <div className="mb-3 flex items-start justify-between gap-3 sm:mb-4 sm:gap-4">
               <div className="min-w-0">
-                <p className="hc-dashboard-tour-progress text-[11px] font-black uppercase tracking-[0.22em] text-[#73D7FF]">
+                <p className="hc-dashboard-tour-progress text-[10px] font-black uppercase tracking-[0.16em] text-[#73D7FF] sm:text-[11px] sm:tracking-[0.22em]">
                   {progressLabel}
                 </p>
-                <h2 className="hc-dashboard-tour-title mt-2 text-xl font-black tracking-tight text-white">
+                <h2 className="hc-dashboard-tour-title mt-1.5 text-lg font-black leading-tight tracking-tight text-white sm:mt-2 sm:text-xl">
                   {step.title}
                 </h2>
               </div>
@@ -356,21 +358,21 @@ export default function DashboardTutorialOverlay({
                 type="button"
                 onClick={onClose}
                 aria-label={texts?.close}
-                className="hc-dashboard-tour-close flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-white/5 text-white transition-all hover:bg-white/10 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#73D7FF]/35"
+                className="hc-dashboard-tour-close flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/5 text-white transition-all hover:bg-white/10 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#73D7FF]/35 sm:h-11 sm:w-11 sm:rounded-2xl"
               >
                 <X size={18} strokeWidth={2.5} />
               </button>
             </div>
 
-            <p className="hc-dashboard-tour-text text-sm leading-6 text-slate-200">
+            <p className="hc-dashboard-tour-text text-[13px] leading-5 text-slate-200 sm:text-sm sm:leading-6">
               {step.description}
             </p>
 
-            <div className="mt-5 flex items-center gap-3">
+            <div className="mt-4 flex items-center gap-2 sm:mt-5 sm:gap-3">
               <button
                 type="button"
                 onClick={onClose}
-                className="hc-dashboard-tour-close min-h-12 rounded-2xl border border-white/15 bg-white/5 px-4 text-sm font-black uppercase tracking-[0.14em] text-white transition-all hover:bg-white/10 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#73D7FF]/35"
+                className="hc-dashboard-tour-close min-h-11 rounded-xl border border-white/15 bg-white/5 px-3 text-xs font-black uppercase tracking-[0.1em] text-white transition-all hover:bg-white/10 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#73D7FF]/35 sm:min-h-12 sm:rounded-2xl sm:px-4 sm:text-sm sm:tracking-[0.14em]"
               >
                 {texts?.close}
               </button>
@@ -378,7 +380,7 @@ export default function DashboardTutorialOverlay({
               <button
                 type="button"
                 onClick={handleNext}
-                className="hc-dashboard-tour-next min-h-12 flex-1 rounded-2xl bg-[#00AEEF] px-4 text-sm font-black uppercase tracking-[0.14em] text-white transition-all hover:bg-[#0893c9] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#73D7FF]/35"
+                className="hc-dashboard-tour-next min-h-11 flex-1 rounded-xl bg-[#00AEEF] px-3 text-xs font-black uppercase tracking-[0.1em] text-white transition-all hover:bg-[#0893c9] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#73D7FF]/35 sm:min-h-12 sm:rounded-2xl sm:px-4 sm:text-sm sm:tracking-[0.14em]"
               >
                 {texts?.next}
               </button>
