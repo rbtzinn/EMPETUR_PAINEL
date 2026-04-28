@@ -91,6 +91,7 @@ const HERO_SLIDES = [
 ];
 
 const VISIBLE_OFFSETS = [-2, -1, 0, 1, 2];
+const MOBILE_DOT_OFFSETS = [-2, -1, 0, 1, 2];
 
 const getRelativeOffset = (index, activeIndex) => {
   let offset = (index - activeIndex + HERO_SLIDES.length) % HERO_SLIDES.length;
@@ -213,6 +214,19 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
     })).filter((slide) => VISIBLE_OFFSETS.includes(slide.offset));
   }, [activeSlide]);
 
+  const mobileIndicatorDots = useMemo(() => {
+    return MOBILE_DOT_OFFSETS.map((offset) => {
+      const index =
+        (activeSlide + offset + HERO_SLIDES.length) % HERO_SLIDES.length;
+
+      return {
+        offset,
+        index,
+        slide: HERO_SLIDES[index],
+      };
+    });
+  }, [activeSlide]);
+
   const handleCarouselPhotoClick = (slideIndex) => {
     setActiveSlide((current) =>
       slideIndex === current ? (current + 1) % HERO_SLIDES.length : slideIndex
@@ -269,11 +283,35 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
             animation: none !important;
           }
         }
+        @media (max-width: 639px) {
+          .hero-bg-image {
+            object-position: center top !important;
+          }
+          .hero-overlay {
+            background: linear-gradient(
+              to bottom,
+              rgba(4, 16, 31, 0.2) 0%,
+              rgba(7, 24, 47, 0.22) 34%,
+              rgba(4, 16, 31, 0.72) 70%,
+              rgba(4, 16, 31, 0.92) 100%
+            ) !important;
+          }
+          .hero-bottom-fade {
+            height: 58% !important;
+            background: linear-gradient(
+              to top,
+              #071a30 0%,
+              rgba(7, 26, 48, 0.92) 34%,
+              rgba(7, 26, 48, 0.5) 70%,
+              transparent 100%
+            ) !important;
+          }
+        }
       `}</style>
 
       <section
         id="inicio"
-        className={`hero-section relative min-h-[780px] overflow-hidden sm:min-h-[760px] md:min-h-[780px] lg:min-h-[820px] xl:min-h-[840px] 2xl:min-h-[860px] ${
+        className={`hero-section relative min-h-[700px] overflow-hidden sm:min-h-[740px] md:min-h-[780px] lg:min-h-[820px] xl:min-h-[840px] 2xl:min-h-[860px] ${
           isHighContrast ? "bg-black" : "bg-[#071a30]"
         }`}
       >
@@ -349,7 +387,7 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
         )}
 
         <div
-          className="pointer-events-none absolute inset-0 z-[3] flex flex-col items-center justify-start pb-8 pt-[148px] sm:pt-[156px] md:pt-[176px] lg:items-start lg:pt-[190px] xl:pt-[204px]"
+          className="pointer-events-none absolute inset-0 z-[3] flex flex-col items-center justify-start pb-8 pt-[228px] sm:pt-[156px] md:pt-[176px] lg:items-start lg:pt-[190px] xl:pt-[204px]"
           style={{
             opacity: contentVisible ? 1 : 0,
             transform: contentVisible ? "translateY(0)" : "translateY(20px)",
@@ -365,11 +403,11 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
                 {t.hero.badge}
               </div>
 
-              <h1 className="w-full font-black leading-[0.97] tracking-[-0.04em] text-white sm:hidden">
-                <span className="block text-[clamp(1.55rem,7.6vw,2.08rem)] [overflow-wrap:anywhere]">
+              <h1 className="w-full font-black leading-[0.95] tracking-[-0.025em] text-white sm:hidden">
+                <span className="block text-[clamp(1.34rem,6.4vw,1.72rem)] [overflow-wrap:anywhere]">
                   {t.hero.titlePrefix}
                 </span>
-                <span className="hero-title-gradient mt-1 block bg-gradient-to-r from-white via-[#7DD3FC] to-[#00AEEF] bg-clip-text text-[clamp(1.48rem,7.3vw,1.95rem)] text-transparent [overflow-wrap:anywhere]">
+                <span className="hero-title-gradient mt-0.5 block bg-gradient-to-r from-white via-[#7DD3FC] to-[#00AEEF] bg-clip-text text-[clamp(1.3rem,6.1vw,1.66rem)] text-transparent [overflow-wrap:anywhere]">
                   {t.hero.titleHighlight}
                 </span>
               </h1>
@@ -381,11 +419,11 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
                 </span>
               </h1>
 
-              <p className="hc-text-desc mt-3 w-full max-w-none text-center text-[12px] font-light leading-relaxed text-slate-200 sm:mt-4 sm:text-[14px] md:max-w-[42rem] md:text-center md:text-[15px] lg:max-w-[34rem] lg:text-left lg:text-[16px]">
+              <p className="hc-text-desc mt-2 w-full max-w-[18.5rem] text-center text-[11px] font-light leading-[1.45] text-slate-200 sm:mt-4 sm:max-w-none sm:text-[14px] md:max-w-[42rem] md:text-center md:text-[15px] lg:max-w-[34rem] lg:text-left lg:text-[16px]">
                 {t.hero.description}
               </p>
 
-              <div className="hero-stats mt-4 grid w-full max-w-full grid-cols-3 divide-x-2 divide-slate-100 rounded-2xl border border-white/70 bg-white/95 p-2 shadow-2xl shadow-blue-950/20 backdrop-blur-lg sm:mt-5 sm:p-3 md:max-w-[38rem] md:p-5 lg:max-w-[35rem]">
+              <div className="hero-stats mt-3 grid w-full max-w-[18.5rem] grid-cols-3 divide-x-2 divide-slate-100 rounded-2xl border border-white/70 bg-white/95 p-1.5 shadow-2xl shadow-blue-950/20 backdrop-blur-lg sm:mt-5 sm:max-w-full sm:p-3 md:max-w-[38rem] md:p-5 lg:max-w-[35rem]">
                 <AnimatedCounter
                   end={apresentacoes}
                   label={t.hero.stats.presentations}
@@ -413,18 +451,20 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
               </a>
 
               {!isHighContrast && (
-                <div className="mt-5 flex items-center justify-center gap-2 lg:hidden">
-                  {HERO_SLIDES.map((slide, index) => (
+                <div className="mt-5 flex h-4 items-center justify-center gap-2 lg:hidden">
+                  {mobileIndicatorDots.map(({ offset, index, slide }) => (
                     <button
                       key={slide.src}
                       type="button"
                       aria-label={`Mostrar imagem: ${slide.alt}`}
-                      aria-current={index === activeSlide ? "true" : undefined}
+                      aria-current={offset === 0 ? "true" : undefined}
                       onClick={() => setActiveSlide(index)}
-                      className={`h-2.5 rounded-full transition-all focus:outline-none focus:ring-4 focus:ring-[#00AEEF]/50 ${
-                        index === activeSlide
-                          ? "w-8 bg-white"
-                          : "w-2.5 bg-white/45"
+                      className={`rounded-full transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-[#00AEEF]/50 ${
+                        offset === 0
+                          ? "h-2.5 w-8 bg-white"
+                          : Math.abs(offset) === 1
+                            ? "h-2.5 w-2.5 bg-white/55"
+                            : "h-1.5 w-1.5 bg-white/35"
                       }`}
                     />
                   ))}

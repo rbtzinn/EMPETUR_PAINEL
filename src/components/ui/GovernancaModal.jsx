@@ -24,21 +24,22 @@ export default function GovernancaModal({ isOpen, onClose }) {
         onClick={onClose}
       />
 
-      <FadeIn className="relative flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-[2rem] bg-white shadow-2xl md:rounded-[2.5rem]">
-        <div className="relative flex items-center justify-between overflow-hidden bg-gradient-to-r from-[#0B2341] to-[#123661] p-6 md:p-8">
+      <FadeIn className="relative flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-[1.75rem] bg-white shadow-2xl md:rounded-[2.5rem]">
+        <div className="relative flex items-start justify-between gap-3 overflow-hidden bg-gradient-to-r from-[#0B2341] to-[#123661] px-5 py-5 md:items-center md:p-8">
           <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/5 blur-2xl" />
-          <div className="relative z-10">
-            <h2 className="mb-1 text-2xl font-black tracking-tight text-white md:text-3xl">
+          <div className="relative z-10 min-w-0 pr-1">
+            <h2 className="mb-1 max-w-[13rem] text-[1.35rem] font-black leading-tight tracking-tight text-white sm:max-w-none sm:text-2xl md:text-3xl">
               {t.governanceModal.title}
             </h2>
-            <p className="text-xs font-bold uppercase tracking-widest text-[#00AEEF]">
+            <p className="max-w-[13.5rem] text-[0.62rem] font-bold uppercase leading-snug tracking-[0.16em] text-[#00AEEF] sm:max-w-none sm:text-xs sm:tracking-widest">
               {t.governanceModal.subtitle}
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="relative z-10 rounded-full bg-white/5 p-2.5 text-white/50 transition-all hover:bg-white/20 hover:text-white backdrop-blur-sm"
+            className="relative z-10 shrink-0 rounded-full bg-white/5 p-2.5 text-white/60 backdrop-blur-sm transition-all hover:bg-white/20 hover:text-white"
+            aria-label="Fechar modal"
           >
             <X strokeWidth={2.5} size={20} />
           </button>
