@@ -83,7 +83,7 @@ export default function PanelSection({ id, csvUrls, lookerShareUrl }) {
         <FadeIn className="mb-8 rounded-[2rem] border border-slate-200 bg-white p-7 shadow-[0_24px_60px_-48px_rgba(11,35,65,0.35)] md:p-9">
           <div className="max-w-3xl">
             <div className="mb-5 h-1.5 w-14 rounded-full bg-[#00AEEF]" />
-            <h2 className="mb-4 text-3xl font-black tracking-tight text-[#0B2341] hc-text-destaque md:text-5xl">
+            <h2 className="mb-4 max-w-full text-3xl font-black tracking-tight text-[#0B2341] hc-text-destaque [overflow-wrap:anywhere] md:text-5xl">
               {t.panelSection.title}
             </h2>
             <p className="max-w-xl text-base font-medium leading-relaxed text-slate-500 hc-text-destaque md:text-lg">

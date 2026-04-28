@@ -44,7 +44,7 @@ export default function AboutSection({ id }) {
       <div className="relative z-10 mx-auto max-w-7xl px-6">
         <FadeIn className="mb-14 max-w-3xl md:mb-18">
           <div className="hc-sobre-bg mb-6 h-1.5 w-12 rounded-full bg-[#00AEEF]" />
-          <h2 className="mb-5 text-3xl font-black tracking-tight text-[#0B2341] hc-text-destaque sm:text-4xl md:text-5xl">
+          <h2 className="mb-5 max-w-full text-3xl font-black tracking-tight text-[#0B2341] hc-text-destaque [overflow-wrap:anywhere] sm:text-4xl md:text-5xl">
             {t.about.title}
           </h2>
           <p className="max-w-2xl text-lg font-light leading-8 text-slate-500 hc-text-desc md:text-xl">

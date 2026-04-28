@@ -11,6 +11,20 @@ const configInicial = {
   ocultarImagens: false,
 };
 
+const TEXT_SELECTOR =
+  "h1, h2, h3, h4, h5, h6, p, span, a, li, label, small, strong, em, td, th, button, input, textarea, select";
+
+const limparAjustesTexto = (conteudo) => {
+  if (!conteudo) return;
+
+  conteudo.querySelectorAll(TEXT_SELECTOR).forEach((el) => {
+    el.style.fontSize = "";
+    el.style.lineHeight = "";
+    el.style.letterSpacing = "";
+    delete el.dataset.baseFontSize;
+  });
+};
+
 export function useAccessibilityConfig() {
   const [carregando, setCarregando] = useState(false);
   const [config, setConfig] = useState(configInicial);
@@ -44,17 +58,7 @@ export function useAccessibilityConfig() {
       setConfig(configInicial);
 
       const conteudo = document.getElementById("conteudo-site");
-      if (!conteudo) return;
-
-      const elementosTexto = conteudo.querySelectorAll(
-        "h1, h2, h3, h4, h5, h6, p, span, a, li, label, small, strong, em, td, th, button, input, textarea, select"
-      );
-
-      elementosTexto.forEach((el) => {
-        el.style.fontSize = "";
-        el.style.lineHeight = "";
-        el.style.letterSpacing = "";
-      });
+      limparAjustesTexto(conteudo);
     });
   };
 
@@ -70,9 +74,17 @@ export function useAccessibilityConfig() {
 
     if (!conteudo) return;
 
-    const elementosTexto = conteudo.querySelectorAll(
-      "h1, h2, h3, h4, h5, h6, p, span, a, li, label, small, strong, em, td, th, button, input, textarea, select"
-    );
+    const usarAjusteTexto =
+      config.tamanhoFonte !== 100 ||
+      config.alturaLinha !== 100 ||
+      config.espacamento !== 100;
+
+    if (!usarAjusteTexto) {
+      limparAjustesTexto(conteudo);
+      return;
+    }
+
+    const elementosTexto = conteudo.querySelectorAll(TEXT_SELECTOR);
 
     elementosTexto.forEach((el) => {
       if (!el.dataset.baseFontSize) {

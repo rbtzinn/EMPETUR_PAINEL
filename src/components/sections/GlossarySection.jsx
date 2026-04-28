@@ -78,7 +78,7 @@ export default function GlossarySection({ id = "glossario" }) {
       <div className="mx-auto max-w-5xl px-6">
         <FadeIn className="mb-16 text-center md:mb-20">
           <div className="mx-auto mb-6 h-1.5 w-12 rounded-full bg-[#00AEEF]" />
-          <h2 className="mb-4 text-2xl font-black tracking-tight text-[#0B2341] sm:text-3xl md:text-5xl">
+          <h2 className="mb-4 max-w-full text-2xl font-black tracking-tight text-[#0B2341] [overflow-wrap:anywhere] sm:text-3xl md:text-5xl">
             {t.glossary.title}
           </h2>
           <p className="text-base font-light leading-7 text-slate-500 sm:text-lg">
@@ -106,7 +106,7 @@ export default function GlossarySection({ id = "glossario" }) {
             <div className="pointer-events-none absolute right-0 top-0 h-64 w-64 translate-x-1/2 -translate-y-1/2 rounded-full bg-[#00AEEF]/10 blur-3xl" />
 
             <div className="relative z-10 max-w-2xl text-center lg:text-left">
-              <h3 className="mb-3 text-2xl font-black tracking-tight text-white md:text-3xl">
+              <h3 className="mb-3 max-w-full text-2xl font-black tracking-tight text-white [overflow-wrap:anywhere] md:text-3xl">
                 {t.glossary.dictionaryTitle}
               </h3>
               <p className="text-sm font-light leading-7 text-slate-400 md:text-base">

@@ -41,7 +41,7 @@ export default function Acessibilidade() {
   return (
     <>
       {carregando && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/35">
           <div className="rounded-xl bg-white px-6 py-4 shadow-2xl">
             <span className="text-xs font-black uppercase tracking-widest text-[#0B2341]">
               Aplicando...

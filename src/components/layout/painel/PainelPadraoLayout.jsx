@@ -301,13 +301,13 @@ export default function PainelPadraoLayout({
             ].map(({ label, valor, accent }) => (
               <div
                 key={label}
-                className="hc-padrao-kpi flex min-h-[116px] flex-col justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-4 backdrop-blur-sm sm:min-h-[112px] sm:rounded-xl sm:py-3.5"
+                className="hc-padrao-kpi flex min-h-[116px] min-w-0 flex-col justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-4 backdrop-blur-sm sm:min-h-[112px] sm:rounded-xl sm:py-3.5"
               >
-                <span className="hc-padrao-kpi-label text-[11px] leading-4 font-black uppercase tracking-[0.14em] text-slate-300 sm:text-[10px] sm:tracking-widest sm:text-slate-300">
+                <span className="hc-padrao-kpi-label max-w-full text-[11px] leading-4 font-black uppercase tracking-[0.14em] text-slate-300 [overflow-wrap:anywhere] sm:text-[10px] sm:tracking-widest sm:text-slate-300">
                   {label}
                 </span>
                 <span
-                  className={`hc-padrao-kpi-value mt-2 block text-[2rem] font-black leading-none tracking-tight sm:mt-2 sm:truncate sm:text-3xl ${
+                  className={`hc-padrao-kpi-value mt-2 block max-w-full text-[clamp(1.35rem,7vw,2rem)] font-black leading-none tracking-tight [overflow-wrap:anywhere] sm:mt-2 sm:truncate sm:text-3xl ${
                     accent ? "text-[#00AEEF]" : "text-white"
                   }`}
                 >

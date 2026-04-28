@@ -1,39 +1,119 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useLanguage } from "../../contexts/LanguageContext";
 import Breadcrumb from "../layout/Breadcrumb";
 
 const HERO_SLIDES = [
   {
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Convento_de_S%C3%A3o_Francisco_-_Olinda_-_Pernambuco_-_Brasil.jpg/1280px-Convento_de_S%C3%A3o_Francisco_-_Olinda_-_Pernambuco_-_Brasil.jpg",
-    alt: "Centro Histórico de Olinda, em Pernambuco",
-    credit: "Olinda / Wikimedia Commons / CC BY-SA 4.0",
-    position: "center 58%",
-  },
-  {
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Passistas_de_Frevo.jpg/1280px-Passistas_de_Frevo.jpg",
-    alt: "Passistas de frevo no Carnaval",
-    credit: "Frevo / Wikimedia Commons / CC BY-SA 4.0",
-    position: "center 34%",
-  },
-  {
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Um_mundo_chamado_Sert%C3%A3o.jpg/1280px-Um_mundo_chamado_Sert%C3%A3o.jpg",
-    alt: "Paisagem típica do Sertão de Pernambuco",
-    credit: "Sertão (Caatinga) / Wikimedia Commons / CC BY-SA 4.0",
+    src: "/images/PE Meu País no carnaval RECIFE - Alyne Pinheiro - SecultPE.jpg",
+    alt: "PE Meu Pais no Carnaval do Recife",
     position: "center center",
   },
   {
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Antonio_Vaz_island_-_Recife%2C_Pernambuco%2C_Brazil_%28cropped%29.jpg/1280px-Antonio_Vaz_island_-_Recife%2C_Pernambuco%2C_Brazil_%28cropped%29.jpg",
-    alt: "Vista de Recife, Pernambuco",
-    credit: "Recife / Wikimedia Commons / CC BY-SA 4.0",
+    src: "/images/Carnaval Olinda - Arquimedes Santos.jpg",
+    alt: "Carnaval de Olinda",
+    position: "center center",
+  },
+  {
+    src: "/images/Papangus BEZERROS - Alyne Pinheiro - SecultPE.jpg",
+    alt: "Papangus de Bezerros",
+    position: "center center",
+  },
+  {
+    src: "/images/Maracatus NAZARÉ DA MATA - Ray Evllyn - SecultPE.jpg",
+    alt: "Maracatus de Nazare da Mata",
+    position: "center center",
+  },
+  {
+    src: "/images/Cortejo Afoxé - Dani Pedrosa - SecultPE.jpg",
+    alt: "Cortejo Afoxe",
+    position: "center center",
+  },
+  {
+    src: "/images/Passista Olinda - Arquimedes Santos.jpg",
+    alt: "Passista em Olinda",
+    position: "center center",
+  },
+  {
+    src: "/images/Maracatus NAZARÉ DA MATA - Ray Evllyn - SecultPE 2.jpg",
+    alt: "Maracatus em Nazare da Mata",
+    position: "center center",
+  },
+  {
+    src: "/images/Boi Maracatu - Artur Freire - SecultPE.jpg",
+    alt: "Boi Maracatu",
+    position: "center center",
+  },
+  {
+    src: "/images/Brincantes PESQUEIRA - Silla Cadengue - Fundarpe.jpg",
+    alt: "Brincantes de Pesqueira",
+    position: "center center",
+  },
+  {
+    src: "/images/Brincantes PESQUEIRA - Silla Cadengue - Fundarpe 2.jpg",
+    alt: "Brincantes em Pesqueira",
+    position: "center center",
+  },
+  {
+    src: "/images/Bacamarte - Dani Pedrosa SECULTPE Fundarpe.jpg",
+    alt: "Bacamarteiros",
+    position: "center center",
+  },
+  {
+    src: "/images/Bacamarte - Dani Pedrosa SECULTPE Fundarpe B.jpg",
+    alt: "Apresentacao de bacamarteiros",
+    position: "center center",
+  },
+  {
+    src: "/images/Malhada de Pedras - Ft Jorge Farias.jpg",
+    alt: "Malhada de Pedras",
+    position: "center center",
+  },
+  {
+    src: "/images/Malhada de Pedras - Ft Jorge Farias 3.jpg",
+    alt: "Festa em Malhada de Pedras",
+    position: "center center",
+  },
+  {
+    src: "/images/Alto do Moura - Jorge Pinho.jpg",
+    alt: "Alto do Moura",
+    position: "center center",
+  },
+  {
+    src: "/images/Petrolina - Emerson Leite.jpg",
+    alt: "Petrolina",
+    position: "center center",
+  },
+  {
+    src: "/images/nova Jerusalém - Jorge Pinho.jpg",
+    alt: "Nova Jerusalem",
     position: "center center",
   },
 ];
+
+const VISIBLE_OFFSETS = [-2, -1, 0, 1, 2];
+
+const getRelativeOffset = (index, activeIndex) => {
+  let offset = (index - activeIndex + HERO_SLIDES.length) % HERO_SLIDES.length;
+
+  if (offset > HERO_SLIDES.length / 2) {
+    offset -= HERO_SLIDES.length;
+  }
+
+  return offset;
+};
+
+const getOrbitTransform = (offset) => {
+  const angle = offset * 47 + 135;
+  const scale = offset === 0 ? 3.2 : Math.abs(offset) === 1 ? 1.28 : 0.86;
+
+  return `rotate(${angle}deg) translateY(142px) rotate(${-angle}deg) translate(-50%, -50%) scale(${scale})`;
+};
 
 const AnimatedCounter = ({ end, suffix = "", label, active }) => {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    if (!active) return;
+    if (!active) return undefined;
 
     let start = 0;
     const increment = end / (1600 / 16);
@@ -66,11 +146,14 @@ const AnimatedCounter = ({ end, suffix = "", label, active }) => {
 
 export default function Hero({ apresentacoes, municipios, artistas }) {
   const { t } = useLanguage();
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [isCarouselPaused, setIsCarouselPaused] = useState(false);
   const [isHighContrast, setIsHighContrast] = useState(
     () =>
       typeof document !== "undefined" &&
       document.body.classList.contains("contraste-negativo")
   );
+  const [isDesktop, setIsDesktop] = useState(false);
   const [contentVisible, setContentVisible] = useState(false);
   const [countersActive, setCountersActive] = useState(false);
 
@@ -91,6 +174,28 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
   }, []);
 
   useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+
+    const mediaQuery = window.matchMedia("(min-width: 1024px)");
+    const updateDesktopMode = () => setIsDesktop(mediaQuery.matches);
+
+    updateDesktopMode();
+    mediaQuery.addEventListener("change", updateDesktopMode);
+
+    return () => mediaQuery.removeEventListener("change", updateDesktopMode);
+  }, []);
+
+  useEffect(() => {
+    if (isCarouselPaused || isHighContrast) return undefined;
+
+    const timer = setInterval(() => {
+      setActiveSlide((current) => (current + 1) % HERO_SLIDES.length);
+    }, 4200);
+
+    return () => clearInterval(timer);
+  }, [isCarouselPaused, isHighContrast]);
+
+  useEffect(() => {
     const showTimer = setTimeout(() => setContentVisible(true), 220);
     const countersTimer = setTimeout(() => setCountersActive(true), 700);
 
@@ -99,6 +204,20 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
       clearTimeout(countersTimer);
     };
   }, []);
+
+  const orderedOrbitSlides = useMemo(() => {
+    return HERO_SLIDES.map((slide, index) => ({
+      ...slide,
+      originalIndex: index,
+      offset: getRelativeOffset(index, activeSlide),
+    })).filter((slide) => VISIBLE_OFFSETS.includes(slide.offset));
+  }, [activeSlide]);
+
+  const handleCarouselPhotoClick = (slideIndex) => {
+    setActiveSlide((current) =>
+      slideIndex === current ? (current + 1) % HERO_SLIDES.length : slideIndex
+    );
+  };
 
   const handleScrollToPanel = (event) => {
     event.preventDefault();
@@ -117,16 +236,17 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
           background: #000 !important;
         }
         body.contraste-negativo .hero-overlay,
-        body.contraste-negativo #inicio > .absolute.inset-0.z-\\[1\\] {
+        body.contraste-negativo #inicio > .absolute.inset-0.z-\\[1\\],
+        body.contraste-negativo .hero-gallery,
+        body.contraste-negativo .hero-bg-image,
+        body.contraste-negativo .hero-fade,
+        body.contraste-negativo .hero-bottom-fade {
           display: none !important;
         }
         body.contraste-negativo .hero-title-gradient {
           background: none !important;
           -webkit-text-fill-color: #ffea00 !important;
           color: #ffea00 !important;
-        }
-        body.contraste-negativo .hero-overlay {
-          display: none !important;
         }
         body.contraste-negativo .hero-stats {
           background: #000 !important;
@@ -142,29 +262,94 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
           background: #ffea00 !important;
           color: #000 !important;
         }
+        @media (prefers-reduced-motion: reduce) {
+          .hero-bg-image,
+          .hero-orbit-item {
+            transition: none !important;
+            animation: none !important;
+          }
+        }
       `}</style>
 
       <section
         id="inicio"
-        className="relative min-h-[780px] overflow-hidden bg-[#0B2341] sm:min-h-[760px] md:min-h-[780px] lg:min-h-[820px] xl:min-h-[840px] 2xl:min-h-[860px]"
+        className={`hero-section relative min-h-[780px] overflow-hidden sm:min-h-[760px] md:min-h-[780px] lg:min-h-[820px] xl:min-h-[840px] 2xl:min-h-[860px] ${
+          isHighContrast ? "bg-black" : "bg-[#071a30]"
+        }`}
       >
         <Breadcrumb />
 
         {!isHighContrast && (
           <div className="absolute inset-0">
             <img
-              src="/images/heroImage.png"
-              alt="Imagem principal do painel de dados culturais de Pernambuco"
-              className="absolute inset-0 h-full w-full object-cover object-center"
+              key={HERO_SLIDES[activeSlide].src}
+              src={HERO_SLIDES[activeSlide].src}
+              alt=""
+              aria-hidden="true"
+              decoding="async"
+              className="hero-bg-image absolute inset-0 h-full w-full scale-[1.04] object-cover transition-opacity duration-500 ease-out"
+              style={{ objectPosition: HERO_SLIDES[activeSlide].position }}
             />
           </div>
         )}
 
-        <div className="hero-overlay absolute inset-0 z-[1] bg-[radial-gradient(circle_at_top,#123f72_0%,#0B2341_42%,#06182e_100%)] md:bg-[linear-gradient(to_bottom,rgba(7,24,47,0.42)_0%,rgba(7,24,47,0.12)_52%,rgba(7,24,47,0.65)_100%)] md:hidden" />
-        <div className="absolute inset-0 z-[1] hidden bg-[linear-gradient(to_bottom,rgba(7,24,47,0.55)_0%,rgba(7,24,47,0.22)_48%,rgba(7,24,47,0.68)_100%)] md:block pointer-events-none" />
-        
+        {!isHighContrast && (
+          <>
+            <div className="hero-overlay absolute inset-0 z-[1] bg-[linear-gradient(to_bottom,rgba(4,16,31,0.7)_0%,rgba(7,24,47,0.3)_50%,rgba(4,16,31,0.82)_100%)] md:bg-[linear-gradient(100deg,rgba(4,16,31,0.94)_0%,rgba(6,25,48,0.7)_34%,rgba(7,26,48,0.2)_66%,rgba(7,24,47,0.26)_100%)]" />
+            <div className="hero-fade pointer-events-none absolute inset-y-0 left-0 z-[1] hidden w-[54%] bg-[radial-gradient(circle_at_30%_42%,rgba(0,174,239,0.18),transparent_35%),linear-gradient(90deg,rgba(4,16,31,0.96)_0%,rgba(4,16,31,0.68)_58%,transparent_100%)] md:block" />
+            <div className="hero-bottom-fade pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-48 bg-gradient-to-t from-[#071a30] via-[#071a30]/55 to-transparent" />
+          </>
+        )}
+
+        {!isHighContrast && isDesktop && (
+          <div
+            className="hero-gallery pointer-events-auto absolute bottom-[-132px] right-[-134px] z-[2] h-[420px] w-[420px] xl:bottom-[-126px] xl:right-[-118px]"
+            onMouseEnter={() => setIsCarouselPaused(true)}
+            onMouseLeave={() => setIsCarouselPaused(false)}
+            onFocus={() => setIsCarouselPaused(true)}
+            onBlur={() => setIsCarouselPaused(false)}
+          >
+            <div className="absolute left-1/2 top-1/2 h-[336px] w-[336px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-[#eebe97]/50 bg-white/[0.02] shadow-[0_0_72px_rgba(0,174,239,0.12)]" />
+            <div className="absolute left-1/2 top-1/2 h-[232px] w-[232px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10" />
+
+            {orderedOrbitSlides.map((slide) => {
+              const isActive = slide.offset === 0;
+
+              return (
+                <button
+                  key={slide.src}
+                  type="button"
+                  aria-label={`Mostrar imagem: ${slide.alt}`}
+                  aria-current={isActive ? "true" : undefined}
+                  title={isActive ? "Avancar para a proxima imagem" : slide.alt}
+                  onClick={() => handleCarouselPhotoClick(slide.originalIndex)}
+                  className={`hero-orbit-item absolute left-1/2 top-1/2 h-[58px] w-[58px] cursor-pointer overflow-hidden rounded-full border bg-white/10 p-1 backdrop-blur-md transition-all duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] hover:border-white hover:brightness-110 focus:outline-none focus:ring-4 focus:ring-[#00AEEF]/60 ${
+                    isActive
+                      ? "z-20 border-[#eebe97]/85 shadow-[0_22px_58px_rgba(0,0,0,0.42)]"
+                      : "z-10 border-white/50 shadow-[0_14px_32px_rgba(0,0,0,0.34)]"
+                  }`}
+                  style={{
+                    opacity: 1,
+                    transform: getOrbitTransform(slide.offset),
+                  }}
+                >
+                  <img
+                    src={slide.src}
+                    alt=""
+                    aria-hidden="true"
+                    decoding="async"
+                    loading={isActive ? "eager" : "lazy"}
+                    className="h-full w-full rounded-full object-cover"
+                    style={{ objectPosition: slide.position }}
+                  />
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         <div
-          className="absolute inset-0 z-[2] flex flex-col items-center justify-start pb-8 pt-[148px] sm:pt-[156px] md:pt-[176px] lg:pt-[196px] xl:pt-[208px]"
+          className="pointer-events-none absolute inset-0 z-[3] flex flex-col items-center justify-start pb-8 pt-[148px] sm:pt-[156px] md:pt-[176px] lg:items-start lg:pt-[190px] xl:pt-[204px]"
           style={{
             opacity: contentVisible ? 1 : 0,
             transform: contentVisible ? "translateY(0)" : "translateY(20px)",
@@ -172,8 +357,11 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
           }}
         >
           <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
-            <div className="mx-auto flex w-full max-w-full flex-col items-center text-center" style={{ maxWidth: "clamp(280px, 52vw, 820px)" }}>
-              <div className="hero-badge mb-4 inline-flex max-w-full items-center rounded-full border border-white/20 bg-white/10 px-2.5 py-1.5 text-[8px] font-bold uppercase tracking-[0.08em] text-white backdrop-blur-md shadow-sm sm:mb-5 sm:px-4 sm:py-2 sm:text-[10px] sm:tracking-[0.12em]">
+            <div
+              className="pointer-events-auto mx-auto flex w-full max-w-full flex-col items-center text-center lg:mx-0 lg:items-start lg:text-left"
+              style={{ maxWidth: "clamp(280px, 52vw, 820px)" }}
+            >
+              <div className="hero-badge mb-4 inline-flex max-w-full items-center rounded-full border border-white/20 bg-white/10 px-2.5 py-1.5 text-[8px] font-bold uppercase tracking-[0.08em] text-white shadow-sm backdrop-blur-md sm:mb-5 sm:px-4 sm:py-2 sm:text-[10px] sm:tracking-[0.12em]">
                 {t.hero.badge}
               </div>
 
@@ -186,18 +374,18 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
                 </span>
               </h1>
 
-              <h1 className="hidden w-full font-black leading-[0.96] tracking-[-0.035em] text-white sm:block sm:text-[2.55rem] md:text-[3rem] lg:text-[3.45rem]">
+              <h1 className="hidden w-full font-black leading-[0.96] tracking-[-0.035em] text-white sm:block sm:text-[2.55rem] md:text-[3rem] lg:text-left lg:text-[3.55rem] xl:text-[4.1rem]">
                 {t.hero.titlePrefix}
                 <span className="hero-title-gradient mt-1.5 block bg-gradient-to-r from-white via-[#7DD3FC] to-[#00AEEF] bg-clip-text text-transparent">
                   {t.hero.titleHighlight}
                 </span>
               </h1>
 
-              <p className="hc-text-desc mt-3 w-full max-w-none text-center text-[12px] font-light leading-relaxed text-slate-200 sm:mt-4 sm:text-[14px] md:max-w-[42rem] md:text-center md:text-[15px]">
+              <p className="hc-text-desc mt-3 w-full max-w-none text-center text-[12px] font-light leading-relaxed text-slate-200 sm:mt-4 sm:text-[14px] md:max-w-[42rem] md:text-center md:text-[15px] lg:max-w-[34rem] lg:text-left lg:text-[16px]">
                 {t.hero.description}
               </p>
 
-              <div className="hero-stats mt-4 grid w-full max-w-full grid-cols-3 divide-x-2 divide-slate-100 rounded-2xl border border-white/70 bg-white/95 p-2 shadow-2xl shadow-blue-950/20 backdrop-blur-lg sm:mt-5 sm:p-3 md:max-w-[38rem] md:p-5">
+              <div className="hero-stats mt-4 grid w-full max-w-full grid-cols-3 divide-x-2 divide-slate-100 rounded-2xl border border-white/70 bg-white/95 p-2 shadow-2xl shadow-blue-950/20 backdrop-blur-lg sm:mt-5 sm:p-3 md:max-w-[38rem] md:p-5 lg:max-w-[35rem]">
                 <AnimatedCounter
                   end={apresentacoes}
                   label={t.hero.stats.presentations}
@@ -223,6 +411,25 @@ export default function Hero({ apresentacoes, municipios, artistas }) {
               >
                 {t.hero.cta}
               </a>
+
+              {!isHighContrast && (
+                <div className="mt-5 flex items-center justify-center gap-2 lg:hidden">
+                  {HERO_SLIDES.map((slide, index) => (
+                    <button
+                      key={slide.src}
+                      type="button"
+                      aria-label={`Mostrar imagem: ${slide.alt}`}
+                      aria-current={index === activeSlide ? "true" : undefined}
+                      onClick={() => setActiveSlide(index)}
+                      className={`h-2.5 rounded-full transition-all focus:outline-none focus:ring-4 focus:ring-[#00AEEF]/50 ${
+                        index === activeSlide
+                          ? "w-8 bg-white"
+                          : "w-2.5 bg-white/45"
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
