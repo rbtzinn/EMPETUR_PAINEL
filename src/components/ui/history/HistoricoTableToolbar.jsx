@@ -31,11 +31,11 @@ export default function HistoricoTableToolbar({
       </div>
 
       <div className="relative z-10 flex flex-col gap-2 md:flex-row md:items-center">
-        <div className="flex items-center gap-2">
+        <div className="grid grid-cols-2 gap-2 md:flex md:items-center">
           <button
             type="button"
             onClick={onOpenExplanation}
-            className={`hc-text-destaque flex h-10 flex-1 items-center justify-center whitespace-nowrap rounded-xl border border-white/10 px-3 font-black uppercase tracking-[0.14em] text-[#00AEEF] transition-colors hover:border-white/20 hover:text-white focus:outline-none focus-visible:underline md:h-8 md:flex-none md:rounded-lg ${
+            className={`hc-text-destaque flex min-h-10 min-w-0 flex-1 items-center justify-center rounded-xl border border-white/10 px-3 text-center font-black uppercase leading-tight tracking-[0.14em] text-[#00AEEF] transition-colors hover:border-white/20 hover:text-white focus:outline-none focus-visible:underline md:h-8 md:min-h-0 md:flex-none md:rounded-lg md:whitespace-nowrap ${
               comfortable ? "text-xs md:text-[10px]" : "text-[10px] md:text-[9px]"
             }`}
           >
@@ -45,11 +45,11 @@ export default function HistoricoTableToolbar({
           <button
             type="button"
             onClick={onOpenExport}
-            className={`hc-text-destaque flex h-10 flex-1 items-center justify-center gap-1.5 rounded-xl bg-[#00AEEF] px-3 font-black uppercase tracking-[0.14em] text-[#0B2341] shadow-lg shadow-sky-900/20 transition-all hover:bg-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-300 md:h-8 md:flex-none md:rounded-lg ${
+            className={`hc-text-destaque flex min-h-10 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl bg-[#00AEEF] px-3 text-center font-black uppercase leading-tight tracking-[0.14em] text-[#0B2341] shadow-lg shadow-sky-900/20 transition-all hover:bg-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-300 md:h-8 md:min-h-0 md:flex-none md:rounded-lg md:whitespace-nowrap ${
               comfortable ? "text-xs md:text-[10px]" : "text-[10px] md:text-[9px]"
             }`}
           >
-            <Layers size={12} /> {exportLabel}
+            <Layers size={12} className="shrink-0" /> <span>{exportLabel}</span>
           </button>
         </div>
 
