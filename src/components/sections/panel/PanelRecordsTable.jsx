@@ -78,7 +78,7 @@ export default function PanelRecordsTable({
         </div>
       )}
 
-      <div className="h-[650px] overflow-y-auto bg-slate-50/30 scrollbar-moderna">
+      <div className="h-[650px] overflow-x-auto overflow-y-auto bg-slate-50/30 scrollbar-moderna">
         <table className="w-full min-w-[1050px] border-collapse text-left">
           <thead className="hc-tabela-header sticky top-0 z-10 bg-white/95 shadow-sm shadow-slate-100 backdrop-blur-md">
             <tr>

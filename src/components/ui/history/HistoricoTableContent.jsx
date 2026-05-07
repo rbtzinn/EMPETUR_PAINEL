@@ -36,7 +36,7 @@ export default function HistoricoTableContent({
   return (
     <div
       ref={containerRef}
-      className="relative min-h-0 flex-1 overflow-auto bg-white scrollbar-moderna bi-scroll"
+      className="relative min-h-0 flex-1 overflow-x-auto overflow-y-auto bg-white scrollbar-moderna bi-scroll"
     >
       <style>{`
         body.contraste-negativo .hc-filtered-column-header {

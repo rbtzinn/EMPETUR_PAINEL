@@ -61,7 +61,7 @@ export default function PainelCompleto({ csvUrls }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
-  const dataUltimaAtualizacao = "06/04/2026";
+  const dataUltimaAtualizacao = "07/05/2026";
   const { t } = useLanguage();
   const { isBIMode, isMobile } = useViewMode();
 
