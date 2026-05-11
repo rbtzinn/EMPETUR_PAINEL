@@ -8,9 +8,11 @@ import {
   buildFilterOptions,
   filterRows,
 } from "../utils/dashboardFilters";
+import { useDashboardUpdateDate } from "./useDashboardUpdateDate";
 
-export function useDashboardData(csvUrls) {
+export function useDashboardData(csvUrls, updateDateUrl) {
   const { data: dados, loading } = useProcessedData(csvUrls);
+  const dataUltimaAtualizacao = useDashboardUpdateDate(updateDateUrl, dados);
   const [filtros, setFiltros] = useState(createDefaultFilters);
 
   const temFiltroAtivo = useMemo(
@@ -87,6 +89,7 @@ export function useDashboardData(csvUrls) {
     registrosPorCiclo,
     registrosPorMunicipio,
     registrosPorAno,
+    dataUltimaAtualizacao,
     getOpcoes,
   };
 }

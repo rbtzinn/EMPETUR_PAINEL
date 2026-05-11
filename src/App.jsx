@@ -29,6 +29,9 @@ const CSV_URLS = Object.freeze([
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbCY3xmn0T8KAH-c9jA7-HIUlHHTIEgo0TqjS3-y7mYSACBhpcwrOwief4MCzfG8001m-k6P4u4JyY/pub?gid=325255945&single=true&output=csv",
 ]);
 
+const UPDATE_DATE_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbCY3xmn0T8KAH-c9jA7-HIUlHHTIEgo0TqjS3-y7mYSACBhpcwrOwief4MCzfG8001m-k6P4u4JyY/pub?gid=818807796&single=true&output=csv";
+
 function Home({ csvUrls }) {
   const { data } = useProcessedData(csvUrls);
 
@@ -87,7 +90,12 @@ function App() {
               <Route path="/" element={<Home csvUrls={CSV_URLS} />} />
               <Route
                 path="/dashboard"
-                element={<PainelCompleto csvUrls={CSV_URLS} />}
+                element={
+                  <PainelCompleto
+                    csvUrls={CSV_URLS}
+                    updateDateUrl={UPDATE_DATE_URL}
+                  />
+                }
               />
             </Routes>
           </Suspense>

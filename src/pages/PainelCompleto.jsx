@@ -57,11 +57,10 @@ const FALLBACK_TUTORIAL_TEXTS = {
   },
 };
 
-export default function PainelCompleto({ csvUrls }) {
+export default function PainelCompleto({ csvUrls, updateDateUrl }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
-  const dataUltimaAtualizacao = "07/05/2026";
   const { t } = useLanguage();
   const { isBIMode, isMobile } = useViewMode();
 
@@ -74,8 +73,9 @@ export default function PainelCompleto({ csvUrls }) {
     registrosPorCiclo,
     registrosPorMunicipio,
     registrosPorAno,
+    dataUltimaAtualizacao,
     getOpcoes,
-  } = useDashboardData(csvUrls);
+  } = useDashboardData(csvUrls, updateDateUrl);
 
   const limparFiltros = () => setFiltros(createDefaultFilters());
 
